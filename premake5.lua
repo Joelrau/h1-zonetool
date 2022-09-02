@@ -249,8 +249,8 @@ filter {}
 
 filter "configurations:Release"
 	optimize "Size"
-	buildoptions {"/GL"}
-	linkoptions { "/IGNORE:4702", "/LTCG" }
+	buildoptions {"/bigobj"}
+	linkoptions { "/IGNORE:4702" }
 	defines {"NDEBUG"}
 	flags {"FatalCompileWarnings"}
 filter {}
