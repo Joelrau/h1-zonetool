@@ -1,101 +1,14 @@
 #include <std_include.hpp>
 #include "stringtable.hpp"
 
+#include "zonetool/utils/csv.hpp"
+
 namespace zonetool
 {
-	// LEGACY ZONETOOL CODE, FIX ME!
-	class CSV
-	{
-	protected:
-		std::string _name;
-		std::vector<std::vector<std::string>> _data;
-
-	public:
-		CSV(std::string name, char sep = ',')
-			: _name(name)
-		{
-			auto f = filesystem::file(name);
-			f.open("rb");
-
-			auto fp = f.get_fp();
-
-			if (fp)
-			{
-				auto len = f.size();
-				auto buf = std::make_unique<char[]>(len + 1);
-				memset(buf.get(), 0, len + 1);
-				fread(buf.get(), len, 1, fp);
-				fclose(fp);
-
-				std::vector<std::string> rows = utils::string::split(std::string(buf.get()), '\n');
-
-				for (auto& row : rows)
-				{
-					// Replace literal characters
-					std::size_t pos;
-					while ((pos = row.find("\\n")) != std::string::npos)
-					{
-						row.replace(pos, 2, "\n");
-					}
-
-					while ((pos = row.find("\\t")) != std::string::npos)
-					{
-						row.replace(pos, 2, "\t");
-					}
-
-					_data.push_back(utils::string::split(row, sep));
-				}
-			}
-
-			f.close();
-		}
-
-		std::string entry(std::size_t row, std::size_t column)
-		{
-			return _data[row][column];
-		}
-
-		std::size_t rows()
-		{
-			return _data.size();
-		}
-
-		std::size_t columns(std::size_t row)
-		{
-			return _data[row].size();
-		}
-
-		std::size_t max_columns()
-		{
-			std::size_t _max = 0;
-
-			for (std::size_t row = 0; row < this->rows(); row++)
-			{
-				if (_max < this->columns(row))
-					_max = this->columns(row);
-			}
-
-			return _max;
-		}
-
-		void clear()
-		{
-			for (std::size_t i = 0; i < _data.size(); i++)
-			{
-				for (std::size_t j = 0; j < _data[i].size(); j++)
-					_data[i][j].clear();
-
-				_data[i].clear();
-			}
-
-			_data.clear();
-		}
-	};
-
-	int StringTable_Hash(const char* string)
+	int StringTable_Hash(const std::string& string)
 	{
 		int hash = 0;
-		char* data = _strdup(string);
+		const char* data = string.data();
 
 		while (*data != 0)
 		{
@@ -108,20 +21,21 @@ namespace zonetool
 
 	StringTable* StringTable_Parse(std::string name, ZoneMemory* mem)
 	{
-		auto table = std::make_unique<CSV>(name);
+		auto table = csv::parser(filesystem::get_file_path(name) + name);
 		auto stringtable = mem->Alloc<StringTable>();
 
-		stringtable->name = mem->StrDup(name.c_str());
-		stringtable->rowCount = static_cast<int>(table->rows());
-		stringtable->columnCount = static_cast<int>(table->max_columns());
+		stringtable->name = mem->StrDup(name);
+		stringtable->rowCount = static_cast<int>(table.get_num_rows());
+		stringtable->columnCount = static_cast<int>(table.get_max_columns());
 		stringtable->values = mem->Alloc<StringTableCell>(stringtable->rowCount * stringtable->columnCount);
 
-		for (int row = 0; row < table->rows(); row++)
+		auto rows = table.get_rows();
+		for (int row = 0; row < table.get_num_rows(); row++)
 		{
-			for (int col = 0; col < table->columns(row); col++)
+			for (int col = 0; col < rows[row]->num_fields; col++)
 			{
 				int entry = (row * stringtable->columnCount) + col;
-				stringtable->values[entry].string = mem->StrDup(table->entry(row, col).c_str());
+				stringtable->values[entry].string = mem->StrDup(rows[row]->fields[col]);
 				stringtable->values[entry].hash = StringTable_Hash(stringtable->values[entry].string);
 			}
 		}
@@ -202,24 +116,36 @@ namespace zonetool
 		auto file = filesystem::file(asset->name);
 		file.open("wb");
 
-		if (file.get_fp())
+		if (!file.get_fp())
 		{
-			for (int row = 0; row < asset->rowCount; row++)
+			return;
+		}
+
+		for (auto row = 0; row < asset->rowCount; row++)
+		{
+			for (auto column = 0; column < asset->columnCount; column++)
 			{
-				for (int column = 0; column < asset->columnCount; column++)
+				const auto index = (row * asset->columnCount) + column;
+				const auto string_value = asset->values[index].string;
+				const auto last_char = (column == asset->columnCount - 1) ? "\r\n" : ",";
+
+				if (string_value == nullptr)
 				{
-					fprintf(
-						file.get_fp(),
-						"%s%s",
-						(asset->values[(row * asset->columnCount) + column].string)
-						? asset->values[(row * asset->columnCount) + column].string
-						: "",
-						(column == asset->columnCount - 1) ? "\n" : ","
-					);
+					std::fprintf(file.get_fp(), last_char);
+				}
+				else
+				{
+					std::string str = string_value;
+					if (str.contains(',') || str.contains('\n') || str.contains('\t'))
+					{
+						str.insert(str.begin(), '"');
+						str.insert(str.end(), '"');
+						str = std::regex_replace(str, std::regex("\n"), "\\n");
+						str = std::regex_replace(str, std::regex("\t"), "\\t");
+					}
+					std::fprintf(file.get_fp(), "%s%s", str.data(), last_char);
 				}
 			}
 		}
-
-		file.close();
 	}
 }
