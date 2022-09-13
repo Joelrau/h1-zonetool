@@ -4455,16 +4455,329 @@ namespace zonetool
 		float linkMaxs[2];
 	}; assert_sizeof(DynEntityColl, 20);
 
-	struct ScriptableMapEnts // TODO:
+	enum ScriptableEventType : std::int32_t
+	{
+		SCRIPTABLE_EVENT_MODEL = 0x0,
+		SCRIPTABLE_EVENT_FX = 0x1,
+		SCRIPTABLE_EVENT_STOP_FX = 0x2,
+		SCRIPTABLE_EVENT_SOUND = 0x3,
+		SCRIPTABLE_EVENT_ANIMATION = 0x4,
+		SCRIPTABLE_EVENT_EXPLODE = 0x5,
+		SCRIPTABLE_EVENT_HEALTHDRAIN = 0x6,
+		SCRIPTABLE_EVENT_PHYSICSLAUNCH = 0x7,
+		SCRIPTABLE_EVENT_LIGHTSETTINGS = 0x8,
+		SCRIPTABLE_EVENT_SUNLIGHTSETTINGS = 0x9,
+		SCRIPTABLE_EVENT_SHAKE = 0xA,
+		SCRIPTABLE_EVENT_TRANSLATE = 0xB,
+		SCRIPTABLE_EVENT_ROTATE = 0xC,
+		SCRIPTABLE_EVENT_STATECHANGE = 0xD,
+		SCRIPTABLE_EVENT_COUNT = 0xE,
+	};
+
+	struct ScriptableEventModelDef
+	{
+		XModel* model;
+	}; assert_sizeof(ScriptableEventModelDef, 8);
+
+	struct ScriptableEventFxDef
+	{
+		FxEffectDef* handle;
+		scr_string_t tagName;
+		unsigned short loopTime;
+		unsigned char loopTimeStreamIndex;
+		bool tagUseAngles;
+	}; assert_sizeof(ScriptableEventFxDef, 16);
+
+	struct ScriptableEventStopFxDef
+	{
+		FxEffectDef* handle;
+		scr_string_t tagName;
+		unsigned short loopTime;
+		unsigned char loopTimeStreamIndex;
+		bool tagUseAngles;
+	}; assert_sizeof(ScriptableEventFxDef, 16);
+
+	struct ScriptableEventSoundDef
+	{
+		snd_alias_list_t* alias;
+		bool looping;
+	}; assert_sizeof(ScriptableEventSoundDef, 16);
+
+	struct ScriptableEventAnimationDef
+	{
+		const char* animName;
+		bool override;
+		bool stateful;
+		unsigned char animEntryIndex;
+		unsigned char animPlaybackStreamIndex;
+		unsigned short timeOffsetMin;
+		unsigned short timeOffsetMax;
+		unsigned short playbackRateMin;
+		unsigned short playbackRateMax;
+		unsigned short blendTime;
+	}; assert_sizeof(ScriptableEventAnimationDef, 24);
+
+	struct ScriptableEventExplodeDef
+	{
+		unsigned short forceMin;
+		unsigned short forceMax;
+		unsigned short radius;
+		unsigned short damageMin;
+		unsigned short damageMax;
+		bool aiAvoid;
+	}; assert_sizeof(ScriptableEventExplodeDef, 12);
+
+	struct ScriptableEventHealthDef
+	{
+		unsigned short amount;
+		unsigned short interval;
+		unsigned short badPlaceRadius;
+		unsigned char streamIndex;
+	}; assert_sizeof(ScriptableEventHealthDef, 8);
+
+	struct ScriptableEventPhysicsDef
+	{
+		XModel* model;
+		unsigned char launchDirX;
+		unsigned char launchDirY;
+		unsigned char launchDirZ;
+		unsigned short explForceScale;
+		unsigned short bulletForceScale;
+	}; assert_sizeof(ScriptableEventPhysicsDef, 16);
+
+	struct ScriptableEventLightSettingsDef
+	{
+		unsigned char color[4];
+		unsigned char lightIndexConstIndex;
+		unsigned char transStateStreamIndex;
+		unsigned char useColor;
+		unsigned char useStateTransitionTime;
+		unsigned short intensityScaleMin;
+		unsigned short intensityScaleMax;
+		unsigned short radiusScaleMin;
+		unsigned short radiusScaleMax;
+		const char* noteworthy;
+		unsigned short transitionTimeMin;
+		unsigned short transitionTimeMax;
+	}; assert_sizeof(ScriptableEventLightSettingsDef, 32);
+
+	struct ScriptableEventSunlightSettingsDef
+	{
+		unsigned char color[4];
+		unsigned char transStateStreamIndex;
+		unsigned char flags;
+		unsigned short intensityScaleMin;
+		unsigned short intensityScaleMax;
+		unsigned short pitchMin;
+		unsigned short pitchMax;
+		unsigned short headingMin;
+		unsigned short headingMax;
+		unsigned short transitionTimeMin;
+		unsigned short transitionTimeMax;
+		char __pad0[6];
+	}; assert_sizeof(ScriptableEventSunlightSettingsDef, 28);
+
+	struct ScriptableEventShakeDef
+	{
+		const char* rumbleName;
+		unsigned short duration;
+		unsigned short durationFadeUp;
+		unsigned short durationFadeDown;
+		unsigned short radius;
+		unsigned short exponent;
+		unsigned short scaleEarthquake;
+		unsigned char scalePitch;
+		unsigned char scaleYaw;
+		unsigned char scaleRoll;
+		unsigned char frequencyPitch;
+		unsigned char frequencyYaw;
+		unsigned char frequencyRoll;
+		unsigned char flags;
+	}; assert_sizeof(ScriptableEventShakeDef, 32);
+
+	struct ScriptableEventTranslateDef
+	{
+		char __pad0[24];
+		const char* str;
+	}; assert_sizeof(ScriptableEventTranslateDef, 32);
+
+	struct ScriptableEventRotateDef
+	{
+		char __pad0[24];
+		const char* str;
+	}; assert_sizeof(ScriptableEventTranslateDef, 32);
+
+	struct ScriptableEventStateChangeDef
+	{
+		unsigned char targetIndex;
+		unsigned char delayStreamIndex;
+		unsigned short delayMin;
+		unsigned short delayMax;
+	}; assert_sizeof(ScriptableEventStateChangeDef, 6);
+
+	union ScriptableEventDataUnion
+	{
+		ScriptableEventModelDef setModel;
+		ScriptableEventFxDef playFx;
+		ScriptableEventStopFxDef stopFx;
+		ScriptableEventSoundDef playSound;
+		ScriptableEventAnimationDef playAnim;
+		ScriptableEventExplodeDef doExplosion;
+		ScriptableEventHealthDef healthDrain;
+		ScriptableEventPhysicsDef physicsLaunch;
+		ScriptableEventLightSettingsDef lightSettings;
+		ScriptableEventSunlightSettingsDef sunlightSettings;
+		ScriptableEventShakeDef shake;
+		ScriptableEventTranslateDef translate;
+		ScriptableEventRotateDef rotate;
+		ScriptableEventStateChangeDef stateChange;
+	};
+
+	struct ScriptableEventDef
+	{
+		ScriptableEventType type;
+		ScriptableEventDataUnion data;
+	};
+
+	struct ScriptableStateDef
+	{
+		scr_string_t name;
+		scr_string_t tagName;
+		ScriptableEventDef* onEnterEvents;
+		unsigned char onEnterEventCount;
+		unsigned char damageFlags;
+		unsigned char damageParentTransferRate;
+		unsigned char damageParentReceiveRate;
+		unsigned short maxHealth;
+	}; assert_sizeof(ScriptableStateDef, 24);
+
+	struct ScriptablePartDef
+	{
+		ScriptableStateDef* states;
+		scr_string_t name;
+		unsigned char stateCount;
+		unsigned char flags;
+		unsigned char eventStreamTimeRemainIndex;
+		unsigned char eventStreamNextChangeTimeIndex;
+	}; assert_sizeof(ScriptablePartDef, 16);
+
+	enum ScriptableNotetrackType : std::int32_t
+	{
+		SCRIPTABLE_NT_FX = 0x0,
+		SCRIPTABLE_NT_SOUND = 0x1,
+		SCRIPTABLE_NT_COUNT = 0x2,
+	};
+
+	struct ScriptableNotetrackFxDef
+	{
+		FxEffectDef* handle;
+		scr_string_t tagName;
+		bool useAngles;
+	};
+
+	struct ScriptableNotetrackSoundDef
+	{
+		snd_alias_list_t* alias;
+	};
+
+	union ScriptableNotetrackDataUnion
+	{
+		ScriptableNotetrackFxDef playFx;
+		ScriptableNotetrackSoundDef playSound;
+	};
+
+	struct ScriptableNotetrackDef
+	{
+		scr_string_t name;
+		ScriptableNotetrackType type;
+		ScriptableNotetrackDataUnion data;
+	};
+
+	enum ScriptableType : std::int32_t
+	{
+		SCRIPTABLE_TYPE_GENERAL = 0x0,
+		SCRIPTABLE_TYPE_CHARACTER = 0x1,
+		SCRIPTABLE_TYPE_COUNT = 0x2,
+	};
+
+	struct ScriptableDef
+	{
+		const char* name;
+		XModel* baseModel;
+		const char* baseCollisionBrush;
+		const char* destroyedCollisionBrush;
+		ScriptablePartDef* parts;
+		ScriptableNotetrackDef* notetracks;
+		ScriptableType type;
+		unsigned char flags;
+		unsigned char partCount;
+		unsigned char serverInstancePartCount;
+		unsigned char serverControlledPartCount;
+		unsigned char notetrackCount;
+		unsigned char eventStreamSize;
+		unsigned char eventConstantsSize;
+	}; assert_sizeof(ScriptableDef, 0x40);
+	assert_offsetof(ScriptableDef, partCount, 53);
+	assert_offsetof(ScriptableDef, eventConstantsSize, 58);
+
+	struct ScriptableInstanceTargetData
+	{
+		char __pad0[68];
+	}; assert_sizeof(ScriptableInstanceTargetData, 68);
+
+	struct ScriptableInstancePartState
+	{
+		unsigned short curHealth;
+		unsigned char lastExecutedStateIndex;
+		unsigned char stateIndex;
+	}; assert_sizeof(ScriptableInstancePartState, 4);
+
+	struct ScriptableInstance
+	{
+		ScriptableDef* def;
+		unsigned char* eventConstantsBuf;
+		ScriptableInstanceTargetData* targetData;
+		float origin[3];
+		float angles[3];
+		char __pad0[24];
+		scr_string_t targetname;
+		unsigned short preBrushModel;
+		unsigned short postBrushModel;
+		unsigned char flags;
+		unsigned char targetDataCount;
+		char __pad1[6];
+		XModel* currentModel;
+		ScriptableInstancePartState* partStates;
+		unsigned char* eventStreamBuf;
+		unsigned int currentPartBits[8];
+		unsigned int damageOwnerEntHandle;
+		unsigned short updateNextInstance;
+		unsigned short linkedObject;
+	}; assert_sizeof(ScriptableInstance, 152);
+	assert_offsetof(ScriptableInstance, targetData, 16);
+	assert_offsetof(ScriptableInstance, targetname, 72);
+	assert_offsetof(ScriptableInstance, currentModel, 88);
+	assert_offsetof(ScriptableInstance, partStates, 96);
+	assert_offsetof(ScriptableInstance, eventStreamBuf, 104);
+
+	struct ScriptableAnimationEntry
+	{
+		const char* animName;
+		unsigned __int64 runtimeBuf;
+	}; assert_sizeof(ScriptableAnimationEntry, 16);
+
+	struct ScriptableMapEnts
 	{
 		unsigned int instanceStateSize;
 		unsigned int instanceCount;
 		unsigned int reservedInstanceCount;
-		void* instances; //ScriptableInstance* instances;
+		ScriptableInstance* instances;
 		unsigned int animEntryCount;
-		void* animEntries; //ScriptableAnimationEntry* animEntries;
+		ScriptableAnimationEntry* animEntries;
 		unsigned int replicatedInstanceCount;
 	}; assert_sizeof(ScriptableMapEnts, 48);
+	assert_offsetof(ScriptableMapEnts, instances, 16);
+	assert_offsetof(ScriptableMapEnts, animEntries, 32);
 
 	struct grapple_magnet_t
 	{
@@ -4961,16 +5274,102 @@ namespace zonetool
 	assert_offsetof(GfxWorldDraw, displacementParmsCount, 224);
 	assert_offsetof(GfxWorldDraw, displacementParms, 232);
 
+	struct GfxLightGridEntry
+	{
+		unsigned int colorsIndex;
+		unsigned short primaryLightEnvIndex;
+		unsigned char unused;
+		unsigned char needsTrace;
+	}; assert_sizeof(GfxLightGridEntry, 8);
+
+	struct GfxLightGridColors
+	{
+		unsigned char colorVec6[56][6];
+	}; assert_sizeof(GfxLightGridColors, 336);
+
+	struct GfxLightGridColorsHDR
+	{
+		unsigned char colorVec6[56][6];
+	}; assert_sizeof(GfxLightGridColorsHDR, 336);
+
+	struct GfxLightGridTree
+	{
+		unsigned char maxDepth;
+		int nodeCount;
+		int leafCount;
+		int coordMinGridSpace[3];
+		int coordMaxGridSpace[3];
+		int coordHalfSizeGridSpace[3];
+		int defaultColorIndexBitCount;
+		int defaultLightIndexBitCount;
+		unsigned int* p_nodeTable;
+		int leafTableSize;
+		unsigned char* p_leafTable;
+	}; assert_sizeof(GfxLightGridTree, 80);
+
 	struct GfxLightGrid
 	{
-		char __pad0[1080];
-		// TODO:
+		bool hasLightRegions;
+		bool useSkyForLowZ;
+		unsigned int lastSunPrimaryLightIndex;
+		unsigned short mins[3];
+		unsigned short maxs[3];
+		unsigned int rowAxis;
+		unsigned int colAxis;
+		unsigned short* rowDataStart;
+		unsigned int rawRowDataSize;
+		unsigned char* rawRowData;
+		unsigned int entryCount;
+		GfxLightGridEntry* entries;
+		unsigned int colorCount;
+		GfxLightGridColors* colors;
+		char __pad0[24];
+		int tableVersion;
+		int paletteVersion;
+		char rangeExponent8BitsEncoding;
+		char rangeExponent12BitsEncoding;
+		char rangeExponent16BitsEncoding;
+		unsigned char stageCount;
+		float* stageLightingContrastGain;
+		unsigned int paletteEntryCount;
+		int* paletteEntryAddress;
+		unsigned int paletteBitstreamSize;
+		unsigned char* paletteBitstream;
+		GfxLightGridColorsHDR skyLightGridColors;
+		GfxLightGridColorsHDR defaultLightGridColors;
+		GfxLightGridTree tree;
+		char __pad1[160];
 	}; assert_sizeof(GfxLightGrid, 1080);
+	assert_offsetof(GfxLightGrid, rowDataStart, 32);
+	assert_offsetof(GfxLightGrid, rawRowData, 48);
+	assert_offsetof(GfxLightGrid, entries, 64);
+	assert_offsetof(GfxLightGrid, colors, 80);
+	assert_offsetof(GfxLightGrid, paletteVersion, 116);
+	assert_offsetof(GfxLightGrid, rangeExponent8BitsEncoding, 120);
+	assert_offsetof(GfxLightGrid, stageCount, 123);
+	assert_offsetof(GfxLightGrid, stageLightingContrastGain, 128);
+	assert_offsetof(GfxLightGrid, paletteEntryCount, 136);
+	assert_offsetof(GfxLightGrid, paletteEntryAddress, 144);
+	assert_offsetof(GfxLightGrid, paletteBitstreamSize, 152);
+	assert_offsetof(GfxLightGrid, paletteBitstream, 160);
+	assert_offsetof(GfxLightGrid, tree, 840);
+
+	struct GfxBrushModelWritable
+	{
+		Bounds bounds;
+		vec3_t origin;
+		vec4_t quat;
+		int mdaoVolumeProcessed;
+	};
 
 	struct GfxBrushModel
 	{
-		char __pad0[96];
-		// TODO:
+		GfxBrushModelWritable writable;
+		Bounds bounds;
+		float radius;
+		unsigned int startSurfIndex;
+		unsigned short surfaceCount;
+		int mdaoVolumeIndex;
 	}; assert_sizeof(GfxBrushModel, 96);
 
 	struct MaterialMemory
@@ -5058,16 +5457,170 @@ namespace zonetool
 		GfxLightRegionHull* hulls;
 	}; assert_sizeof(GfxLightRegion, 16);
 
+	struct GfxStaticModelInst
+	{
+		float mins[3];
+		float maxs[3];
+		float lightingOrigin[3];
+	}; assert_sizeof(GfxStaticModelInst, 36);
+
+	struct srfTriangles_t
+	{
+		unsigned int vertexLayerData;
+		unsigned int firstVertex;
+		float maxEdgeLength;
+		unsigned short vertexCount;
+		unsigned short triCount;
+		unsigned int baseIndex;
+	};
+
+	struct GfxSurfaceLightingAndFlagsFields
+	{
+		unsigned char lightmapIndex;
+		unsigned char reflectionProbeIndex;
+		unsigned short primaryLightEnvIndex;
+		unsigned char flags;
+		unsigned char unused[3];
+	};
+
+	union GfxSurfaceLightingAndFlags
+	{
+		GfxSurfaceLightingAndFlagsFields fields;
+		unsigned __int64 packed;
+	};
+
+	struct GfxSurface
+	{
+		srfTriangles_t tris;
+		Material* material;
+		GfxSurfaceLightingAndFlags laf;
+	};
+	assert_sizeof(GfxSurface, 40);
+	assert_offsetof(GfxSurface, material, 24);
+
+	struct GfxSurfaceBounds
+	{
+		Bounds bounds;
+		char __pad0[12];
+	};
+	assert_sizeof(GfxSurfaceBounds, 36);
+
+	struct GfxPackedPlacement
+	{
+		float origin[3];
+		float axis[3][3];
+		float scale;
+	};
+
+	struct GfxStaticModelDrawInst
+	{
+		GfxPackedPlacement placement;
+		XModel* model;
+		unsigned short lightingHandle;
+		unsigned short cullDist;
+		unsigned short flags;
+		unsigned short staticModelId;
+		unsigned short primaryLightEnvIndex;
+		unsigned char reflectionProbeIndex;
+		unsigned char firstMtlSkinIndex;
+		unsigned char sunShadowFlags;
+	}; assert_sizeof(GfxStaticModelDrawInst, 80);
+	assert_offsetof(GfxStaticModelDrawInst, model, 56);
+
+	struct GfxStaticModelVertexLighting
+	{
+		unsigned char visibility[4];
+		unsigned short ambientColorFloat16[4];
+		unsigned short highlightColorFloat16[4];
+	}; assert_sizeof(GfxStaticModelVertexLighting, 20);
+
+	struct GfxStaticModelVertexLightingInfo
+	{
+		GfxStaticModelVertexLighting* lightingValues;
+		ID3D11Buffer* lightingValuesVb;
+		int numLightingValues;
+	};
+
+	struct GfxStaticModelLighting
+	{
+		GfxStaticModelVertexLightingInfo info;
+	}; assert_sizeof(GfxStaticModelLighting, 24);
+
+	struct GfxSubdivVertexLightingInfo
+	{
+		int flags;
+		ID3D11Buffer* vb;
+		GfxSubdivCache cache;
+	}; assert_sizeof(GfxSubdivVertexLightingInfo, 40);
+
+	struct GfxDepthAndSurf
+	{
+		char __pad0[8];
+	}; assert_sizeof(GfxDepthAndSurf, 8);
+
+	typedef void* GfxWorldDpvsVoid;
+
 	struct GfxWorldDpvsStatic
 	{
-		char __pad0[784];
-		// TODO:
+		unsigned int smodelCount; // 0
+		unsigned int subdivVertexLightingInfoCount; // 4
+		unsigned int staticSurfaceCount; // 8
+		unsigned int litOpaqueSurfsBegin; // 12
+		unsigned int litOpaqueSurfsEnd; // 16
+		unsigned int unkSurfsBegin;
+		unsigned int unkSurfsEnd;
+		unsigned int litDecalSurfsBegin; // 28
+		unsigned int litDecalSurfsEnd; // 32
+		unsigned int litTransSurfsBegin; // 36
+		unsigned int litTransSurfsEnd; // 40
+		unsigned int shadowCasterSurfsBegin; // 44
+		unsigned int shadowCasterSurfsEnd; // 48
+		unsigned int emissiveSurfsBegin; // 52
+		unsigned int emissiveSurfsEnd; // 56
+		unsigned int smodelVisDataCount; // 60
+		unsigned int surfaceVisDataCount; // 64
+		unsigned int* smodelVisData[4]; // 72 80 88 96
+		unsigned int* smodelUnknownVisData[27];
+		unsigned int* surfaceVisData[4]; // 320 328 336 344
+		unsigned int* surfaceUnknownVisData[27];
+		unsigned int* smodelUmbraVisData[4]; // 568 576 584 592
+		unsigned int* surfaceUmbraVisData[4]; // 600 608 616 624
+		char* lodData; // 632
+		unsigned int* tessellationCutoffVisData; // 640
+		unsigned int* sortedSurfIndex; // 648
+		GfxStaticModelInst* smodelInsts; // 656
+		GfxSurface* surfaces; // 664
+		GfxSurfaceBounds* surfacesBounds; // 672
+		GfxStaticModelDrawInst* smodelDrawInsts; // 680
+		void* a;
+		void* b;
+		GfxStaticModelLighting* smodelLighting; // 704 (array)
+		GfxSubdivVertexLightingInfo* subdivVertexLighting; // 712 (array)
+		GfxDrawSurf* surfaceMaterials; // 720
+		unsigned int* surfaceCastsSunShadow; // 728
+		unsigned int sunShadowOptCount; // 736
+		unsigned int sunSurfVisDataCount; // 740
+		unsigned int* surfaceCastsSunShadowOpt; // 744
+		GfxDepthAndSurf* surfaceDeptAndSurf; // 752
+		GfxWorldDpvsVoid* constantBuffersLit; // 760
+		GfxWorldDpvsVoid* constantBuffersAmbient; // 768
+		int usageCount; // 776
 	}; assert_sizeof(GfxWorldDpvsStatic, 784);
+	assert_offsetof(GfxWorldDpvsStatic, smodelVisData[0], 72);
+	assert_offsetof(GfxWorldDpvsStatic, surfaceVisData[0], 320);
+	assert_offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[0], 568);
+	assert_offsetof(GfxWorldDpvsStatic, tessellationCutoffVisData, 640);
+	assert_offsetof(GfxWorldDpvsStatic, smodelDrawInsts, 680);
+	assert_offsetof(GfxWorldDpvsStatic, smodelLighting, 704);
+	assert_offsetof(GfxWorldDpvsStatic, sunSurfVisDataCount, 740);
+	assert_offsetof(GfxWorldDpvsStatic, constantBuffersAmbient, 768);
 
 	struct GfxWorldDpvsDynamic
 	{
-		char __pad0[96];
-		// TODO:
+		unsigned int dynEntClientWordCount[2]; // 0 4
+		unsigned int dynEntClientCount[2]; // 8 12
+		unsigned int* dynEntCellBits[2]; // 16 24
+		unsigned char* dynEntVisData[2][4]; // 32 40 48 56 64 72 80 88
 	}; assert_sizeof(GfxWorldDpvsDynamic, 96);
 
 	struct GfxHeroOnlyLight
@@ -5257,7 +5810,7 @@ namespace zonetool
 		NetConstStrings* netConstStrings;
 		// reverb preset
 		LuaFile* luaFile;
-		// scriptable
+		ScriptableDef* scriptable;
 		// equipment snd table
 		// vector field
 		DopplerPreset* doppler;
