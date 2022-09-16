@@ -4184,7 +4184,7 @@ namespace zonetool
 		short leafBrushCount;
 		int contents;
 		cLeafBrushNodeData_t data;
-	};
+	}; assert_sizeof(cLeafBrushNode_s, 24);
 
 	typedef unsigned short LeafBrush;
 
@@ -4226,13 +4226,17 @@ namespace zonetool
 
 	struct SModelsCollisionTree
 	{
+		unsigned short unknown;
 		unsigned short smodelNodeCount;
 		SModelAabbNode* smodelNodes;
 	}; assert_sizeof(SModelsCollisionTree, 16);
 
 	struct cbrushside_t
 	{
-		char __pad0[8];
+		unsigned int planeIndex;
+		unsigned short materialNum;
+		unsigned char firstAdjacentSideOffset;
+		unsigned char edgeCount;
 	}; assert_sizeof(cbrushside_t, 8);
 
 	typedef unsigned char cbrushedge_t;
@@ -4247,11 +4251,12 @@ namespace zonetool
 		unsigned char firstAdjacentSideOffsets[2][3];
 		unsigned char edgeCount[2][3];
 	}; assert_sizeof(cbrush_t, 48);
+	assert_offsetof(cbrush_t, sides, 8);
 
 	struct BrushesCollisionData
 	{
 		unsigned int numBrushSides;
-		cbrushside_t* brushsides;
+		cbrushside_t* brushSides;
 		unsigned int numBrushEdges;
 		cbrushedge_t* brushEdges;
 		unsigned short numBrushes;
@@ -4281,7 +4286,7 @@ namespace zonetool
 	struct PatchesCollisionData
 	{
 		unsigned int vertCount;
-		float(*verts)[3];
+		vec3_t* verts;
 		int triCount;
 		unsigned short* triIndices;
 		unsigned char* triEdgeIsWalkable;
@@ -4325,6 +4330,7 @@ namespace zonetool
 	assert_offsetof(ClipInfo, bCollisionData, 96);
 	assert_offsetof(ClipInfo, pCollisionData, 160);
 	assert_offsetof(ClipInfo, sCollisionData, 232);
+	assert_offsetof(ClipInfo, bCollisionData.brushes, 136);
 
 	struct cNode_t
 	{
@@ -4556,10 +4562,11 @@ namespace zonetool
 		unsigned short intensityScaleMax;
 		unsigned short radiusScaleMin;
 		unsigned short radiusScaleMax;
-		const char* noteworthy;
 		unsigned short transitionTimeMin;
 		unsigned short transitionTimeMax;
+		const char* noteworthy;
 	}; assert_sizeof(ScriptableEventLightSettingsDef, 32);
+	assert_offsetof(ScriptableEventLightSettingsDef, noteworthy, 24);
 
 	struct ScriptableEventSunlightSettingsDef
 	{
@@ -4779,6 +4786,30 @@ namespace zonetool
 	assert_offsetof(ScriptableMapEnts, instances, 16);
 	assert_offsetof(ScriptableMapEnts, animEntries, 32);
 
+	struct sphere_tree_t
+	{
+		char __pad0[8];
+		int unk_count;
+		char __pad1[4];
+		unsigned int* unk;
+		char __pad2[8];
+	}; assert_sizeof(sphere_tree_t, 32);
+	assert_offsetof(sphere_tree_t, unk_count, 8);
+	assert_offsetof(sphere_tree_t, unk, 16);
+
+	struct sphere_tree_obj_t
+	{
+		char __pad0[20];
+	}; assert_sizeof(sphere_tree_obj_t, 20);
+
+	struct sphere_tree_data_t
+	{
+		int sphereTreeCount;
+		sphere_tree_t* sphereTree;
+		int sphereTreeObjCount;
+		sphere_tree_obj_t* sphereTreeObj;
+	}; assert_sizeof(sphere_tree_data_t, 32);
+
 	struct grapple_magnet_t
 	{
 		char __pad0[40];
@@ -4786,10 +4817,10 @@ namespace zonetool
 
 	struct grapple_data_t
 	{
-		char __pad0[32];
+		sphere_tree_data_t sphereTreeData;
 		grapple_magnet_t* magnet;
 		unsigned int magnetCount;
-		char __pad1[4];
+		char __pad0[4];
 	}; assert_sizeof(grapple_data_t, 48);
 
 	struct /*alignas(128)*/ clipMap_t
@@ -4895,12 +4926,12 @@ namespace zonetool
 		int lastStateChangeTime;
 		unsigned char impactDir;
 		unsigned char impactPos[2];
-	};
+	}; assert_sizeof(G_GlassPiece, 12);
 
 	struct G_GlassName
 	{
 		char* nameStr;
-		scr_string_t name;
+		scr_string_t name; // set during runtime from nameStr, G_InitGlass
 		unsigned short pieceCount;
 		unsigned short* pieceIndices;
 	}; assert_sizeof(G_GlassName, 24);
@@ -5036,13 +5067,13 @@ namespace zonetool
 		unsigned int defCount;
 		unsigned int pieceLimit;
 		unsigned int pieceWordCount;
-		unsigned int initPieceCount;
 		unsigned int cellCount;
-		unsigned int activePieceCount;
-		unsigned int firstFreePiece;
+		unsigned int activePieceCount; //
+		unsigned int firstFreePiece; //
 		unsigned int geoDataLimit;
 		unsigned int geoDataCount;
 		unsigned int initGeoDataCount;
+		//
 		FxGlassDef* defs;
 		FxGlassPiecePlace* piecePlaces;
 		FxGlassPieceState* pieceStates;
@@ -5054,14 +5085,15 @@ namespace zonetool
 		float(*linkOrg)[3];
 		float* halfThickness;
 		unsigned short* lightingHandles;
-		FxGlassInitPieceState* initPieceStates;
-		bool needToCompactData;
-		unsigned char initCount;
-		float effectChanceAccum;
-		int lastPieceDeletionTime;
 		FxGlassGeometryData* initGeoData;
-	};
-	assert_offsetof(FxGlassSystem, initGeoData, 160);
+		bool needToCompactData; //
+		unsigned char initCount; //
+		float effectChanceAccum; //
+		int lastPieceDeletionTime; //
+		unsigned int initPieceCount;
+		FxGlassInitPieceState* initPieceStates;
+	}; assert_sizeof(FxGlassSystem, 168);
+	assert_offsetof(FxGlassSystem, initPieceStates, 160);
 
 	struct FxWorld
 	{
@@ -5171,8 +5203,8 @@ namespace zonetool
 
 	struct GfxReflectionProbeVolume
 	{
-		short* data;
-		int count;
+		unsigned short* data;
+		unsigned int count;
 	}; assert_sizeof(GfxReflectionProbeVolume, 16);
 
 	struct GfxReflectionProbe
@@ -5181,6 +5213,7 @@ namespace zonetool
 		GfxReflectionProbeVolume* probeVolumes;
 		unsigned int probeVolumeCount;
 	}; assert_sizeof(GfxReflectionProbe, 32);
+	assert_offsetof(GfxReflectionProbe, probeVolumeCount, 24);
 
 	struct GfxReflectionProbeReferenceOrigin
 	{
@@ -5203,7 +5236,7 @@ namespace zonetool
 		GfxImage* secondary;
 	};
 
-	struct GfxWorldVertex // union, multiple types?
+	struct GfxWorldVertex
 	{
 		float xyz[3];
 		float binormalSign;
@@ -5213,6 +5246,11 @@ namespace zonetool
 		PackedUnitVec normal;
 		PackedUnitVec tangent;
 	}; assert_sizeof(GfxWorldVertex, 44);
+
+	union GfxWorldVertex0Union
+	{
+		GfxWorldVertex* vertices;
+	};
 
 	struct GfxWorldVertexData
 	{
@@ -5248,7 +5286,9 @@ namespace zonetool
 		GfxRawTexture* lightmapSecondaryTextures;
 		GfxImage* lightmapOverridePrimary;
 		GfxImage* lightmapOverrideSecondary;
-		char __pad0[20];
+		int u1[2];
+		int u2[2];
+		int u3;
 		unsigned int trisType;
 		unsigned int vertexCount;
 		GfxWorldVertexData vd;
@@ -5337,8 +5377,7 @@ namespace zonetool
 		unsigned char* paletteBitstream;
 		GfxLightGridColorsHDR skyLightGridColors;
 		GfxLightGridColorsHDR defaultLightGridColors;
-		GfxLightGridTree tree;
-		char __pad1[160];
+		GfxLightGridTree tree[3];
 	}; assert_sizeof(GfxLightGrid, 1080);
 	assert_offsetof(GfxLightGrid, rowDataStart, 32);
 	assert_offsetof(GfxLightGrid, rawRowData, 48);
@@ -5376,7 +5415,7 @@ namespace zonetool
 	{
 		Material* material;
 		int memory;
-	};  assert_sizeof(MaterialMemory, 16);
+	}; assert_sizeof(MaterialMemory, 16);
 
 	struct sunflare_t
 	{
@@ -5494,16 +5533,14 @@ namespace zonetool
 		srfTriangles_t tris;
 		Material* material;
 		GfxSurfaceLightingAndFlags laf;
-	};
-	assert_sizeof(GfxSurface, 40);
+	}; assert_sizeof(GfxSurface, 40);
 	assert_offsetof(GfxSurface, material, 24);
 
 	struct GfxSurfaceBounds
 	{
 		Bounds bounds;
 		char __pad0[12];
-	};
-	assert_sizeof(GfxSurfaceBounds, 36);
+	}; assert_sizeof(GfxSurfaceBounds, 36);
 
 	struct GfxPackedPlacement
 	{
@@ -5517,7 +5554,7 @@ namespace zonetool
 		GfxPackedPlacement placement;
 		XModel* model;
 		unsigned short lightingHandle;
-		unsigned short cullDist;
+		//unsigned short cullDist;
 		unsigned short flags;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
@@ -5548,7 +5585,7 @@ namespace zonetool
 
 	struct GfxSubdivVertexLightingInfo
 	{
-		int flags;
+		int vertexLightingIndex;
 		ID3D11Buffer* vb;
 		GfxSubdivCache cache;
 	}; assert_sizeof(GfxSubdivVertexLightingInfo, 40);
@@ -5558,7 +5595,7 @@ namespace zonetool
 		char __pad0[8];
 	}; assert_sizeof(GfxDepthAndSurf, 8);
 
-	typedef void* GfxWorldDpvsVoid;
+	typedef char* GfxWorldDpvsVoid;
 
 	struct GfxWorldDpvsStatic
 	{
@@ -5585,15 +5622,15 @@ namespace zonetool
 		unsigned int* surfaceUnknownVisData[27];
 		unsigned int* smodelUmbraVisData[4]; // 568 576 584 592
 		unsigned int* surfaceUmbraVisData[4]; // 600 608 616 624
-		char* lodData; // 632
+		unsigned int* lodData; // 632
 		unsigned int* tessellationCutoffVisData; // 640
 		unsigned int* sortedSurfIndex; // 648
 		GfxStaticModelInst* smodelInsts; // 656
 		GfxSurface* surfaces; // 664
 		GfxSurfaceBounds* surfacesBounds; // 672
 		GfxStaticModelDrawInst* smodelDrawInsts; // 680
-		void* a;
-		void* b;
+		unsigned int* unknownSModelVisData1; // 688
+		unsigned int* unknownSModelVisData2; // 696
 		GfxStaticModelLighting* smodelLighting; // 704 (array)
 		GfxSubdivVertexLightingInfo* subdivVertexLighting; // 712 (array)
 		GfxDrawSurf* surfaceMaterials; // 720
@@ -5637,17 +5674,14 @@ namespace zonetool
 		int exponent;
 	}; assert_sizeof(GfxHeroOnlyLight, 68);
 
-	struct umbraTomePtr_t
-	{
-		void* umbraTome;
-	};
+	typedef void* umbraTomePtr_t;
 
 	struct GfxBuildInfo
 	{
-		const char* a;
-		const char* b;
-		const char* c;
-		const char* d;
+		const char* args0;
+		const char* args1;
+		const char* buildStartTime;
+		const char* buildEndTime;
 	}; assert_sizeof(GfxBuildInfo, 32);
 
 	struct GfxWorld
@@ -5660,14 +5694,23 @@ namespace zonetool
 		unsigned int surfaceCount; // 28
 		int skyCount; // 32
 		GfxSky* skies; // 40
-		//unsigned int lastSunPrimaryLightIndex; // 52
-		//unsigned int primaryLightCount; // 56
-		char __pad0[48];
+		unsigned int portalGroupCount; // 48
+		unsigned int lastSunPrimaryLightIndex; // 52
+		unsigned int primaryLightCount; // 56
+		unsigned int primaryLightEnvCount; // 60
+		unsigned int sortKeyLitDecal; // 64
+		unsigned int sortKeyEffectDecal; // 68
+		unsigned int sortKeyTopDecal; // 72
+		unsigned int sortKeyEffectAuto; // 76
+		unsigned int sortKeyDistortion; // 80
+		unsigned int sortKeyUnknown; // 84
+		unsigned int sortKeyUnknown2; // 88
+		char __pad0[4]; // 92
 		GfxWorldDpvsPlanes dpvsPlanes; // 96
 		GfxCellTreeCount* aabbTreeCounts; // 128
 		GfxCellTree* aabbTrees; // 136
 		GfxCell* cells; // 144
-		GfxPortalGroup* portalGroups; // 152
+		GfxPortalGroup* portalGroup; // 152
 		int unk_vec4_count_0; // 160
 		char __pad1[4];
 		vec4_t* unk_vec4_0; // 168
@@ -5675,7 +5718,11 @@ namespace zonetool
 		GfxLightGrid lightGrid; // 432
 		int modelCount; // 1512
 		GfxBrushModel* models; // 1520
-		char __pad2[52];
+		vec3_t mins1;
+		vec3_t maxs1;
+		vec3_t mins2;
+		vec3_t maxs2;
+		unsigned int checksum;
 		int materialMemoryCount; // 1580
 		MaterialMemory* materialMemory; // 1584
 		sunflare_t sun; // 1592
@@ -5696,18 +5743,21 @@ namespace zonetool
 		unsigned int mapVtxChecksum;
 		unsigned int heroOnlyLightCount; // 2748
 		GfxHeroOnlyLight* heroOnlyLights; // 2752
-		unsigned int umbraDataCount; // 2764
-		char* umbraData; // 2768
-		umbraTomePtr_t* umbraTomePtr; // 2776
+		int umbraTomeEnabled; // 2760
+		unsigned int umbraTomeSize; // 2764
+		char* umbraTomeData; // 2768
+		umbraTomePtr_t umbraTomePtr; // 2776
 		unsigned int mdaoVolumesCount; // 2784
 		MdaoVolume* mdaoVolumes; // 2792
 		char __pad3[32];
 		GfxBuildInfo buildInfo; // 2832
 	}; assert_sizeof(GfxWorld, 0xB30);
+	assert_offsetof(GfxWorld, skyCount, 32);
+	assert_offsetof(GfxWorld, skies, 40);
 	assert_offsetof(GfxWorld, dpvsPlanes, 96);
 	assert_offsetof(GfxWorld, aabbTreeCounts, 128);
 	assert_offsetof(GfxWorld, cells, 144);
-	assert_offsetof(GfxWorld, portalGroups, 152);
+	assert_offsetof(GfxWorld, portalGroup, 152);
 	assert_offsetof(GfxWorld, unk_vec4_count_0, 160);
 	assert_offsetof(GfxWorld, unk_vec4_0, 168);
 	assert_offsetof(GfxWorld, draw, 176);
@@ -5724,7 +5774,8 @@ namespace zonetool
 	assert_offsetof(GfxWorld, dpvsDyn, 2648);
 	assert_offsetof(GfxWorld, heroOnlyLightCount, 2748);
 	assert_offsetof(GfxWorld, heroOnlyLights, 2752);
-	assert_offsetof(GfxWorld, umbraData, 2768);
+	assert_offsetof(GfxWorld, umbraTomeSize, 2764);
+	assert_offsetof(GfxWorld, umbraTomeData, 2768);
 	assert_offsetof(GfxWorld, umbraTomePtr, 2776);
 	assert_offsetof(GfxWorld, mdaoVolumesCount, 2784);
 	assert_offsetof(GfxWorld, mdaoVolumes, 2792);

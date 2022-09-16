@@ -75,7 +75,7 @@ namespace zonetool
 			add_script_string(&spawnList->spawns[i].name, data[i]["name"].get<std::string>());
 			add_script_string(&spawnList->spawns[i].target, data[i]["target"].get<std::string>());
 			add_script_string(&spawnList->spawns[i].script_noteworthy, data[i]["script_noteworthy"].get<std::string>());
-			add_script_string(&spawnList->spawns[i].unknown, data[i]["script_noteworthy"].get<std::string>());
+			add_script_string(&spawnList->spawns[i].unknown, data[i]["unknown"].get<std::string>());
 			for (auto j = 0; j < 3; j++)
 			{
 				spawnList->spawns[i].origin[j] = data[i]["origin"][j].get<float>();

@@ -124,6 +124,9 @@ namespace zonetool
 			}
 			else
 			{
+#ifdef DEBUG
+				ZONETOOL_INFO("Dumping asset \"%s\" of type %s.", get_asset_name(asset), type_to_string(asset->type));
+#endif
 #define DUMP_ASSET(__type__,__interface__,__struct__) \
 				if (asset->type == __type__) \
 				{ \
@@ -147,6 +150,7 @@ namespace zonetool
 					DUMP_ASSET(ASSET_TYPE_NET_CONST_STRINGS, INetConstStrings, NetConstStrings);
 					DUMP_ASSET(ASSET_TYPE_RAWFILE, IRawFile, RawFile);
 					DUMP_ASSET(ASSET_TYPE_REVERB_CURVE, IReverbCurve, SndCurve);
+					DUMP_ASSET(ASSET_TYPE_SCRIPTABLE, IScriptableDef, ScriptableDef);
 					DUMP_ASSET(ASSET_TYPE_SCRIPTFILE, IScriptFile, ScriptFile);
 					DUMP_ASSET(ASSET_TYPE_SKELETONSCRIPT, ISkeletonScript, SkeletonScript);
 					DUMP_ASSET(ASSET_TYPE_SOUND, ISound, snd_alias_list_t);
@@ -179,6 +183,12 @@ namespace zonetool
 
 					DUMP_ASSET(ASSET_TYPE_MENU, IMenuDef, menuDef_t);
 					DUMP_ASSET(ASSET_TYPE_MENULIST, IMenuList, MenuList);
+
+					DUMP_ASSET(ASSET_TYPE_COL_MAP_MP, IClipMap, clipMap_t);
+					DUMP_ASSET(ASSET_TYPE_COM_MAP, IComWorld, ComWorld);
+					DUMP_ASSET(ASSET_TYPE_FX_MAP, IFxWorld, FxWorld);
+					DUMP_ASSET(ASSET_TYPE_GFX_MAP, IGfxWorld, GfxWorld);
+					DUMP_ASSET(ASSET_TYPE_GLASS_MAP, IGlassWorld, GlassWorld);
 				}
 				catch (std::exception& ex)
 				{
@@ -527,11 +537,21 @@ namespace zonetool
 								{
 									if (is_valid_asset_type(row->fields[0]))
 									{
+										std::string name;
+										if ((!row->fields[1] || !strlen(row->fields[1]) && row->fields[2] && strlen(row->fields[2])))
+										{
+											name = ","s + row->fields[2];
+										}
+										else
+										{
+											name = ((is_referencing) ? ","s : ""s) + row->fields[1];
+										}
+
 										try
 										{
 											zone->add_asset_of_type(
 												row->fields[0],
-												((is_referencing) ? ","s : ""s) + row->fields[1]
+												name
 											);
 										}
 										catch (std::exception& ex)
@@ -572,11 +592,18 @@ namespace zonetool
 		auto zone = alloc_zone(fastfile);
 		if (zone == nullptr)
 		{
-			ZONETOOL_ERROR("An error occured while building fastfile \"%s\": Are you out of memory?", fastfile.data());
+			ZONETOOL_ERROR("Are you out of memory?");
 			return;
 		}
 
-		parse_csv_file(zone.get(), fastfile, fastfile);
+		try
+		{
+			parse_csv_file(zone.get(), fastfile, fastfile);
+		}
+		catch (std::exception& ex)
+		{
+			ZONETOOL_FATAL("%s", ex.what());
+		}
 
 		// allocate zone buffer
 		auto buffer = alloc_buffer();
