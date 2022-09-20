@@ -1,6 +1,8 @@
 #include <std_include.hpp>
 #include "zonetool.hpp"
 
+#include <utils/io.hpp>
+
 namespace zonetool
 {
 	void dump_asset(XAsset* asset);
@@ -531,6 +533,11 @@ namespace zonetool
 							{
 								ILocalize::parse_localizedstrings_file(zone, row->fields[1]);
 							}
+							else if (row->fields[0] == "localize"s && row->num_fields >= 2 &&
+								filesystem::file("localizedstrings/"s + row->fields[1] + ".json").exists())
+							{
+								ILocalize::parse_localizedstrings_json(zone, row->fields[1]);
+							}
 							else
 							{
 								if (row->num_fields >= 2)
@@ -592,7 +599,7 @@ namespace zonetool
 		auto zone = alloc_zone(fastfile);
 		if (zone == nullptr)
 		{
-			ZONETOOL_ERROR("Are you out of memory?");
+			ZONETOOL_ERROR("An error occured while building fastfile \"%s\": Are you out of memory?", fastfile.data());
 			return;
 		}
 
@@ -718,6 +725,28 @@ namespace zonetool
 					else if (args[i] == "-buildzone")
 					{
 						build_zone(args[i + 1]);
+						i++;
+					}
+					else if (args[i] == "-buildzones")
+					{
+						const auto& filename = args[i + 1];
+						std::string data{};
+						if (!utils::io::read_file(filename, &data))
+						{
+							return;
+						}
+
+						const auto zones = utils::string::split(data, '\n');
+						for (auto zone : zones)
+						{
+							if (zone.ends_with("\r"))
+							{
+								zone.pop_back();
+							}
+
+							build_zone(zone);
+						}
+
 						i++;
 					}
 					else if (args[i] == "-verifyzone")
