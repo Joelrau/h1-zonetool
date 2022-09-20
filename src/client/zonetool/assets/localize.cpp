@@ -24,6 +24,7 @@ namespace zonetool
 		if (!localize.is_object())
 		{
 			ZONETOOL_ERROR("Localized strings json file should be an object!");
+			return false;
 		}
 
 		for (const auto& [key, value] : localize.items())
