@@ -10,6 +10,7 @@ namespace zonetool
 		LocalizeEntry* asset_ = nullptr;
 
 	public:
+		static bool parse_localizedstrings_json(IZone* zone, const std::string& file_name);
 		static bool parse_localizedstrings_file(IZone* zone, const std::string& file_name);
 		LocalizeEntry* parse(const std::string& name, ZoneMemory* mem);
 
