@@ -117,9 +117,8 @@ namespace zonetool
 			this->add_script_string(&asset->notetracks[i].name, read.read_string());
 			if (asset->notetracks[i].type == SCRIPTABLE_NT_FX)
 			{
-				this->add_script_string(&asset->notetracks[i].data.playFx.tagName, read.read_string());
-				asset->notetracks[i].data.playFx = *read.read_single<ScriptableNotetrackFxDef>();
 				asset->notetracks[i].data.playFx.handle = read.read_asset<FxEffectDef>();
+				this->add_script_string(&asset->notetracks[i].data.playFx.tagName, read.read_string());
 			}
 			else if (asset->notetracks[i].type == SCRIPTABLE_NT_SOUND)
 			{
@@ -466,7 +465,7 @@ namespace zonetool
 				{
 					if (data->notetracks[i].data.playFx.handle)
 					{
-						destnotetracks->data.playFx.handle = reinterpret_cast<FxEffectDef*>(
+						destnotetracks[i].data.playFx.handle = reinterpret_cast<FxEffectDef*>(
 							zone->get_asset_pointer(ASSET_TYPE_FX, data->notetracks[i].data.playFx.handle->name));
 					}
 				}
@@ -544,16 +543,16 @@ namespace zonetool
 		dump.dump_string(asset->destroyedCollisionBrush);
 
 		dump.dump_array(asset->parts, asset->partCount);
-		for (auto i = 0; i < asset->partCount; i++)
+		for (unsigned char i = 0; i < asset->partCount; i++)
 		{
 			dump.dump_array(asset->parts[i].states, asset->parts[i].stateCount);
-			for (auto j = 0; j < asset->parts[i].stateCount; j++)
+			for (unsigned char j = 0; j < asset->parts[i].stateCount; j++)
 			{
 				dump.dump_string(SL_ConvertToString(asset->parts[i].states[j].name));
 				dump.dump_string(SL_ConvertToString(asset->parts[i].states[j].tagName));
 				dump.dump_array(asset->parts[i].states[j].onEnterEvents,
 					asset->parts[i].states[j].onEnterEventCount);
-				for (auto k = 0; k < asset->parts[i].states[j].onEnterEventCount; k++)
+				for (unsigned char k = 0; k < asset->parts[i].states[j].onEnterEventCount; k++)
 				{
 					dump_scriptable_event_def(&asset->parts[i].states[j].onEnterEvents[k], dump);
 				}
@@ -562,14 +561,13 @@ namespace zonetool
 		}
 
 		dump.dump_array(asset->notetracks, asset->notetrackCount);
-		for (auto i = 0; i < asset->notetrackCount; i++)
+		for (unsigned char i = 0; i < asset->notetrackCount; i++)
 		{
 			dump.dump_string(SL_ConvertToString(asset->notetracks[i].name));
 			if (asset->notetracks[i].type == SCRIPTABLE_NT_FX)
 			{
-				dump.dump_single(&asset->notetracks[i].data.playFx);
-				dump.dump_string(SL_ConvertToString(asset->notetracks[i].data.playFx.tagName));
 				dump.dump_asset(asset->notetracks[i].data.playFx.handle);
+				dump.dump_string(SL_ConvertToString(asset->notetracks[i].data.playFx.tagName));
 			}
 			else if (asset->notetracks[i].type == SCRIPTABLE_NT_SOUND)
 			{

@@ -41,13 +41,6 @@ namespace zonetool
 		this->name_ = "maps/"s + (filesystem::get_fastfile().substr(0, 3) == "mp_" ? "mp/" : "") + filesystem::get_fastfile() + ".d3dbsp"; // name;
 		this->asset_ = this->parse(name, mem);
 
-		if (this->referenced())
-		{
-			this->asset_ = mem->Alloc<typename std::remove_reference<decltype(*this->asset_)>::type>();
-			this->asset_->name = mem->StrDup(name);
-			return;
-		}
-
 		if (!this->asset_)
 		{
 			ZONETOOL_FATAL("Could not parse glassmap \"%s\"", name.data());

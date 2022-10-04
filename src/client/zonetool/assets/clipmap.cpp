@@ -251,7 +251,8 @@ namespace zonetool
 		stageReader.close();
 
 		// pInfo -> info
-		asset->pInfo = &asset->info;
+		//asset->pInfo = &asset->info;
+		asset->pInfo = mem->Alloc<ClipInfo>();
 
 		return asset;
 	}
@@ -575,6 +576,12 @@ namespace zonetool
 			for (unsigned int i = 0; i < data->numSubModels; i++)
 			{
 				destcmodels[i].info = info_ptr;
+				//buf->push_stream(0);
+				//buf->align(3);
+				//auto destInfo = buf->write(data->cmodels[i].info);
+				//write_info(zone, buf, data->cmodels[i].info, destInfo);
+				//ZoneBuffer::clear_pointer(&destcmodels[i].info);
+				//buf->pop_stream();
 			}
 
 			ZoneBuffer::clear_pointer(&dest->cmodels);

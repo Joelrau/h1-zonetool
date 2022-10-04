@@ -225,7 +225,11 @@ namespace zonetool
 		asset->dpvs.smodelLighting = read.read_array<GfxStaticModelLighting>();
 		for (unsigned int i = 0; i < asset->dpvs.smodelCount; i++)
 		{
-			asset->dpvs.smodelLighting[i].info.lightingValues = read.read_array<GfxStaticModelVertexLighting>();
+			auto flags = asset->dpvs.smodelDrawInsts[i].flags;
+			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].info.lightingValues)
+			{
+				asset->dpvs.smodelLighting[i].info.lightingValues = read.read_array<GfxStaticModelVertexLighting>();
+			}
 		}
 
 		asset->dpvs.subdivVertexLighting = read.read_array<GfxSubdivVertexLightingInfo>();
@@ -287,13 +291,6 @@ namespace zonetool
 		this->asset_ = this->parse(name, mem);
 
 		this->base_name_ = filesystem::get_fastfile();
-
-		if (this->referenced())
-		{
-			this->asset_ = mem->Alloc<typename std::remove_reference<decltype(*this->asset_)>::type>();
-			this->asset_->name = mem->StrDup(name);
-			return;
-		}
 
 		if (!this->asset_)
 		{
@@ -1512,10 +1509,10 @@ namespace zonetool
 
 			for (unsigned int i = 0; i < data->dpvs.smodelCount; i++)
 			{
-				destlighting[i].info.lightingValuesVb = nullptr;
-				int flags = data->dpvs.smodelDrawInsts[i].flags;
+				auto flags = data->dpvs.smodelDrawInsts[i].flags;
 				if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && data->dpvs.smodelLighting[i].info.lightingValues)
 				{
+					destlighting[i].info.lightingValuesVb = nullptr;
 					buf->align(3);
 					buf->write(data->dpvs.smodelLighting[i].info.lightingValues, data->dpvs.smodelLighting[i].info.numLightingValues);
 					ZoneBuffer::clear_pointer(&destlighting[i].info.lightingValues);
@@ -1944,7 +1941,11 @@ namespace zonetool
 		write.dump_array(asset->dpvs.smodelLighting, asset->dpvs.smodelCount);
 		for (unsigned int i = 0; i < asset->dpvs.smodelCount; i++)
 		{
-			write.dump_array(asset->dpvs.smodelLighting[i].info.lightingValues, asset->dpvs.smodelLighting[i].info.numLightingValues);
+			auto flags = asset->dpvs.smodelDrawInsts[i].flags;
+			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].info.lightingValues)
+			{
+				write.dump_array(asset->dpvs.smodelLighting[i].info.lightingValues, asset->dpvs.smodelLighting[i].info.numLightingValues);
+			}
 		}
 
 		write.dump_array(asset->dpvs.subdivVertexLighting, asset->dpvs.subdivVertexLightingInfoCount);

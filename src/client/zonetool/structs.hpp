@@ -930,7 +930,7 @@ namespace zonetool
 		int contents;
 		unsigned short hullCount;
 		unsigned short firstHull;
-	};
+	}; assert_sizeof(TriggerModel, 8);
 
 	struct TriggerHull
 	{
@@ -938,14 +938,14 @@ namespace zonetool
 		int contents;
 		unsigned short slabCount;
 		unsigned short firstSlab;
-	};
+	}; assert_sizeof(TriggerHull, 32);
 
 	struct TriggerSlab
 	{
 		float dir[3];
 		float midPoint;
 		float halfSize;
-	};
+	}; assert_sizeof(TriggerSlab, 20);
 
 	struct MapTriggers
 	{
@@ -955,14 +955,14 @@ namespace zonetool
 		TriggerHull* hulls;
 		unsigned int slabCount;
 		TriggerSlab* slabs;
-	};
+	}; assert_sizeof(MapTriggers, 0x30);
 
 	struct ClientTriggerAabbNode
 	{
 		Bounds bounds;
 		unsigned short firstChild;
 		unsigned short childCount;
-	};
+	}; assert_sizeof(ClientTriggerAabbNode, 28);
 
 	struct ClientTriggers
 	{
@@ -982,7 +982,7 @@ namespace zonetool
 		short* unk5;
 		short* unk6;
 		short* unk7;
-		short* unk8;
+		void* unk8;
 	}; assert_sizeof(ClientTriggers, 0xB0);
 
 	struct ClientTriggerBlendNode
@@ -991,13 +991,13 @@ namespace zonetool
 		float pointB[3];
 		unsigned short triggerA;
 		unsigned short triggerB;
-	};
+	}; assert_sizeof(ClientTriggerBlendNode, 28);
 
 	struct ClientTriggerBlend
 	{
 		unsigned short numClientTriggerBlendNodes;
 		ClientTriggerBlendNode* blendNodes;
-	};
+	}; assert_sizeof(ClientTriggerBlend, 0x10);
 
 	struct SpawnPointEntityRecord
 	{
@@ -4259,7 +4259,7 @@ namespace zonetool
 		cbrushside_t* brushSides;
 		unsigned int numBrushEdges;
 		cbrushedge_t* brushEdges;
-		unsigned short numBrushes;
+		unsigned int numBrushes;
 		cbrush_t* brushes;
 		Bounds* brushBounds;
 		int* brushContents;
@@ -5553,8 +5553,8 @@ namespace zonetool
 	{
 		GfxPackedPlacement placement;
 		XModel* model;
-		unsigned short lightingHandle;
-		//unsigned short cullDist;
+		//unsigned short lightingHandle;
+		unsigned short cullDist;
 		unsigned short flags;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
@@ -5578,9 +5578,28 @@ namespace zonetool
 		int numLightingValues;
 	};
 
+	struct GfxStaticModelLightmapInfo
+	{
+		unsigned short smodelCacheIndex[4];
+		unsigned short unk1;
+		unsigned short unk2;
+		float unk3;
+		int unk4;
+		int unk5;
+		/*
+		unsigned short V0[4];
+		unsigned short V1[4];
+		unsigned short V2[4];
+		*/
+	};
+
 	struct GfxStaticModelLighting
 	{
-		GfxStaticModelVertexLightingInfo info;
+		union
+		{
+			GfxStaticModelVertexLightingInfo info;
+			GfxStaticModelLightmapInfo info2;
+		};
 	}; assert_sizeof(GfxStaticModelLighting, 24);
 
 	struct GfxSubdivVertexLightingInfo

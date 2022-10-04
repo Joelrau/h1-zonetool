@@ -39,6 +39,11 @@ namespace zonetool
 		}
 
 		std::string ref_name = "," + name;
+		if (name.starts_with(","))
+		{
+			ref_name = name;
+			ref_name.erase(0, 1);
+		}
 
 		for (std::size_t idx = 0; idx < m_assets.size(); idx++)
 		{

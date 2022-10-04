@@ -13,8 +13,6 @@ namespace zonetool
 		void add_script_string(scr_string_t* ptr, std::string str);
 		std::string get_script_string(scr_string_t* ptr);
 
-		void fix_info_planes(ClipInfo* info, IZone* zone);
-
 		void parse_info(ClipInfo* info, assetmanager::reader& read, ZoneMemory* mem);
 		void write_info(IZone* zone, ZoneBuffer* buf, ClipInfo* data, ClipInfo* dest);
 		static void dump_info(ClipInfo* info, assetmanager::dumper& write);
