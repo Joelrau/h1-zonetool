@@ -5577,18 +5577,23 @@ namespace zonetool
 		GfxPackedPlacement placement;
 		XModel* model;
 		unsigned short cullDist;
-		unsigned short lightingHandle;
 		unsigned short flags;
+		unsigned short lightingHandle;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
+		short pad;
+		char unk;
 		unsigned char reflectionProbeIndex;
 		unsigned char firstMtlSkinIndex;
 		unsigned char sunShadowFlags;
 	}; assert_sizeof(GfxStaticModelDrawInst, 80);
 	assert_offsetof(GfxStaticModelDrawInst, model, 56);
-	assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 66);
-	assert_offsetof(GfxStaticModelDrawInst, flags, 68);
+	assert_offsetof(GfxStaticModelDrawInst, cullDist, 64);
+	assert_offsetof(GfxStaticModelDrawInst, flags, 66);
+	assert_offsetof(GfxStaticModelDrawInst, lightingHandle, 68);
 	assert_offsetof(GfxStaticModelDrawInst, primaryLightEnvIndex, 72);
+	assert_offsetof(GfxStaticModelDrawInst, reflectionProbeIndex, 77); // maybe wrong
+	assert_offsetof(GfxStaticModelDrawInst, firstMtlSkinIndex, 78);
 
 	struct GfxStaticModelVertexLighting
 	{
