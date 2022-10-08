@@ -4893,11 +4893,11 @@ namespace zonetool
 
 	struct ComPrimaryLight
 	{
-		unsigned char type; // 0
-		unsigned char canUseShadowMap; // 1
-		unsigned char exponent; // 2
-		unsigned char unknown; // 3
-		char __pad0[4]; // 4
+		GfxLightType type; // 0
+		unsigned char unk0; // 1
+		unsigned char canUseShadowMap; // 2
+		unsigned char exponent; // 3
+		int unk1; // 4
 		float color[3]; // 8 12 16
 		float dir[3]; // 20 24 28
 		float up[3]; // 32 36 40
