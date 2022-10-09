@@ -135,33 +135,27 @@ namespace zonetool
 		for (int i = 0; i < 2; i++)
 		{
 			asset->dynEntCount[i] = static_cast<unsigned short>(read.read_int());
+
 			if (asset->dynEntCount[i] <= 0)
 			{
 				continue;
 			}
 
-			asset->dynEntDefList[i] = mem->Alloc<DynEntityDef>(asset->dynEntCount[i]);
-			asset->dynEntPoseList[i] = mem->Alloc<DynEntityPose>(asset->dynEntCount[i]);
-			asset->dynEntClientList[i] = mem->Alloc<DynEntityClient>(asset->dynEntCount[i]);
-			asset->dynEntCollList[i] = mem->Alloc<DynEntityColl>(asset->dynEntCount[i]);
-
+			asset->dynEntDefList[i] = read.read_array<DynEntityDef>();
+			asset->dynEntPoseList[i] = read.read_array<DynEntityPose>();
+			asset->dynEntClientList[i] = read.read_array<DynEntityClient>();
+			asset->dynEntCollList[i] = read.read_array<DynEntityColl>();
 			for (int j = 0; j < asset->dynEntCount[i]; j++)
 			{
-				asset->dynEntDefList[i][j] = *read.read_single<DynEntityDef>();
 				asset->dynEntDefList[i][j].baseModel = read.read_asset<XModel>();
 				asset->dynEntDefList[i][j].destroyFx = read.read_asset<FxEffectDef>();
 				asset->dynEntDefList[i][j].sound = read.read_asset<snd_alias_list_t>();
 				asset->dynEntDefList[i][j].physPreset = read.read_asset<PhysPreset>();
 				asset->dynEntDefList[i][j].hinge = read.read_single<DynEntityHingeDef>();
 				asset->dynEntDefList[i][j].linkTo = read.read_single<DynEntityLinkToDef>();
-
-				asset->dynEntPoseList[i][j] = *read.read_single<DynEntityPose>();
-
-				asset->dynEntClientList[i][j] = *read.read_single<DynEntityClient>();
+				
 				//asset->dynEntClientList[i][j].hinge = read.read_single<Hinge>();
 				//asset->dynEntClientList[i][j].activeModel = read.read_asset<XModel>();
-
-				asset->dynEntCollList[i][j] = *read.read_single<DynEntityColl>();
 			}
 		}
 
@@ -982,23 +976,21 @@ namespace zonetool
 				continue;
 			}
 
+			write.dump_array(asset->dynEntDefList[i], asset->dynEntCount[i]);
+			write.dump_array(asset->dynEntPoseList[i], asset->dynEntCount[i]);
+			write.dump_array(asset->dynEntClientList[i], asset->dynEntCount[i]);
+			write.dump_array(asset->dynEntCollList[i], asset->dynEntCount[i]);
 			for (int j = 0; j < asset->dynEntCount[i]; j++)
 			{
-				write.dump_single(&asset->dynEntDefList[i][j]);
 				write.dump_asset(asset->dynEntDefList[i][j].baseModel);
 				write.dump_asset(asset->dynEntDefList[i][j].destroyFx);
 				write.dump_asset(asset->dynEntDefList[i][j].sound);
 				write.dump_asset(asset->dynEntDefList[i][j].physPreset);
 				write.dump_single(asset->dynEntDefList[i][j].hinge);
 				write.dump_single(asset->dynEntDefList[i][j].linkTo);
-
-				write.dump_single(&asset->dynEntPoseList[i][j]);
-
-				write.dump_single(&asset->dynEntClientList[i][j]);
+				
 				//write.dump_single(asset->dynEntClientList[i][j].hinge);
 				//write.dump_asset(asset->dynEntClientList[i][j].activeModel);
-
-				write.dump_single(&asset->dynEntCollList[i][j]);
 			}
 		}
 

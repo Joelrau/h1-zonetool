@@ -999,435 +999,507 @@ namespace zonetool
 		}
 
 		buf->push_stream(2);
-		if (data->dpvs.smodelVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[0]) == 72);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[0]) == 72);
+		if (data->dpvs.smodelVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelVisData[0], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelVisData[0]);
 		}
-		if (data->dpvs.smodelVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[1]) == 80);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[1]) == 80);
+		if (data->dpvs.smodelVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelVisData[1], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelVisData[1]);
 		}
-		if (data->dpvs.smodelVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[2]) == 88);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[2]) == 88);
+		if (data->dpvs.smodelVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelVisData[2], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelVisData[2]);
 		}
-		if (data->dpvs.surfaceVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[0]) == 320);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[0]) == 320);
+		if (data->dpvs.surfaceVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceVisData[0], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceVisData[0]);
 		}
-		if (data->dpvs.surfaceVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[1]) == 328);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[1]) == 328);
+		if (data->dpvs.surfaceVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceVisData[1], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceVisData[1]);
 		}
-		if (data->dpvs.surfaceVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[2]) == 336);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[2]) == 336);
+		if (data->dpvs.surfaceVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceVisData[2], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceVisData[2]);
 		}
 		buf->pop_stream();
-		if (data->dpvs.unknownSModelVisData1) static_assert(offsetof(GfxWorldDpvsStatic, unknownSModelVisData1) == 688);
+		static_assert(offsetof(GfxWorldDpvsStatic, unknownSModelVisData1) == 688);
+		if (data->dpvs.unknownSModelVisData1)
 		{
 			buf->align(127);
 			buf->write(data->dpvs.unknownSModelVisData1, data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.unknownSModelVisData1);
 		}
-		if (data->dpvs.unknownSModelVisData2) static_assert(offsetof(GfxWorldDpvsStatic, unknownSModelVisData2) == 696);
+		static_assert(offsetof(GfxWorldDpvsStatic, unknownSModelVisData2) == 696);
+		if (data->dpvs.unknownSModelVisData2)
 		{
 			buf->align(127);
 			buf->write(data->dpvs.unknownSModelVisData2, 2 * data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.unknownSModelVisData2);
 		}
 		buf->push_stream(2);
-		if (data->dpvs.smodelVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[3]) == 96);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelVisData[3]) == 96);
+		if (data->dpvs.smodelVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelVisData[3], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelVisData[3]);
 		}
-		if (data->dpvs.surfaceVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[3]) == 344);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceVisData[3]) == 344);
+		if (data->dpvs.surfaceVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceVisData[3], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceVisData[3]);
 		}
-		if (data->dpvs.smodelUnknownVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[0]) == 104);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[0]) == 104);
+		if (data->dpvs.smodelUnknownVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[0], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[0]);
 		}
-		if (data->dpvs.smodelUnknownVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[1]) == 112);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[1]) == 112);
+		if (data->dpvs.smodelUnknownVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[1], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[1]);
 		}
-		if (data->dpvs.smodelUnknownVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[2]) == 120);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[2]) == 120);
+		if (data->dpvs.smodelUnknownVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[2], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[2]);
 		}
-		if (data->dpvs.smodelUnknownVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[3]) == 128);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[3]) == 128);
+		if (data->dpvs.smodelUnknownVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[3], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[3]);
 		}
-		if (data->dpvs.smodelUnknownVisData[4]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[4]) == 136);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[4]) == 136);
+		if (data->dpvs.smodelUnknownVisData[4])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[4], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[4]);
 		}
-		if (data->dpvs.smodelUnknownVisData[5]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[5]) == 144);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[5]) == 144);
+		if (data->dpvs.smodelUnknownVisData[5])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[5], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[5]);
 		}
-		if (data->dpvs.smodelUnknownVisData[6]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[6]) == 152);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[6]) == 152);
+		if (data->dpvs.smodelUnknownVisData[6])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[6], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[6]);
 		}
-		if (data->dpvs.smodelUnknownVisData[7]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[7]) == 160);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[7]) == 160);
+		if (data->dpvs.smodelUnknownVisData[7])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[7], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[7]);
 		}
-		if (data->dpvs.smodelUnknownVisData[8]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[8]) == 168);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[8]) == 168);
+		if (data->dpvs.smodelUnknownVisData[8])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[8], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[8]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[0]) == 352);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[0]) == 352);
+		if (data->dpvs.surfaceUnknownVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[0], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[0]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[1]) == 360);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[1]) == 360);
+		if (data->dpvs.surfaceUnknownVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[1], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[1]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[2]) == 368);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[2]) == 368);
+		if (data->dpvs.surfaceUnknownVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[2], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[2]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[3]) == 376);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[3]) == 376);
+		if (data->dpvs.surfaceUnknownVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[3], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[3]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[4]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[4]) == 384);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[4]) == 384);
+		if (data->dpvs.surfaceUnknownVisData[4])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[4], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[4]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[5]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[5]) == 392);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[5]) == 392);
+		if (data->dpvs.surfaceUnknownVisData[5])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[5], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[5]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[6]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[6]) == 400);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[6]) == 400);
+		if (data->dpvs.surfaceUnknownVisData[6])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[6], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[6]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[7]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[7]) == 408);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[7]) == 408);
+		if (data->dpvs.surfaceUnknownVisData[7])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[7], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[7]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[8]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[8]) == 416);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[8]) == 416);
+		if (data->dpvs.surfaceUnknownVisData[8])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[8], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[8]);
 		}
-		if (data->dpvs.smodelUnknownVisData[9]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[9]) == 176);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[9]) == 176);
+		if (data->dpvs.smodelUnknownVisData[9])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[9], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[9]);
 		}
-		if (data->dpvs.smodelUnknownVisData[10]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[10]) == 184);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[10]) == 184);
+		if (data->dpvs.smodelUnknownVisData[10])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[10], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[10]);
 		}
-		if (data->dpvs.smodelUnknownVisData[11]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[11]) == 192);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[11]) == 192);
+		if (data->dpvs.smodelUnknownVisData[11])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[11], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[11]);
 		}
-		if (data->dpvs.smodelUnknownVisData[12]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[12]) == 200);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[12]) == 200);
+		if (data->dpvs.smodelUnknownVisData[12])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[12], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[12]);
 		}
-		if (data->dpvs.smodelUnknownVisData[13]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[13]) == 208);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[13]) == 208);
+		if (data->dpvs.smodelUnknownVisData[13])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[13], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[13]);
 		}
-		if (data->dpvs.smodelUnknownVisData[14]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[14]) == 216);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[14]) == 216);
+		if (data->dpvs.smodelUnknownVisData[14])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[14], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[14]);
 		}
-		if (data->dpvs.smodelUnknownVisData[15]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[15]) == 224);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[15]) == 224);
+		if (data->dpvs.smodelUnknownVisData[15])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[15], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[15]);
 		}
-		if (data->dpvs.smodelUnknownVisData[16]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[16]) == 232);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[16]) == 232);
+		if (data->dpvs.smodelUnknownVisData[16])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[16], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[16]);
 		}
-		if (data->dpvs.smodelUnknownVisData[17]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[17]) == 240);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[17]) == 240);
+		if (data->dpvs.smodelUnknownVisData[17])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[17], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[17]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[9]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[9]) == 424);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[9]) == 424);
+		if (data->dpvs.surfaceUnknownVisData[9])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[9], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[9]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[10]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[10]) == 432);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[10]) == 432);
+		if (data->dpvs.surfaceUnknownVisData[10])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[10], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[10]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[11]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[11]) == 440);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[11]) == 440);
+		if (data->dpvs.surfaceUnknownVisData[11])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[11], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[11]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[12]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[12]) == 448);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[12]) == 448);
+		if (data->dpvs.surfaceUnknownVisData[12])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[12], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[12]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[13]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[13]) == 456);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[13]) == 456);
+		if (data->dpvs.surfaceUnknownVisData[13])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[13], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[13]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[14]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[14]) == 464);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[14]) == 464);
+		if (data->dpvs.surfaceUnknownVisData[14])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[14], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[14]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[15]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[15]) == 472);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[15]) == 472);
+		if (data->dpvs.surfaceUnknownVisData[15])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[15], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[15]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[16]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[16]) == 480);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[16]) == 480);
+		if (data->dpvs.surfaceUnknownVisData[16])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[16], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[16]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[17]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[17]) == 488);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[17]) == 488);
+		if (data->dpvs.surfaceUnknownVisData[17])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[17], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[17]);
 		}
-		if (data->dpvs.smodelUnknownVisData[18]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[18]) == 248);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[18]) == 248);
+		if (data->dpvs.smodelUnknownVisData[18])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[18], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[18]);
 		}
-		if (data->dpvs.smodelUnknownVisData[19]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[19]) == 256);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[19]) == 256);
+		if (data->dpvs.smodelUnknownVisData[19])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[19], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[19]);
 		}
-		if (data->dpvs.smodelUnknownVisData[20]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[20]) == 264);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[20]) == 264);
+		if (data->dpvs.smodelUnknownVisData[20])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[20], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[20]);
 		}
-		if (data->dpvs.smodelUnknownVisData[21]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[21]) == 272);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[21]) == 272);
+		if (data->dpvs.smodelUnknownVisData[21])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[21], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[21]);
 		}
-		if (data->dpvs.smodelUnknownVisData[22]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[22]) == 280);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[22]) == 280);
+		if (data->dpvs.smodelUnknownVisData[22])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[22], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[22]);
 		}
-		if (data->dpvs.smodelUnknownVisData[23]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[23]) == 288);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[23]) == 288);
+		if (data->dpvs.smodelUnknownVisData[23])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[23], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[23]);
 		}
-		if (data->dpvs.smodelUnknownVisData[24]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[24]) == 296);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[24]) == 296);
+		if (data->dpvs.smodelUnknownVisData[24])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[24], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[24]);
 		}
-		if (data->dpvs.smodelUnknownVisData[25]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[25]) == 304);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[25]) == 304);
+		if (data->dpvs.smodelUnknownVisData[25])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[26], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[25]);
 		}
-		if (data->dpvs.smodelUnknownVisData[26]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[26]) == 312);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUnknownVisData[26]) == 312);
+		if (data->dpvs.smodelUnknownVisData[26])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUnknownVisData[26], data->dpvs.smodelVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUnknownVisData[26]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[18]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[18]) == 496);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[18]) == 496);
+		if (data->dpvs.surfaceUnknownVisData[18])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[18], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[18]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[19]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[19]) == 504);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[19]) == 504);
+		if (data->dpvs.surfaceUnknownVisData[19])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[19], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[19]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[20]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[20]) == 512);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[20]) == 512);
+		if (data->dpvs.surfaceUnknownVisData[20])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[20], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[20]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[21]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[21]) == 520);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[21]) == 520);
+		if (data->dpvs.surfaceUnknownVisData[21])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[21], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[21]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[22]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[22]) == 528);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[22]) == 528);
+		if (data->dpvs.surfaceUnknownVisData[22])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[22], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[22]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[23]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[23]) == 536);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[23]) == 536);
+		if (data->dpvs.surfaceUnknownVisData[23])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[23], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[23]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[24]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[24]) == 544);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[24]) == 544);
+		if (data->dpvs.surfaceUnknownVisData[24])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[24], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[24]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[25]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[25]) == 552);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[25]) == 552);
+		if (data->dpvs.surfaceUnknownVisData[25])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[25], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[25]);
 		}
-		if (data->dpvs.surfaceUnknownVisData[26]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[26]) == 560);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUnknownVisData[26]) == 560);
+		if (data->dpvs.surfaceUnknownVisData[26])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUnknownVisData[26], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUnknownVisData[26]);
 		}
-		if (data->dpvs.smodelUmbraVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[0]) == 568);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[0]) == 568);
+		if (data->dpvs.smodelUmbraVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUmbraVisData[0], data->dpvs.smodelVisDataCount + 1);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUmbraVisData[0]);
 		}
-		if (data->dpvs.smodelUmbraVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[1]) == 576);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[1]) == 576);
+		if (data->dpvs.smodelUmbraVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUmbraVisData[1], data->dpvs.smodelVisDataCount + 1);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUmbraVisData[1]);
 		}
-		if (data->dpvs.smodelUmbraVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[2]) == 584);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[2]) == 584);
+		if (data->dpvs.smodelUmbraVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUmbraVisData[2], data->dpvs.smodelVisDataCount + 1);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUmbraVisData[2]);
 		}
-		if (data->dpvs.surfaceUmbraVisData[0]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[0]) == 600);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[0]) == 600);
+		if (data->dpvs.surfaceUmbraVisData[0])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUmbraVisData[0], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUmbraVisData[0]);
 		}
-		if (data->dpvs.surfaceUmbraVisData[1]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[1]) == 608);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[1]) == 608);
+		if (data->dpvs.surfaceUmbraVisData[1])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUmbraVisData[1], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUmbraVisData[1]);
 		}
-		if (data->dpvs.surfaceUmbraVisData[2]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[2]) == 616);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[2]) == 616);
+		if (data->dpvs.surfaceUmbraVisData[2])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUmbraVisData[2], data->dpvs.surfaceVisDataCount);
 			ZoneBuffer::clear_pointer(&dest->dpvs.surfaceUmbraVisData[2]);
 		}
-		if (data->dpvs.smodelUmbraVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[3]) == 592);
+		static_assert(offsetof(GfxWorldDpvsStatic, smodelUmbraVisData[3]) == 592);
+		if (data->dpvs.smodelUmbraVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.smodelUmbraVisData[3], data->dpvs.smodelVisDataCount + 1);
 			ZoneBuffer::clear_pointer(&dest->dpvs.smodelUmbraVisData[3]);
 		}
-		if (data->dpvs.surfaceUmbraVisData[3]) static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[3]) == 624);
+		static_assert(offsetof(GfxWorldDpvsStatic, surfaceUmbraVisData[3]) == 624);
+		if (data->dpvs.surfaceUmbraVisData[3])
 		{
 			buf->align(127);
 			buf->write(data->dpvs.surfaceUmbraVisData[3], data->dpvs.surfaceVisDataCount);
@@ -1739,7 +1811,7 @@ namespace zonetool
 		write.dump_array(asset->dpvsPlanes.planes, asset->planeCount);
 		write.dump_array(asset->dpvsPlanes.nodes, asset->nodeCount);
 		write.dump_array(asset->dpvsPlanes.sceneEntCellBits, asset->dpvsPlanes.cellCount << 9);
-		
+
 		write.dump_array(asset->aabbTreeCounts, asset->dpvsPlanes.cellCount);
 		write.dump_array(asset->aabbTrees, asset->dpvsPlanes.cellCount);
 		for (int i = 0; i < asset->dpvsPlanes.cellCount; i++)
@@ -1771,7 +1843,7 @@ namespace zonetool
 			{
 				write.dump_string(asset->portalGroup[i].group);
 			}
-			
+
 			write.dump_array(asset->portalGroup[i].info, asset->portalGroup[i].infoCount);
 		}
 
