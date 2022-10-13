@@ -108,7 +108,7 @@ namespace zonetool
 		parse_info(&asset->info, read, mem);
 
 		asset->pInfo = read.read_single<ClipInfo>();
-		parse_info(asset->pInfo, read, mem);
+		//parse_info(asset->pInfo, read, mem);
 
 		asset->nodes = read.read_array<cNode_t>();
 		for (unsigned int i = 0; i < asset->numNodes; i++)
@@ -126,7 +126,7 @@ namespace zonetool
 			if (asset->cmodels[i].info)
 			{
 				asset->cmodels[i].info = read.read_single<ClipInfo>();
-				parse_info(asset->cmodels[i].info, read, mem);
+				//parse_info(asset->cmodels[i].info, read, mem);
 			}
 		}
 
@@ -245,8 +245,8 @@ namespace zonetool
 		stageReader.close();
 
 		// pInfo -> info
-		//asset->pInfo = &asset->info;
-		asset->pInfo = mem->Alloc<ClipInfo>();
+		asset->pInfo = &asset->info;
+		//asset->pInfo = mem->Alloc<ClipInfo>();
 
 		return asset;
 	}
@@ -943,7 +943,7 @@ namespace zonetool
 		dump_info(&asset->info, write);
 
 		write.dump_single(asset->pInfo);
-		dump_info(asset->pInfo, write);
+		//dump_info(asset->pInfo, write);
 
 		write.dump_array(asset->nodes, asset->numNodes);
 		for (unsigned int i = 0; i < asset->numNodes; i++)
@@ -961,7 +961,7 @@ namespace zonetool
 			if (asset->cmodels[i].info)
 			{
 				write.dump_single(asset->cmodels[i].info);
-				dump_info(asset->cmodels[i].info, write);
+				//dump_info(asset->cmodels[i].info, write);
 			}
 		}
 
