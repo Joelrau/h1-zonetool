@@ -76,6 +76,23 @@ namespace zonetool
 		}
 		using namespace shared;
 
+		DXGI_FORMAT dxgi_format_from_iwi(GfxImageFileFormat format)
+		{
+			switch (format)
+			{
+			case IMG_FORMAT_DXT1:
+				return DXGI_FORMAT_BC1_UNORM;
+				break;
+			case IMG_FORMAT_DXT3:
+				return DXGI_FORMAT_BC2_UNORM;
+				break;
+			case IMG_FORMAT_DXT5:
+				return DXGI_FORMAT_BC3_UNORM;
+				break;
+			}
+			return DXGI_FORMAT_UNKNOWN;
+		}
+
 		namespace iw5
 		{
 			enum IMG_FLAGS : std::uint32_t
@@ -193,18 +210,8 @@ namespace zonetool
 
 						const unsigned int data_len = static_cast<unsigned int>(pixel_data_size);
 
-						switch (iwi_header->format)
-						{
-						case IMG_FORMAT_DXT1:
-							image->imageFormat = DXGI_FORMAT_BC1_UNORM;
-							break;
-						case IMG_FORMAT_DXT3:
-							image->imageFormat = DXGI_FORMAT_BC2_UNORM;
-							break;
-						case IMG_FORMAT_DXT5:
-							image->imageFormat = DXGI_FORMAT_BC3_UNORM;
-							break;
-						}
+						image->imageFormat = dxgi_format_from_iwi(iwi_header->format);
+
 						image->pixelData = mem->Alloc<unsigned char>(data_len);
 						memcpy(image->pixelData, pixel_data, data_len);
 
@@ -291,18 +298,8 @@ namespace zonetool
 #else
 						const unsigned int data_len = static_cast<unsigned int>(pixel_data_size);
 
-						switch (iwi_header->format)
-						{
-						case IMG_FORMAT_DXT1:
-							image->imageFormat = DXGI_FORMAT_BC1_UNORM;
-							break;
-						case IMG_FORMAT_DXT3:
-							image->imageFormat = DXGI_FORMAT_BC2_UNORM;
-							break;
-						case IMG_FORMAT_DXT5:
-							image->imageFormat = DXGI_FORMAT_BC3_UNORM;
-							break;
-						}
+						image->imageFormat = dxgi_format_from_iwi(iwi_header->format);
+
 						image->pixelData = mem->Alloc<unsigned char>(data_len);
 						memcpy(image->pixelData, pixel_data, data_len);
 #endif
@@ -356,18 +353,8 @@ namespace zonetool
 
 						const unsigned int data_len = static_cast<unsigned int>(pixel_data_size);
 
-						switch (iwi_header->format)
-						{
-						case IMG_FORMAT_DXT1:
-							image->imageFormat = DXGI_FORMAT_BC1_UNORM;
-							break;
-						case IMG_FORMAT_DXT3:
-							image->imageFormat = DXGI_FORMAT_BC2_UNORM;
-							break;
-						case IMG_FORMAT_DXT5:
-							image->imageFormat = DXGI_FORMAT_BC3_UNORM;
-							break;
-						}
+						image->imageFormat = dxgi_format_from_iwi(iwi_header->format);
+
 						image->pixelData = mem->Alloc<unsigned char>(data_len);
 						memcpy(image->pixelData, pixel_data, data_len);
 
@@ -446,18 +433,8 @@ namespace zonetool
 #else
 						const unsigned int data_len = static_cast<unsigned int>(pixel_data_size);
 
-						switch (iwi_header->format)
-						{
-						case IMG_FORMAT_DXT1:
-							image->imageFormat = DXGI_FORMAT_BC1_UNORM;
-							break;
-						case IMG_FORMAT_DXT3:
-							image->imageFormat = DXGI_FORMAT_BC2_UNORM;
-							break;
-						case IMG_FORMAT_DXT5:
-							image->imageFormat = DXGI_FORMAT_BC3_UNORM;
-							break;
-						}
+						image->imageFormat = dxgi_format_from_iwi(iwi_header->format);
+
 						image->pixelData = mem->Alloc<unsigned char>(data_len);
 						memcpy(image->pixelData, pixel_data, data_len);
 #endif
