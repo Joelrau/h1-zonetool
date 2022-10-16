@@ -119,7 +119,6 @@ namespace zonetool
 		buf->pop_stream();
 	}
 
-
 	void IGfxLightDef::dump(GfxLightDef* asset)
 	{
 		const auto path = "lights\\"s + asset->name + ".json"s;

@@ -155,8 +155,11 @@ namespace zonetool
 				&this->blend_state_bits,
 				mem);
 
-			ITechset::parse_constant_buffer_indexes(mat->techniqueSet->name, mat->constantBufferIndex, mem);
-			ITechset::parse_constant_buffer_def_array(mat->techniqueSet->name, &mat->constantBufferTable, &mat->constantBufferCount, mem);
+			if (mat->constantCount)
+			{
+				ITechset::parse_constant_buffer_indexes(mat->techniqueSet->name, mat->constantBufferIndex, mem);
+				ITechset::parse_constant_buffer_def_array(mat->techniqueSet->name, &mat->constantBufferTable, &mat->constantBufferCount, mem);
+			}
 		}
 
 		auto max_state_index = 0;
@@ -274,6 +277,11 @@ namespace zonetool
 			if (data->textureTable[i].u.image)
 			{
 				zone->add_asset_of_type(ASSET_TYPE_IMAGE, data->textureTable[i].u.image->name);
+				auto img = zone->find_asset(ASSET_TYPE_IMAGE, data->textureTable[i].u.image->name);
+				if (img)
+				{
+					reinterpret_cast<GfxImage*>(img->pointer())->sematic = data->textureTable[i].semantic;
+				}
 			}
 		}
 	}

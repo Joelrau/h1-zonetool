@@ -40,7 +40,7 @@ namespace zonetool
 	{
 		assetmanager::reader read(mem);
 
-		const auto path = name + ".fxe"s;
+		const auto path = "effects\\"s + name + ".fxe"s;
 		if (!read.open(path))
 		{
 			return nullptr;
@@ -556,7 +556,7 @@ namespace zonetool
 	{
 		assetmanager::dumper dump;
 
-		const auto path = asset->name + ".fxe"s;
+		const auto path = "effects\\"s + asset->name + ".fxe"s;
 		if (!dump.open(path))
 		{
 			return;

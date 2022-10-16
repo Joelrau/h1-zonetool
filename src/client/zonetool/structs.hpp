@@ -121,13 +121,38 @@ namespace zonetool
 		float array[4];
 	};
 
+	enum PhysPresetScaling : std::int32_t
+	{
+		PHYSPRESET_SCALING_LINEAR = 0x0,
+		PHYSPRESET_SCALING_QUADRATIC = 0x1,
+		PHYSPRESET_SCALING_COUNT = 0x2,
+	};
+
 	struct PhysPreset
 	{
 		const char* name;
-		char __pad0[32];
+		int type;
+		float mass;
+		float bounce;
+		float friction;
+		float bulletForceScale;
+		float explosiveForceScale;
+		char __pad0[8]; // something added before name and sndAlias
 		const char* sndAliasPrefix;
-		char __pad1[48];
+		float piecesSpreadFraction;
+		float piecesUpwardVelocity;
+		float minMomentum;
+		float maxMomentum;
+		float minVolume;
+		float maxVolume;
+		float minPitch;
+		float maxPitch;
+		PhysPresetScaling volumeType;
+		PhysPresetScaling pitchType;
+		bool tempDefaultToCylinder;
+		bool perSurfaceSndAlias;
 	}; assert_sizeof(PhysPreset, 0x60);
+	assert_offsetof(PhysPreset, sndAliasPrefix, 40);
 	
 	struct dmMeshNode_array_t
 	{
@@ -147,7 +172,7 @@ namespace zonetool
 		char __pad0[36];
 		unsigned int count0;
 		unsigned int count1;
-		unsigned int count2;
+		unsigned int count2; // m_triangleCount
 		char __pad1[8];
 	}; assert_sizeof(dmMeshData, 0x50);
 
@@ -219,17 +244,17 @@ namespace zonetool
 		char __pad0[8];
 	};
 
-	struct PhysWorld
+	struct PhysWorld // PhysicsWorld
 	{
 		const char* name;
 		PhysBrushModel* models;
 		dmPolytopeData* polytopeDatas;
 		dmMeshData* meshDatas;
 		PhysWaterVolumeDef* waterVolumes;
-		unsigned int modelsCount;
-		unsigned int polytopeDatasCount;
-		unsigned int meshDatasCount;
-		unsigned int waterVolumesCount;
+		unsigned int modelsCount; // brushModelCount
+		unsigned int polytopeDatasCount; // polytopeCount
+		unsigned int meshDatasCount; // meshDataCount
+		unsigned int waterVolumesCount; // waterVolumeDefCount
 	}; assert_sizeof(PhysWorld, 0x38);
 
 	struct PhysConstraint
@@ -677,6 +702,39 @@ namespace zonetool
 		MAPTYPE_CUBE = 0x5,
 		MAPTYPE_ARRAY = 0x6,
 		MAPTYPE_COUNT = 0x7,
+	};
+
+	enum IMG_TS : std::uint8_t
+	{
+		TS_2D = 0x0,
+		TS_FUNCTION = 0x1,
+		TS_COLOR_MAP = 0x2,
+		TS_DETAIL_MAP = 0x3,
+		TS_UNUSED_2 = 0x4,
+		TS_NORMAL_MAP = 0x5,
+		TS_UNUSED_3 = 0x6,
+		TS_UNUSED_4 = 0x7,
+		TS_SPECULAR_MAP = 0x8,
+		TS_UNUSED_5 = 0x9,
+		TS_OCEANFLOW_DISPLACEMENT_MAP = 0xA,
+		TS_WATER_MAP = 0xB,
+		TS_OCEAN_DISPLACEMENT_MAP = 0xC,
+		TS_DISPLACEMENT_MAP = 0xD,
+		TS_PARALLAX_MAP = 0xE,
+		TS_COUNT = 0xF,
+	};
+
+	enum IMG_CATEGORY : std::uint8_t
+	{
+		IMG_CATEGORY_UNKNOWN = 0x0,
+		IMG_CATEGORY_AUTO_GENERATED = 0x1,
+		IMG_CATEGORY_LIGHTMAP = 0x2,
+		IMG_CATEGORY_LOAD_FROM_FILE = 0x3,
+		IMG_CATEGORY_RAW = 0x4,
+		IMG_CATEGORY_FIRST_UNMANAGED = 0x5,
+		IMG_CATEGORY_WATER = 0x5,
+		IMG_CATEGORY_RENDERTARGET = 0x6,
+		IMG_CATEGORY_TEMP = 0x7,
 	};
 
 	struct GfxImage
@@ -1316,6 +1374,66 @@ namespace zonetool
 		FX_ELEM_TYPE_VECTORFIELD = 17,
 	};
 
+	enum FxElemLitType : std::uint8_t
+	{
+		FX_ELEM_LIT_TYPE_NONE = 0x0,
+		FX_ELEM_LIT_TYPE_LIGHTGRID_SPAWN_SINGLE = 0x1,
+		FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SINGLE = 0x2,
+		FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_SPRITE = 0x3,
+		FX_ELEM_LIT_TYPE_LIGHTGRID_FRAME_VERTEX = 0x4,
+		FX_ELEM_LIT_TYPE_COUNT = 0x5,
+	};
+
+	enum FxFlags : std::uint32_t
+	{
+		FX_ELEM_SPAWN_RELATIVE_TO_EFFECT = 0x2,
+		FX_ELEM_SPAWN_FRUSTUM_CULL = 0x4,
+		FX_ELEM_RUNNER_USES_RAND_ROT = 0x8,
+		FX_ELEM_SPAWN_OFFSET_NONE = 0x0,
+		FX_ELEM_SPAWN_OFFSET_SPHERE = 0x10,
+		FX_ELEM_SPAWN_OFFSET_CYLINDER = 0x20,
+		FX_ELEM_SPAWN_OFFSET_MASK = 0x30,
+		FX_ELEM_RUN_RELATIVE_TO_WORLD = 0x0,
+		FX_ELEM_RUN_RELATIVE_TO_SPAWN = 0x40,
+		FX_ELEM_RUN_RELATIVE_TO_EFFECT = 0x80,
+		FX_ELEM_RUN_RELATIVE_TO_OFFSET = 0xC0,
+		FX_ELEM_RUN_RELATIVE_TO_CAMERA = 0x100,
+		FX_ELEM_RUN_MASK = 0x1C0,
+		FX_ELEM_DIE_ON_TOUCH = 0x200,
+		FX_ELEM_DRAW_PAST_FOG = 0x400,
+		FX_ELEM_DRAW_WITH_VIEWMODEL = 0x800,
+		FX_ELEM_BLOCK_SIGHT = 0x1000,
+		FX_ELEM_DRAW_IN_THERMAL_VIEW_ONLY = 0x2000,
+		FX_ELEM_TRAIL_ORIENT_BY_VELOCITY = 0x4000,
+		FX_ELEM_EMIT_BOLT = 0x80000000,
+		FX_ELEM_EMIT_ORIENT_BY_ELEM = 0x8000,
+		FX_ELEM_USE_OCCLUSION_QUERY = 0x10000,
+		FX_ELEM_NODRAW_IN_THERMAL_VIEW = 0x20000,
+		FX_ELEM_THERMAL_MASK = 0x22000,
+		FX_ELEM_SPAWN_IMPACT_FX_WITH_SURFACE_NAME = 0x40000,
+		FX_ELEM_RECEIVE_DYNAMIC_LIGHT = 0x80000,
+		FX_ELEM_VOLUMETRIC_TRAIL = 0x100000,
+		FX_ELEM_USE_COLLISION = 0x200000,
+		FX_ELEM_USE_VECTORFIELDS = 0x400000,
+		FX_ELEM_NO_SURFACE_HDR_SCALAR = 0x800000,
+		FX_ELEM_HAS_VELOCITY_GRAPH_LOCAL = 0x1000000,
+		FX_ELEM_HAS_VELOCITY_GRAPH_WORLD = 0x2000000,
+		FX_ELEM_HAS_GRAVITY = 0x4000000,
+		FX_ELEM_USE_MODEL_PHYSICS = 0x8000000,
+		FX_ELEM_NONUNIFORM_SCALE = 0x10000000,
+		FX_ELEM_CLOUD_SHAPE_CUBE = 0x0,
+		FX_ELEM_CLOUD_SHAPE_SPHERE_LARGE = 0x20000000,
+		FX_ELEM_CLOUD_SHAPE_SPHERE_MEDIUM = 0x40000000,
+		FX_ELEM_CLOUD_SHAPE_SPHERE_SMALL = 0x60000000,
+		FX_ELEM_CLOUD_SHAPE_MASK = 0x60000000,
+		FX_ELEM_FOUNTAIN_DISABLE_COLLISION = 0x80000000,
+	};
+
+	enum FxFlags2 : std::uint32_t
+	{
+		FX_ELEM_CLOUD_SHAPE_SHIFT = 0x1D,
+	};
+
 	struct FxFloatRange
 	{
 		float base;
@@ -1529,7 +1647,7 @@ namespace zonetool
 		FxFloatRange reflectionFactor;
 		FxElemAtlas atlas;
 		FxElemType elemType;
-		unsigned char elemLitType;
+		FxElemLitType elemLitType;
 		unsigned char visualCount;
 		unsigned char velIntervalCount;
 		unsigned char visStateIntervalCount;
@@ -4422,7 +4540,7 @@ namespace zonetool
 		float origin[3];
 		float invScaledAxis[3][3];
 		Bounds absBounds;
-		int contents;
+		int lightingHandle;
 	}; assert_sizeof(cStaticModel_s, 88);
 
 	struct SModelsCollisionData
@@ -4997,16 +5115,19 @@ namespace zonetool
 	struct ComPrimaryLight
 	{
 		GfxLightType type; // 0
-		unsigned char unk0; // 1
-		unsigned char canUseShadowMap; // 2
+		unsigned char canUseShadowMap; // 1
+		unsigned char needsDynamicShadows; // 2
 		unsigned char exponent; // 3
-		int unk1; // 4
+		unsigned char isVolumetric; // 4
+		char __pad0[3];
 		float color[3]; // 8 12 16
 		float dir[3]; // 20 24 28
 		float up[3]; // 32 36 40
 		float origin[3]; // 44 48 52
-		char __pad1[24];
-		float radius; // 80
+		float fadeOffsetRt[2];
+		float radius;
+		float bulbRadius;
+		float bulbLength[3];
 		float cosHalfFovOuter; // 84
 		float cosHalfFovInner; // 88
 		float cosHalfFovExpanded; // 92
