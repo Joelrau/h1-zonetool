@@ -280,7 +280,7 @@ namespace zonetool
 				auto img = zone->find_asset(ASSET_TYPE_IMAGE, data->textureTable[i].u.image->name);
 				if (img)
 				{
-					reinterpret_cast<GfxImage*>(img->pointer())->sematic = data->textureTable[i].semantic;
+					reinterpret_cast<GfxImage*>(img->pointer())->semantic = data->textureTable[i].semantic;
 				}
 			}
 		}

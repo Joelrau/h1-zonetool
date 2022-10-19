@@ -680,7 +680,7 @@ namespace zonetool
 		ID3D11ShaderResourceView* shaderViewAlternate;
 	};
 
-	struct Picmip
+	struct CardMemory
 	{
 		unsigned char platform[2];
 	};
@@ -742,18 +742,18 @@ namespace zonetool
 		GfxTexture texture;
 		DXGI_FORMAT imageFormat;
 		MapType mapType;
-		unsigned char sematic;
+		unsigned char semantic;
 		unsigned char category;
 		unsigned char flags;
-		Picmip picmip;
+		CardMemory cardMemory;
 		char __pad0[2];
 		unsigned int dataLen1;
 		unsigned int dataLen2;
 		unsigned short width;
 		unsigned short height;
 		unsigned short depth;
-		unsigned short numElements;
-		unsigned char levelCount;
+		unsigned short numElements; // arraySize
+		unsigned char levelCount; // mipLevels
 		unsigned char streamed;
 		char __pad1[2];
 		unsigned char* pixelData;
@@ -800,6 +800,12 @@ namespace zonetool
 	{
 		StreamFileName filename;
 		unsigned int totalMsec;
+	};
+
+	enum LoadedSoundFormat : std::int16_t
+	{
+		SND_FORMAT_PCM = 0x0,
+		SND_FORMAT_FLAC = 0x6,
 	};
 
 	struct LoadedSoundInfo
@@ -904,6 +910,7 @@ namespace zonetool
 			unsigned int noWetLevel : 1;
 			unsigned int is3d : 1;
 			unsigned int type : 2;
+			unsigned int unk : 24;
 		};
 		unsigned int intValue;
 	};
