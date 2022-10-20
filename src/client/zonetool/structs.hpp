@@ -241,7 +241,11 @@ namespace zonetool
 
 	struct PhysBrushModel
 	{
-		char __pad0[8];
+		union
+		{
+			std::uint64_t id;
+			char __pad0[8];
+		};
 	};
 
 	struct PhysWorld // PhysicsWorld
@@ -1391,7 +1395,7 @@ namespace zonetool
 		FX_ELEM_LIT_TYPE_COUNT = 0x5,
 	};
 
-	enum FxFlags : std::uint32_t
+	enum FxElemDefFlags : std::uint32_t
 	{
 		FX_ELEM_SPAWN_RELATIVE_TO_EFFECT = 0x2,
 		FX_ELEM_SPAWN_FRUSTUM_CULL = 0x4,
@@ -1436,9 +1440,9 @@ namespace zonetool
 		FX_ELEM_FOUNTAIN_DISABLE_COLLISION = 0x80000000,
 	};
 
-	enum FxFlags2 : std::uint32_t
+	enum FxElemDefExtraFlags : std::uint32_t
 	{
-		FX_ELEM_CLOUD_SHAPE_SHIFT = 0x1D,
+		
 	};
 
 	struct FxFloatRange
@@ -1508,12 +1512,13 @@ namespace zonetool
 	struct FxElemVisualState
 	{
 		float color[4];
-		float unlitHDRScale;
-		float rotationDelta;
-		float rotationTotal;
+		float rotationA;
+		float rotationB;
+		float rotationC;
+		float pad1[2];
 		float size[2];
 		float scale;
-		char __pad0[16];
+		float pad2[2];
 	};
 
 	struct FxElemVisStateSample
@@ -1673,8 +1678,21 @@ namespace zonetool
 		unsigned char useItemClip;
 		unsigned char fadeInfo;
 		int randomSeed;
-		char __pad0[24];
+		float __pad0[6];
+		//char __pad0[24];
 	}; assert_sizeof(FxElemDef, 0x140);
+
+	enum FxSystemFlags : std::uint32_t
+	{
+		FX_FLAG_DISABLE = 0x1,
+		FX_FLAG_NODRAW = 0x2,
+		FX_FLAG_NOSPOTLIGHT = 0x4,
+		FX_FLAG_GC = 0x8,
+		FX_FLAG_INIT = 0x10,
+		FX_FLAG_ARCHIVING = 0x20,
+		FX_FLAG_DEFER_ELEM = 0x40,
+		FX_FLAG_NOOMNILIGHT = 0x80,
+	};
 
 	struct FxEffectDef
 	{
@@ -5131,10 +5149,10 @@ namespace zonetool
 		float dir[3]; // 20 24 28
 		float up[3]; // 32 36 40
 		float origin[3]; // 44 48 52
-		float fadeOffsetRt[2];
-		float radius;
+		float fadeOffset[2];
 		float bulbRadius;
 		float bulbLength[3];
+		float radius; // 80
 		float cosHalfFovOuter; // 84
 		float cosHalfFovInner; // 88
 		float cosHalfFovExpanded; // 92
@@ -5147,8 +5165,17 @@ namespace zonetool
 		float cucTransVector[2]; // 128 132
 		const char* defName; // 136
 	}; assert_sizeof(ComPrimaryLight, 144);
-	assert_offsetof(ComPrimaryLight, defName, 136);
+	assert_offsetof(ComPrimaryLight, color, 8);
+	assert_offsetof(ComPrimaryLight, dir, 20);
+	assert_offsetof(ComPrimaryLight, up, 32);
+	assert_offsetof(ComPrimaryLight, origin, 44);
+	assert_offsetof(ComPrimaryLight, radius, 80);
+	assert_offsetof(ComPrimaryLight, cosHalfFovOuter, 84);
+	assert_offsetof(ComPrimaryLight, cosHalfFovInner, 88);
 	assert_offsetof(ComPrimaryLight, cosHalfFovExpanded, 92);
+	assert_offsetof(ComPrimaryLight, rotationLimit, 96);
+	assert_offsetof(ComPrimaryLight, translationLimit, 100);
+	assert_offsetof(ComPrimaryLight, defName, 136);
 
 	struct ComPrimaryLightEnv
 	{
@@ -5824,8 +5851,8 @@ namespace zonetool
 		unsigned short lightingHandle;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
-		short pad;
-		char unk;
+		short unk0;
+		char unk1;
 		unsigned char reflectionProbeIndex;
 		unsigned char firstMtlSkinIndex;
 		unsigned char sunShadowFlags;
@@ -5854,7 +5881,7 @@ namespace zonetool
 
 	struct GfxStaticModelLightmapInfo
 	{
-		unsigned short smodelCacheIndex[4];
+		unsigned short cacheId[4];
 		unsigned short unk1;
 		unsigned short unk2;
 		float unk3;
