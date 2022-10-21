@@ -684,6 +684,11 @@ namespace zonetool
 		ID3D11ShaderResourceView* shaderViewAlternate;
 	};
 
+	struct PicMip
+	{
+		unsigned char platform[2];
+	};
+
 	struct CardMemory
 	{
 		unsigned char platform[2];
@@ -749,8 +754,8 @@ namespace zonetool
 		unsigned char semantic;
 		unsigned char category;
 		unsigned char flags;
+		PicMip picmip;
 		CardMemory cardMemory;
-		char __pad0[2];
 		unsigned int dataLen1;
 		unsigned int dataLen2;
 		unsigned short width;
@@ -1050,6 +1055,18 @@ namespace zonetool
 		unsigned short childCount;
 	}; assert_sizeof(ClientTriggerAabbNode, 28);
 
+	enum clientTriggerType_t : std::int32_t
+	{
+		CLIENT_TRIGGER_NONE = 0x0,
+		CLIENT_TRIGGER_VISIONSET = 0x1,
+		CLIENT_TRIGGER_REVERB = 0x2,
+		CLIENT_TRIGGER_AUDIO = 0x4,
+		CLIENT_TRIGGER_BLEND_VISION = 0x8,
+		CLIENT_TRIGGER_BLEND_AUDIO = 0x10,
+		CLIENT_TRIGGER_BLEND_ALL = 0x12,
+		CLIENT_TRIGGER_NPC = 0x20,
+	};
+
 	struct ClientTriggers
 	{
 		MapTriggers trigger;
@@ -1057,18 +1074,18 @@ namespace zonetool
 		ClientTriggerAabbNode* clientTriggerAabbTree;
 		unsigned int triggerStringLength;
 		char* triggerString;
-		short* unk0;
+		short* visionSetTriggers;
+		short* blendLookup;
 		short* unk1;
-		short* unk2;
 		short* triggerType;
 		vec3_t* origins;
 		float* scriptDelay;
+		short* audioTriggers;
+		short* unk2;
 		short* unk3;
 		short* unk4;
 		short* unk5;
-		short* unk6;
-		short* unk7;
-		void* unk8;
+		char __pad0[8];
 	}; assert_sizeof(ClientTriggers, 0xB0);
 
 	struct ClientTriggerBlendNode

@@ -117,17 +117,17 @@ namespace zonetool
 			clientTrigger->triggerStringLength = reader.read_int();
 			clientTrigger->triggerString = reader.read_array<char>();
 
-			clientTrigger->unk0 = reader.read_array<short>();
+			clientTrigger->visionSetTriggers = reader.read_array<short>();
+			clientTrigger->blendLookup = reader.read_array<short>();
 			clientTrigger->unk1 = reader.read_array<short>();
-			clientTrigger->unk2 = reader.read_array<short>();
 			clientTrigger->triggerType = reader.read_array<short>();
 			clientTrigger->origins = reader.read_array<vec3_t>();
 			clientTrigger->scriptDelay = reader.read_array<float>();
+			clientTrigger->audioTriggers = reader.read_array<short>();
+			clientTrigger->unk2 = reader.read_array<short>();
 			clientTrigger->unk3 = reader.read_array<short>();
 			clientTrigger->unk4 = reader.read_array<short>();
 			clientTrigger->unk5 = reader.read_array<short>();
-			clientTrigger->unk6 = reader.read_array<short>();
-			clientTrigger->unk7 = reader.read_array<short>();
 
 			reader.close();
 		}
@@ -300,23 +300,23 @@ namespace zonetool
 			buf->write(data->clientTrigger.triggerString, data->clientTrigger.triggerStringLength);
 			ZoneBuffer::clear_pointer(&dest->clientTrigger.triggerString);
 		}
-		if (data->clientTrigger.unk0)
+		if (data->clientTrigger.visionSetTriggers)
 		{
 			buf->align(1);
-			buf->write(data->clientTrigger.unk0, data->clientTrigger.trigger.count);
-			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk0);
+			buf->write(data->clientTrigger.visionSetTriggers, data->clientTrigger.trigger.count);
+			ZoneBuffer::clear_pointer(&dest->clientTrigger.visionSetTriggers);
+		}
+		if (data->clientTrigger.blendLookup)
+		{
+			buf->align(1);
+			buf->write(data->clientTrigger.blendLookup, data->clientTrigger.trigger.count);
+			ZoneBuffer::clear_pointer(&dest->clientTrigger.blendLookup);
 		}
 		if (data->clientTrigger.unk1)
 		{
 			buf->align(1);
 			buf->write(data->clientTrigger.unk1, data->clientTrigger.trigger.count);
 			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk1);
-		}
-		if (data->clientTrigger.unk2)
-		{
-			buf->align(1);
-			buf->write(data->clientTrigger.unk2, data->clientTrigger.trigger.count);
-			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk2);
 		}
 		if (data->clientTrigger.triggerType)
 		{
@@ -336,6 +336,18 @@ namespace zonetool
 			buf->write(data->clientTrigger.scriptDelay, data->clientTrigger.trigger.count);
 			ZoneBuffer::clear_pointer(&dest->clientTrigger.scriptDelay);
 		}
+		if (data->clientTrigger.audioTriggers)
+		{
+			buf->align(1);
+			buf->write(data->clientTrigger.audioTriggers, data->clientTrigger.trigger.count);
+			ZoneBuffer::clear_pointer(&dest->clientTrigger.audioTriggers);
+		}
+		if (data->clientTrigger.unk2)
+		{
+			buf->align(1);
+			buf->write(data->clientTrigger.unk2, data->clientTrigger.trigger.count);
+			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk2);
+		}
 		if (data->clientTrigger.unk3)
 		{
 			buf->align(1);
@@ -353,18 +365,6 @@ namespace zonetool
 			buf->align(1);
 			buf->write(data->clientTrigger.unk5, data->clientTrigger.trigger.count);
 			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk5);
-		}
-		if (data->clientTrigger.unk6)
-		{
-			buf->align(1);
-			buf->write(data->clientTrigger.unk6, data->clientTrigger.trigger.count);
-			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk6);
-		}
-		if (data->clientTrigger.unk7)
-		{
-			buf->align(1);
-			buf->write(data->clientTrigger.unk7, data->clientTrigger.trigger.count);
-			ZoneBuffer::clear_pointer(&dest->clientTrigger.unk7);
 		}
 
 		if (data->clientTriggerBlend.blendNodes)
@@ -506,17 +506,17 @@ namespace zonetool
 			dumper.dump_int(clientTrigger->triggerStringLength);
 			dumper.dump_array(clientTrigger->triggerString, clientTrigger->triggerStringLength);
 
-			dumper.dump_array(clientTrigger->unk0, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->visionSetTriggers, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->blendLookup, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->unk1, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk2, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->triggerType, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->origins, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->scriptDelay, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->audioTriggers, clientTrigger->trigger.count);
+			dumper.dump_array(clientTrigger->unk2, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->unk3, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->unk4, clientTrigger->trigger.count);
 			dumper.dump_array(clientTrigger->unk5, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk6, clientTrigger->trigger.count);
-			dumper.dump_array(clientTrigger->unk7, clientTrigger->trigger.count);
 
 			dumper.close();
 		}
