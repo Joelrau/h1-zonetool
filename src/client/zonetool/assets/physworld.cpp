@@ -197,21 +197,21 @@ namespace zonetool
 				if (data_mesh_data->meshNodes)
 				{
 					buf->align(15);
-					buf->write(data_mesh_data->meshNodes, data_mesh_data->count0);
+					buf->write(data_mesh_data->meshNodes, data_mesh_data->meshNodeCount);
 					ZoneBuffer::clear_pointer(&dest_mesh_data->meshNodes);
 				}
 
 				if (data_mesh_data->vec4_array0)
 				{
 					buf->align(15);
-					buf->write(data_mesh_data->vec4_array0, data_mesh_data->count1);
+					buf->write(data_mesh_data->vec4_array0, data_mesh_data->vec4_array0_count);
 					ZoneBuffer::clear_pointer(&dest_mesh_data->vec4_array0);
 				}
 
 				if (data_mesh_data->meshTriangles)
 				{
 					buf->align(3);
-					buf->write(data_mesh_data->meshTriangles, data_mesh_data->count2);
+					buf->write(data_mesh_data->meshTriangles, data_mesh_data->meshTriangleCount);
 					ZoneBuffer::clear_pointer(&dest_mesh_data->meshTriangles);
 				}
 			}
@@ -265,9 +265,9 @@ namespace zonetool
 		write.dump_array(asset->meshDatas, asset->meshDatasCount);
 		for (unsigned int i = 0; i < asset->meshDatasCount; i++)
 		{
-			write.dump_array(asset->meshDatas[i].meshNodes, asset->meshDatas[i].count0);
-			write.dump_array(asset->meshDatas[i].vec4_array0, asset->meshDatas[i].count1);
-			write.dump_array(asset->meshDatas[i].meshTriangles, asset->meshDatas[i].count2);
+			write.dump_array(asset->meshDatas[i].meshNodes, asset->meshDatas[i].meshNodeCount);
+			write.dump_array(asset->meshDatas[i].vec4_array0, asset->meshDatas[i].vec4_array0_count);
+			write.dump_array(asset->meshDatas[i].meshTriangles, asset->meshDatas[i].meshTriangleCount);
 		}
 		write.dump_array(asset->waterVolumes, asset->waterVolumesCount);
 		for (unsigned int i = 0; i < asset->waterVolumesCount; i++)

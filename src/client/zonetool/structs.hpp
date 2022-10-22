@@ -156,44 +156,82 @@ namespace zonetool
 	
 	struct dmMeshNode_array_t
 	{
-		char __pad0[16];
-	};
+		union
+		{
+			struct _
+			{
+				int pad[4];
+			} a;
+			char __pad0[16];
+		};
+	}; assert_sizeof(dmMeshNode_array_t, 16);
 
 	struct dmMeshTriangle
 	{
-		char __pad0[32];
-	};
+		union
+		{
+			struct _
+			{
+				int indexes[8];
+			} a;
+			char __pad0[32];
+		};
+	}; assert_sizeof(dmMeshTriangle, 32);
 
 	struct dmMeshData
 	{
 		dmMeshNode_array_t* meshNodes;
 		vec4_t* vec4_array0;
 		dmMeshTriangle* meshTriangles;
-		char __pad0[36];
-		unsigned int count0;
-		unsigned int count1;
-		unsigned int count2; // m_triangleCount
-		char __pad1[8];
+		Bounds bounds;
+		float unk0[3];
+		unsigned int meshNodeCount;
+		unsigned int vec4_array0_count;
+		unsigned int meshTriangleCount; // m_triangleCount
+		int unk1;
+		int contents;
 	}; assert_sizeof(dmMeshData, 0x50);
 
 	struct dmSubEdge
 	{
-		int value;
-	};
+		union
+		{
+			int value; // planeIndex?
+			char __pad0[4];
+		} a;
+	}; assert_sizeof(dmSubEdge, 4);
+
+	struct dmFloat4
+	{
+		union
+		{
+			struct _
+			{
+				float normal[3];
+				float dist;
+			} a;
+			char __pad0[16];
+		};
+	}; assert_sizeof(dmFloat4, 16);
 
 	struct dmPolytopeData
 	{
-		vec4_t* vec4_array0;
-		vec4_t* vec4_array1;
-		unsigned short* uint16_array0;
-		unsigned short* uint16_array1;
-		dmSubEdge* edges;
-		unsigned char* uint8_array0;
+		vec4_t* __ptr64 vec4_array0; // (array,count0)
+		vec4_t* __ptr64 vec4_array1; // (array,count1)
+		unsigned short* __ptr64 uint16_array0; // surfaceType? (array,count0)
+		unsigned short* __ptr64 uint16_array1; // m_vertexMaterials (array,count1)
+		dmSubEdge* __ptr64 edges; // (array,count2)
+		unsigned char* __ptr64 uint8_array0; // baseAdjacentSide? (array,count1)
+		//unsigned __int8 firstAdjacentSideOffsets[2][3];
+		//unsigned __int8 edgeCount[2][3];
 		char __pad0[12];
-		unsigned int count0;
-		unsigned int count1;
-		unsigned int count2;
-		char __pad1[40];
+		unsigned int count0; // m_vertexCount
+		unsigned int count1; // m_faceCount
+		unsigned int count2; // m_subEdgeCount
+		float pad1[8];
+		int contents;
+		int pad2;
+		//char __pad1[40];
 	}; assert_sizeof(dmPolytopeData, 0x70);
 
 	struct PhysGeomInfo
@@ -239,14 +277,23 @@ namespace zonetool
 	}; assert_sizeof(PhysWaterVolumeDef, 0x20);
 	assert_offsetof(PhysWaterVolumeDef, string, 20);
 
-	struct PhysBrushModel
+	struct PhysBrushModelPacked
 	{
-		union
-		{
-			std::uint64_t id;
-			char __pad0[8];
-		};
+		std::uint64_t p;
 	};
+
+	struct PhysBrushModelFields
+	{
+		int polytopeIndex;
+		short unk; // 0
+		short meshIndex;
+	};
+
+	union PhysBrushModel
+	{
+		PhysBrushModelPacked packed;
+		PhysBrushModelFields fields;
+	}; assert_sizeof(PhysBrushModel, 8);
 
 	struct PhysWorld // PhysicsWorld
 	{
@@ -1085,7 +1132,7 @@ namespace zonetool
 		short* unk3;
 		short* unk4;
 		short* unk5;
-		char __pad0[8];
+		void* unk6;
 	}; assert_sizeof(ClientTriggers, 0xB0);
 
 	struct ClientTriggerBlendNode
