@@ -6307,6 +6307,7 @@ namespace zonetool
 		int linkIndex;
 	};
 
+	struct pathnode_t;
 	struct pathnode_transient_t
 	{
 		int iSearchFrame;
