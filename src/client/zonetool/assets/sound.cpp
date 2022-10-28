@@ -4,6 +4,205 @@
 namespace snd
 {
 #define SND_MAX_VOLUME_GROUPS 180
+	std::unordered_map<std::string, const char*> mapped_volume_mod_groups =
+	{
+		{"default", "default"},
+		// User interface
+		{"hud", "hud"},
+		{"frontend_sfx", "frontend_sfx"},
+		{"frontend_music", "frontend_music"},
+		{"sp_hit_alert_npc", "sp_hit_alert_npc"},
+		// Music
+		{"music", "music"},
+		{"music2", "music2"},
+		{"music_big", "music_big"},
+		{"music_emitter", "music"}, // not found
+		// Ambience
+		{"amb_quad", "amb_quad"},
+		{"amb_dist", "amb_dist"},
+		{"amb_damb", "amb_damb"},
+		{"amb_damb_big", "amb_damb"}, // not found
+		{"amb_emitter", "amb_emitter"},
+		{"amb_emitter_int", "amb_emitter_int"},
+		{"amb_emitter_ext", "amb_emitter_ext"},
+		// Physics
+		{"physics", "physics"},
+		// Characters
+		{"bodyfall", "bodyfall"},
+		{"bodyfall_mech", "bodyfall"}, // not found
+		{"foley_plr", "foley_plr"},
+		{"foley_plr_special", "foley_plr"}, // not found
+		{"mp_foley_plr", "foley_plr"}, // not found
+		{"foley_npc", "foley_npc"},
+		{"foley_mech", "foley_npc"}, // not found
+		{"foleymp_npc", "foley_npc"},
+		{"wpn_foley_plr", "wpn_foley_plr"},
+		{"wpn_foley_npc", "wpn_foley_npc"},
+		{"wpn_foley_mech", "wpn_foley_npc"}, // not found
+		{"footstep_plr", "footstep_plr"},
+		{"footstep_plr_special", "footstep_plr_special"},
+		{"footstep_water_plr", "footstep_water_plr"},
+		{"footstep_npc", "footstep_npc"},
+		{"footstep_mech", "footstep_npc"}, // not found
+		{"mp_footstep_plr", "footstep_plr"},
+		{"mp_footstep_npc", "footstep_npc"},
+		{"melee_plr", "melee_plr"},
+		{"melee_npc", "melee_npc"},
+		{"melee_hit", "melee_hit"},
+		{"plr_internal", "plr_internal"},
+		{"deaths_door", "deaths_door"},
+		// Dialogue
+		{"chatter_friendly", "voices_ally"},
+		{"chatter_enemy", "voices_enemy"},
+		{"chatter_atlas", "voices_enemy"}, // not found
+		{"vox_friendly", "voices_ally"}, // not found
+		{"vox_enemy", "voices_enemy"}, // not found
+		{"dialog", "voices_dialog"},
+		{"dialog_radio", "voices_dialog_radio"},
+		{"dialog_critical", "voices_dialog_critical"},
+		{"dialog_amb", "voices_pa"}, // maybe
+		// Explosions & Destruction
+		{"destruct", "destruct"},
+		{"explosion", "explosion"},
+		{"explosion_grenade", "explosion_grenade"},
+		{"explosion_flashbang", "explosion_flashbang"},
+		{"explosion_rocket", "explosion_rocket"},
+		{"explosion_car", "explosion_car"},
+		{"explosion_critical", "explosion_critical"},
+		{"explosion_debris", "explosion_debris"},
+		{"impact_critical", "default"}, // not found
+		// Bullet Impacts & Whizbys
+		{"bullet_impact_geo", "bullet_impact_geo"},
+		{"bullet_impact_plr", "bullet_impact_plr"},
+		{"bullet_impact_npc", "bullet_impact_npc"},
+		{"mp_bullet_impact_geo", "mp_bullet_impact_geo"},
+		{"mp_bullet_impact_plr", "mp_bullet_impact_plr"},
+		{"mp_bullet_impact_npc", "mp_bullet_impact_npc"},
+		{"bullet_whizby", "bullet_whizby"},
+		{"mp_bullet_whizby", "mp_bullet_whizby"},
+		{"bullet_impact_special", "bullet_impact_plr"}, // not found
+		// Vehicles
+		{"vehicle_plr", "vehicle_plr"},
+		{"vehicle_plr_special", "vehicle_plr_special"},
+		{"vehicle_npc", "vehicle_npc"},
+		{"vehicle_npc_special", "vehicle_npc"}, // not found
+		{"vehicle_avm_plr", "vehicle_avm_plr"},
+		{"vehicle_avm_npc", "vehicle_avm_npc"},
+		{"wpn_vehicle_plr", "wpn_vehicle_plr"},
+		{"wpn_vehicle_npc", "wpn_vehicle_npc"},
+		{"vehicle", "vehicle_npc"}, // not found
+		{"vehicle_aircraft", "vehicle_aircraft"}, // not found
+		{"vehicle_pdrone", "vehicle_aircraft"}, // not found
+		{"vehicle_drone_swarm", "vehicle_aircraft"}, // not found
+		{"vehicle_amb", "vehicle_npc"}, // not found
+		// Weapons
+		{"grenadebounce", "grenadebounce"},
+		{"mp_grenadebounce", "mp_grenadebounce"},
+		{"shellcasings", "shellcasings"},
+		{"mp_shellcasings", "shellcasings"},
+		{"wpn_plr", "wpn_plr"},
+		{"wpn_plr_special", "wpn_plr_special"},
+		{"wpn_npc_special", "wpn_npc_special"},
+		{"mp_wpn_plr", "wpn_plr"},
+		{"wpn_npc", "wpn_npc"},
+		{"mp_wpn_npc", "mp_wpn_npc"},
+		{"wpn_projectile", "wpn_projectile"},
+		{"mp_wpn_projectile", "wpn_projectile"},
+		// Weapons Detailed
+		{"wpn_plr_shot_special", "wpn_plr_shot_special"},
+		{"wpn_plr_shot", "wpn_plr_shot"},
+		{"wpn_plr_mech", "wpn_plr_mech"},
+		{"wpn_plr_sub", "wpn_plr_sub"},
+		{"wpn_plr_tail", "wpn_plr_tail"},
+		{"wpn_npc_shot", "wpn_npc_shot"},
+		{"wpn_npc_mech", "wpn_npc_mech"},
+		{"wpn_npc_sub", "wpn_npc_sub"},
+		{"wpn_npc_tail", "wpn_npc_tail"},
+		{"wpn_npc_dist", "wpn_npc_dist"},
+		// Tactical
+		{"tactical_plr", "tactical_plr"},
+		{"tactical_npc", "tactical_npc"},
+		{"tactical_plr_special", "tactical_plr_special"},
+		{"tactical_npc_special", "tactical_npc_special"},
+		// Attack Dogs
+		{"attack_dog", "attack_dog"},
+		// Special use
+		{"big_moment", "big_moment"},
+		{"scripted1", "scripted1"},
+		{"scripted2", "scripted2"},
+		{"scripted3", "scripted3"},
+		{"scripted4", "scripted4"},
+		{"scripted5", "scripted5"},
+		{"scripted6", "scripted6"},
+		{"scripted7", "scripted7"},
+		{"scripted8", "scripted8"},
+		{"scripted9", "scripted9"},
+		{"scripted10", "scripted10"},
+		{"fullvolume", "fullvolume"},
+		{"mp_pre_event", "mp_pre_event"},
+		{"mp_post_event", "default"}, // not found
+		{"mp_splash_notify", "mp_splash_notify"},
+		{"mp_hit_marker", "mp_hit_marker"},
+		// Level specific and MP perks
+		{"mp_perk_quiet", "default"}, // not found
+		// OLD - not found
+		{"mw3_amb_damb", "amb_damb"},
+		{"mw3_amb_emitter", "amb_emitter"},
+		{"mw3_amb_quad", "amb_quad"},
+		{"mw3_bodyfall", "bodyfall"},
+		{"mw3_bullet_impact_geo", "bullet_impact_geo"},
+		{"mw3_bullet_impact_npc", "bullet_impact_npc"},
+		{"mw3_bullet_impact_plr", "bullet_impact_plr"},
+		{"mw3_bullet_whizby", "bullet_whizby"},
+		{"mw3_chatter_enemy", "voices_enemy"},
+		{"mw3_chatter_friendly", "voices_ally"},
+		{"mw3_DEPRECATED_default", "default"},
+		{"mw3_DEPRECATED_MAX", "default"},
+		{"mw3_DEPRECATED_na", "default"},
+		{"mw3_destruct", "destruct"},
+		{"mw3_dialog", "voices_dialog"},
+		{"mw3_dialog_amb", "voices_pa"},
+		{"mw3_dialog_critical", "voices_dialog_critical"},
+		{"mw3_dialog_radio", "voices_dialog_radio"},
+		{"mw3_explosion", "explosion"},
+		{"mw3_explosion_car", "explosion_car"},
+		{"mw3_explosion_flashbang", "explosion_flashbang"},
+		{"mw3_explosion_grenade", "explosion_grenade"},
+		{"mw3_explosion_rocket", "explosion_rocket"},
+		{"mw3_foley_npc", "foley_npc"},
+		{"mw3_footstep_npc", "footstep_npc"},
+		{"mw3_frontend_sfx", "frontend_sfx"},
+		{"mw3_fullvolume", "fullvolume"},
+		{"mw3_grenadebounce", "grenadebounce"},
+		{"mw3_melee_npc", "melee_npc"},
+		{"mw3_mp_bullet_impact_geo", "mp_bullet_impact_geo"},
+		{"mw3_mp_bullet_impact_npc", "mp_bullet_impact_npc"},
+		{"mw3_mp_foley_npc", "mp_foley_npc"},
+		{"mw3_mp_footstep_npc", "mp_footstep_npc"},
+		{"mw3_mp_wpn_npc", "mp_wpn_npc"},
+		{"mw3_music", "music"},
+		{"mw3_physics", "physics"},
+		{"mw3_scripted1", "scripted1"},
+		{"mw3_scripted2", "scripted2"},
+		{"mw3_scripted3", "scripted3"},
+		{"mw3_scripted4", "scripted4"},
+		{"mw3_scripted5", "scripted5"},
+		{"mw3_shellcasings", "shellcasings"},
+		{"mw3_vehicle", "vehicle_plr"},
+		{"mw3_vehicle_plr", "vehicle_plr"},
+		{"mw3_vehicle_npc", "vehicle_npc"},
+		{"mw3_vox_enemy", "voices_enemy"},
+		{"mw3_vox_friendly", "voices_ally"},
+		{"mw3_wpn_foley_npc", "wpn_foley_npc"},
+		{"mw3_wpn_foley_plr", "wpn_foley_plr"},
+		{"mw3_footstep_plr", "footstep_plr"},
+		{"mw3_wpn_npc", "wpn_npc"},
+		{"mw3_wpn_plr", "wpn_plr"},
+		{"mw3_wpn_projectile", "wpn_projectile"},
+		{"mw3_wpn_vehicle_npc", "wpn_vehicle_npc"},
+		{"mw3_wpn_vehicle_plr", "wpn_vehicle_plr"},
+	};
+
 	std::array<const char*, SND_MAX_VOLUME_GROUPS> volume_mod_groups =
 	{
 		"default",
@@ -204,6 +403,42 @@ namespace snd
 	};
 
 #define SND_MAX_DSP_BUSES 32
+	std::unordered_map<std::string, const char*> mapped_dsp_buses =
+	{
+		{"default", "default"},
+		{"weapons", "weapons_plr"},
+		{"weapons_dist", "weapons_npc_dist"},
+		{"ambience", "default"}, // not found
+		{"emitters", "emitters"},
+		{"quads", "default"}, // not found
+		{"music", "music"},
+		{"foley", "foley"},
+		{"explosions", "explosions"},
+		{"explosions_critical", "explosions_critical"},
+		{"tactical", "tactical"},
+		{"tactical_special", "tactical"}, // not found
+		{"vehicles", "vehicles_land"},
+		{"air_vehicles", "vehicles_air"},
+		{"int_vehicles_1", "default"}, // not found
+		{"int_vehicles_2", "default"}, // not found
+		{"voices", "voices"},
+		{"voices_critical", "voices_critical"},
+		{"voices_unfiltered", "voices_unfiltered"},
+		{"animals", "animals"},
+		{"physics", "physics"},
+		{"battlechatter", "default"}, // not found
+		{"interface", "interface"},
+		{"scripted", "scripted1"}, // not found
+		{"scripted1", "scripted1"},
+		{"scripted2", "scripted2"},
+		{"scripted3", "scripted3"},
+		{"scripted4", "scripted4"},
+		{"scripted5", "scripted4"}, // not found
+		{"unoccluded", "unoccluded"},
+		{"whizbys", "whizbys"},
+		{"notimescale", "notimescale"},
+	};
+
 	std::array<const char*, SND_MAX_DSP_BUSES> dsp_buses =
 	{
 		"default",
@@ -242,12 +477,12 @@ namespace snd
 
 	const char* get_vol_nod_name(short index)
 	{
-		return volume_mod_groups[index];
+		return mapped_volume_mod_groups[volume_mod_groups[index]];
 	}
 
 	const char* get_dsp_bus_name(char index)
 	{
-		return dsp_buses[index];
+		return mapped_dsp_buses[dsp_buses[index]];
 	}
 
 	short get_vol_mod_index_from_name(const char* name)
@@ -314,219 +549,22 @@ namespace zonetool
 
 	void ISound::json_parse_snd_alias(snd_alias_t* asset, nlohmann::json snddata, ZoneMemory* mem)
 	{
-		SOUND_STRING(aliasName);
-		SOUND_STRING(secondaryAliasName);
-		SOUND_STRING(chainAliasName);
-		SOUND_STRING(subtitle);
-		SOUND_STRING(mixerGroup);
 
-		asset->soundFile = mem->Alloc<SoundFile>();
-		asset->soundFile->type = snddata["soundfile"]["type"].get<snd_alias_type_t>();
-		asset->soundFile->exists = snddata["soundfile"]["exists"].get<bool>();
-
-		if (asset->soundFile->type == SAT_LOADED)
-		{
-			asset->soundFile->u.loadSnd = mem->Alloc<LoadedSound>();
-			asset->soundFile->u.loadSnd->name = mem->StrDup(snddata["soundfile"]["name"].get<std::string>().data());
-		}
-		else if (asset->soundFile->type == SAT_STREAMED)
-		{
-			asset->soundFile->u.streamSnd.totalMsec = snddata["soundfile"]["totalMsec"].get<unsigned int>();
-			asset->soundFile->u.streamSnd.filename.isLocalized = snddata["soundfile"]["isLocalized"].get<bool>();
-			asset->soundFile->u.streamSnd.filename.isStreamed = snddata["soundfile"]["isStreamed"].get<bool>();
-			asset->soundFile->u.streamSnd.filename.fileIndex = snddata["soundfile"]["fileIndex"].get<unsigned short>();
-			if (asset->soundFile->u.streamSnd.filename.fileIndex)
-			{
-				asset->soundFile->u.streamSnd.filename.info.packed.offset = snddata["soundfile"]["packed"]["offset"].get<unsigned long long>();
-				asset->soundFile->u.streamSnd.filename.info.packed.length = snddata["soundfile"]["packed"]["length"].get<unsigned long long>();
-			}
-			else
-			{
-				asset->soundFile->u.streamSnd.filename.info.raw.dir = mem->StrDup(snddata["soundfile"]["raw"]["dir"].get<std::string>().data());
-				asset->soundFile->u.streamSnd.filename.info.raw.name = mem->StrDup(snddata["soundfile"]["raw"]["name"].get<std::string>().data());
-			}
-		}
-		else if (asset->soundFile->type == SAT_PRIMED)
-		{
-			ZONETOOL_FATAL("SAT_PRIMED parsing is not supported yet.");
-		}
-
-		SOUND_INT(flags);
-		SOUND_CHAR(priority);
-		asset->dspBusIndex = get_dsp_bus_index_from_name(snddata["dspBus"].get<std::string>().data()); //SOUND_CHAR(dspBusIndex);
-		asset->volModIndex = get_vol_mod_index_from_name(snddata["volMod"].get<std::string>().data()); //SOUND_SHORT(volModIndex);
-		SOUND_FLOAT(volMin);
-		SOUND_FLOAT(volMax);
-		SOUND_FLOAT(pitchMin);
-		SOUND_FLOAT(pitchMax);
-		SOUND_FLOAT(distMin);
-		SOUND_FLOAT(distMax);
-		SOUND_FLOAT(velocityMin);
-		SOUND_FLOAT(probability);
-		SOUND_CHAR(sequence);
-		SOUND_INT(startDelay);
-
-		SOUND_CHAR(masterPriority);
-		SOUND_FLOAT(masterPercentage);
-		SOUND_FLOAT(slavePercentage);
-		SOUND_CHAR(playbackPercentage);
-
-		SOUND_FLOAT(lfePercentage);
-		SOUND_FLOAT(centerPercentage);
-
-		SOUND_SHORT(poly);
-		SOUND_SHORT(polyGlobal);
-		SOUND_CHAR(polyEntityType);
-		SOUND_CHAR(polyGlobalType);
-
-		SOUND_FLOAT(envelopMin);
-		SOUND_FLOAT(envelopMax);
-		SOUND_FLOAT(envelopPercentage);
-
-		SOUND_FLOAT(reverbWetMixOverride);
-		SOUND_FLOAT(reverbMultiplier);
-
-		SOUND_FLOAT(smartPanDistance2d);
-		SOUND_FLOAT(smartPanDistance3d);
-		SOUND_FLOAT(smartPanAttenuation3d);
-
-		SOUND_SHORT(stereo3dAngle);
-		SOUND_FLOAT(stereo3dStart);
-		SOUND_FLOAT(stereo3dEnd);
-
-		SOUND_SUBASSET(sndContext, SndContext);
-		SOUND_SUBASSET(sndCurve, SndCurve);
-		SOUND_SUBASSET(lpfCurve, SndCurve);
-		SOUND_SUBASSET(reverbSendCurve, SndCurve);
-
-		if (!snddata["speakerMap"].is_null())
-		{
-			asset->speakerMap = mem->Alloc<SpeakerMap>();
-			json speakerMap = snddata["speakerMap"];
-
-			asset->speakerMap->name = mem->StrDup(speakerMap["name"].get<std::string>().data());
-			asset->speakerMap->isDefault = speakerMap["isDefault"].get<bool>();
-
-			if (!speakerMap["channelMaps"].is_null())
-			{
-				json channelMaps = speakerMap["channelMaps"];
-				for (char x = 0; x < 2; x++)
-				{
-					for (char y = 0; y < 2; y++)
-					{
-						if (!channelMaps[(x & 0x01) << 1 | y & 0x01].is_null())
-						{
-							json channelMap = channelMaps[(x & 0x01) << 1 | y & 0x01];
-							asset->speakerMap->channelMaps[x][y].speakerCount = channelMap["speakerCount"].get<int>();
-
-							if (!channelMap["speakers"].is_null())
-							{
-								json speakers = channelMap["speakers"];
-
-								for (int speaker = 0; speaker < asset->speakerMap->channelMaps[x][y].speakerCount;
-									speaker++)
-								{
-									if (!speakers[speaker].is_null())
-									{
-										json jspeaker = speakers[speaker];
-										asset->speakerMap->channelMaps[x][y].speakers[speaker].speaker =
-											jspeaker["speaker"].get<char>();
-										asset->speakerMap->channelMaps[x][y].speakers[speaker].numLevels =
-											jspeaker["numLevels"].get<char>();
-										asset->speakerMap->channelMaps[x][y].speakers[speaker].levels[0] =
-											jspeaker["levels0"].get<float>();
-										asset->speakerMap->channelMaps[x][y].speakers[speaker].levels[1] =
-											jspeaker["levels1"].get<float>();
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		SOUND_CHAR(allowDoppler);
-		SOUND_SUBASSET(dopplerPreset, DopplerPreset);
-
-		// parse all unknown things too
-		json snd_unknown = snddata["unknown"];
-		if (!snd_unknown.is_null())
-		{
-			auto pad0 = nlohmann::get_object_bytes(snd_unknown["pad"][0]);
-			memcpy(asset->__pad0, pad0.data(), pad0.size());
-			asset->u1 = snd_unknown["u1"].get<char>();
-			asset->u2 = snd_unknown["u2"].get<float>();
-		}
 	}
 
 	snd_alias_list_t* ISound::json_parse(const std::string& name, ZoneMemory* mem)
 	{
-		const auto path = "sounds\\"s + name + ".json"s;
-		auto file = filesystem::file(path);
-		file.open("rb");
-
-		if (file.get_fp())
-		{
-			ZONETOOL_INFO("Parsing sound \"%s\"...", name.data());
-
-			auto size = file.size();
-			auto bytes = file.read_bytes(size);
-			file.close();
-
-			json snddata = json::parse(bytes);
-
-			snd_alias_list_t* asset = mem->Alloc<snd_alias_list_t>();
-
-			SOUND_STRING(aliasName);
-			SOUND_CHAR(count);
-
-			asset->head = mem->Alloc<snd_alias_t>(asset->count);
-
-			json heads = snddata["head"];
-			for (unsigned char i = 0; i < asset->count; i++)
-			{
-				json_parse_snd_alias(&asset->head[i], heads[i], mem);
-			}
-
-			auto context_list = snddata["contextList"];
-			if (context_list.is_array())
-			{
-				asset->contextListCount = static_cast<unsigned char>(context_list.size());
-				asset->contextList = mem->Alloc<snd_alias_context_list>(asset->contextListCount);
-
-				for (unsigned char i = 0; i < asset->contextListCount; i++)
-				{
-					asset->contextList[i].unk = context_list[i].get<short>();
-				}
-			}
-
-			return asset;
-		}
-
 		return nullptr;
 	}
 
 	snd_alias_list_t* ISound::parse(const std::string& name, ZoneMemory* mem)
 	{
-		return json_parse(name, mem);
+		return nullptr;
 	}
 
 	void ISound::init(const std::string& name, ZoneMemory* mem)
 	{
-		this->name_ = name;
-		if (this->referenced())
-		{
-			this->asset_ = mem->Alloc<typename std::remove_reference<decltype(*this->asset_)>::type>();
-			this->asset_->name = mem->StrDup(name);
-			return;
-		}
 
-		this->asset_ = this->parse(name, mem);
-		if (!this->asset_)
-		{
-			this->asset_ = DB_FindXAssetHeader_Safe(XAssetType(this->type()), this->name().data()).sound;
-		}
 	}
 
 	void ISound::prepare(ZoneBuffer* buf, ZoneMemory* mem)
@@ -535,50 +573,7 @@ namespace zonetool
 
 	void ISound::load_depending(IZone* zone)
 	{
-		auto* data = this->asset_;
 
-		for (unsigned char i = 0; i < data->count; i++)
-		{
-			auto* head = &data->head[i];
-
-			if (head->secondaryAliasName)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_SOUND, head->secondaryAliasName);
-			}
-
-			if (head->sndContext)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_SOUND_CONTEXT, head->sndContext->name);
-			}
-
-			if (head->sndCurve)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_SOUND_CURVE, head->sndCurve->name);
-			}
-
-			if (head->lpfCurve)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_LPF_CURVE, head->lpfCurve->name);
-			}
-
-			if (head->reverbSendCurve)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_REVERB_CURVE, head->reverbSendCurve->name);
-			}
-
-			if (head->soundFile)
-			{
-				if (head->soundFile->type == SAT_LOADED)
-				{
-					zone->add_asset_of_type(ASSET_TYPE_LOADED_SOUND, head->soundFile->u.loadSnd->name);
-				}
-			}
-
-			if (head->dopplerPreset)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_DOPPLER_PRESET, head->dopplerPreset->name);
-			}
-		}
 	}
 
 	std::string ISound::name()
@@ -593,164 +588,17 @@ namespace zonetool
 
 	void ISound::write_soundfile(IZone* zone, ZoneBuffer* buf, SoundFile* data)
 	{
-		auto* dest = buf->write(data);
 
-		if (data->type == SAT_LOADED)
-		{
-			if (data->u.loadSnd)
-			{
-				dest->u.loadSnd = static_cast<LoadedSound*>(zone->get_asset_pointer(
-					ASSET_TYPE_LOADED_SOUND, data->u.loadSnd->name));
-			}
-		}
-		else if (data->type == SAT_STREAMED)
-		{
-			if (!data->u.streamSnd.filename.fileIndex)
-			{
-				if (data->u.streamSnd.filename.info.raw.dir)
-				{
-					dest->u.streamSnd.filename.info.raw.dir = buf->write_str(data->u.streamSnd.filename.info.raw.dir);
-				}
-
-				if (data->u.streamSnd.filename.info.raw.name)
-				{
-					dest->u.streamSnd.filename.info.raw.name = buf->write_str(data->u.streamSnd.filename.info.raw.name);
-				}
-			}
-		}
-		else if (data->type == SAT_PRIMED)
-		{
-			if (data->u.loadSnd)
-			{
-				dest->u.loadSnd = static_cast<LoadedSound*>(zone->get_asset_pointer(
-					ASSET_TYPE_LOADED_SOUND, data->u.loadSnd->name));
-			}
-
-			if (!data->u.streamSnd.filename.fileIndex)
-			{
-				if (data->u.streamSnd.filename.info.raw.dir)
-				{
-					dest->u.streamSnd.filename.info.raw.dir = buf->write_str(data->u.streamSnd.filename.info.raw.dir);
-				}
-
-				if (data->u.streamSnd.filename.info.raw.name)
-				{
-					dest->u.streamSnd.filename.info.raw.name = buf->write_str(data->u.streamSnd.filename.info.raw.name);
-				}
-			}
-		}
 	}
 
 	void ISound::write_head(IZone* zone, ZoneBuffer* buf, snd_alias_t* dest)
 	{
-		auto* data = dest;
 
-		if (data->aliasName)
-		{
-			dest->aliasName = buf->write_str(data->aliasName);
-		}
-
-		if (data->subtitle)
-		{
-			dest->subtitle = buf->write_str(data->subtitle);
-		}
-
-		if (data->secondaryAliasName)
-		{
-			dest->secondaryAliasName = buf->write_str(data->secondaryAliasName);
-		}
-
-		if (data->chainAliasName)
-		{
-			dest->chainAliasName = buf->write_str(data->chainAliasName);
-		}
-
-		if (data->mixerGroup)
-		{
-			dest->mixerGroup = buf->write_str(data->mixerGroup);
-		}
-
-		if (data->soundFile)
-		{
-			buf->align(3);
-			write_soundfile(zone, buf, data->soundFile);
-			ZoneBuffer::clear_pointer(&dest->soundFile);
-		}
-
-		if (data->sndContext)
-		{
-			dest->sndContext = static_cast<SndContext*>(zone->get_asset_pointer(
-				ASSET_TYPE_SOUND_CONTEXT, data->sndContext->name));
-		}
-
-		if (data->sndCurve)
-		{
-			dest->sndCurve = static_cast<SndCurve*>(zone->get_asset_pointer(
-				ASSET_TYPE_SOUND_CURVE, data->sndCurve->name));
-		}
-
-		if (data->lpfCurve)
-		{
-			dest->lpfCurve = static_cast<SndCurve*>(zone->get_asset_pointer(
-				ASSET_TYPE_LPF_CURVE, data->lpfCurve->name));
-		}
-
-		if (data->reverbSendCurve)
-		{
-			dest->reverbSendCurve = static_cast<SndCurve*>(zone->get_asset_pointer(
-				ASSET_TYPE_REVERB_CURVE, data->reverbSendCurve->name));
-		}
-
-		if (data->speakerMap)
-		{
-			buf->align(3);
-			auto* speaker_map = buf->write(data->speakerMap);
-
-			if (speaker_map->name)
-			{
-				speaker_map->name = buf->write_str(speaker_map->name);
-			}
-
-			ZoneBuffer::clear_pointer(&dest->speakerMap);
-		}
-
-		if (data->dopplerPreset)
-		{
-			dest->dopplerPreset = static_cast<DopplerPreset*>(zone->get_asset_pointer(
-				ASSET_TYPE_DOPPLER_PRESET, data->dopplerPreset->name));
-		}
 	}
 
 	void ISound::write(IZone* zone, ZoneBuffer* buf)
 	{
-		auto* data = this->asset_;
-		auto* dest = buf->write(data);
 
-		buf->push_stream(3);
-
-		dest->name = buf->write_str(this->name());
-
-		if (data->head)
-		{
-			buf->align(3);
-			auto* dest_sound = buf->write(data->head, data->count);
-
-			for (unsigned char i = 0; i < data->count; i++)
-			{
-				write_head(zone, buf, &dest_sound[i]);
-			}
-
-			ZoneBuffer::clear_pointer(&dest->head);
-		}
-
-		if (data->contextList)
-		{
-			buf->align(1);
-			buf->write(data->contextList, data->contextListCount);
-			ZoneBuffer::clear_pointer(&dest->contextList);
-		}
-
-		buf->pop_stream();
 	}
 
 	void ISound::json_dump_snd_alias(ordered_json& sound, snd_alias_t* asset)
@@ -862,6 +710,8 @@ namespace zonetool
 		SOUND_DUMP_SUBASSET(sndContext);
 		SOUND_DUMP_SUBASSET(sndCurve);
 		SOUND_DUMP_SUBASSET(lpfCurve);
+		sound["hpfCurve"] = "$defaultHpf";
+
 		SOUND_DUMP_SUBASSET(reverbSendCurve);
 
 		sound["speakerMap"] = nullptr;

@@ -1,7 +1,8 @@
 #pragma once
 #include "../zonetool.hpp"
 
-#define TECHNIQUES_COUNT 240u
+#define TECHNIQUES_COUNT 252u
+#define TECHNIQUES_COUNT_H1 240u
 
 namespace zonetool
 {

@@ -5,6 +5,8 @@
 
 namespace zonetool
 {
+	bool is_dumping_weapons = false;
+
 	void dump_asset(XAsset* asset);
 	void stop_dumping();
 
@@ -129,6 +131,7 @@ namespace zonetool
 #ifdef DEBUG
 				ZONETOOL_INFO("Dumping asset \"%s\" of type %s.", get_asset_name(asset), type_to_string(asset->type));
 #endif
+
 #define DUMP_ASSET(__type__,__interface__,__struct__) \
 				if (asset->type == __type__) \
 				{ \
@@ -146,14 +149,14 @@ namespace zonetool
 					DUMP_ASSET(ASSET_TYPE_LOADED_SOUND, ILoadedSound, LoadedSound);
 					DUMP_ASSET(ASSET_TYPE_LOCALIZE_ENTRY, ILocalize, LocalizeEntry);
 					DUMP_ASSET(ASSET_TYPE_LPF_CURVE, ILpfCurve, SndCurve);
-					DUMP_ASSET(ASSET_TYPE_LUA_FILE, ILuaFile, LuaFile);
+					//DUMP_ASSET(ASSET_TYPE_LUA_FILE, ILuaFile, LuaFile);
 					DUMP_ASSET(ASSET_TYPE_MATERIAL, IMaterial, Material);
 					DUMP_ASSET(ASSET_TYPE_MAP_ENTS, IMapEnts, MapEnts);
-					DUMP_ASSET(ASSET_TYPE_NET_CONST_STRINGS, INetConstStrings, NetConstStrings);
+					//DUMP_ASSET(ASSET_TYPE_NET_CONST_STRINGS, INetConstStrings, NetConstStrings);
 					DUMP_ASSET(ASSET_TYPE_RAWFILE, IRawFile, RawFile);
 					DUMP_ASSET(ASSET_TYPE_REVERB_CURVE, IReverbCurve, SndCurve);
 					DUMP_ASSET(ASSET_TYPE_SCRIPTABLE, IScriptableDef, ScriptableDef);
-					DUMP_ASSET(ASSET_TYPE_SCRIPTFILE, IScriptFile, ScriptFile);
+					//DUMP_ASSET(ASSET_TYPE_SCRIPTFILE, IScriptFile, ScriptFile);
 					DUMP_ASSET(ASSET_TYPE_SKELETONSCRIPT, ISkeletonScript, SkeletonScript);
 					DUMP_ASSET(ASSET_TYPE_SOUND, ISound, snd_alias_list_t);
 					DUMP_ASSET(ASSET_TYPE_SOUND_CONTEXT, ISoundContext, SndContext);
@@ -183,8 +186,8 @@ namespace zonetool
 					DUMP_ASSET(ASSET_TYPE_VERTEXDECL, IVertexDecl, MaterialVertexDeclaration);
 					DUMP_ASSET(ASSET_TYPE_VERTEXSHADER, IVertexShader, MaterialVertexShader);
 
-					DUMP_ASSET(ASSET_TYPE_MENU, IMenuDef, menuDef_t);
-					DUMP_ASSET(ASSET_TYPE_MENULIST, IMenuList, MenuList);
+					//DUMP_ASSET(ASSET_TYPE_MENU, IMenuDef, menuDef_t);
+					//DUMP_ASSET(ASSET_TYPE_MENULIST, IMenuList, MenuList);
 
 					DUMP_ASSET(ASSET_TYPE_COL_MAP_MP, IClipMap, clipMap_t);
 					DUMP_ASSET(ASSET_TYPE_COM_MAP, IComWorld, ComWorld);
@@ -632,18 +635,6 @@ namespace zonetool
 			std::quick_exit(EXIT_SUCCESS);
 		});
 
-		command::add("buildzone", [](const command::params& params)
-		{
-			// Check if enough arguments have been passed to the command
-			if (params.size() != 2)
-			{
-				ZONETOOL_ERROR("usage: buildzone <zone>");
-				return;
-			}
-
-			build_zone(params.get(1));
-		});
-
 		command::add("loadzone", [](const command::params& params)
 		{
 			// Check if enough arguments have been passed to the command
@@ -671,6 +662,34 @@ namespace zonetool
 			}
 
 			dump_zone(params.get(1));
+		});
+
+		command::add("dumpweaponzones", [](const command::params& params)
+		{
+			zonetool::is_dumping_weapons = true;
+			const auto _0 = gsl::finally([]
+			{
+				zonetool::is_dumping_weapons = false;
+			});
+
+			const auto files = utils::io::list_files("zone");
+			auto index = 0;
+			auto start_index = atoi(params.get(1));
+			for (auto file : files)
+			{
+				file = file.substr(5);
+				if ((file.starts_with("mp_vm") || file.starts_with("mp_lm") || file.starts_with("mp_wm")) && file.contains("_base_"))
+				{
+					if (index >= start_index)
+					{
+						printf("dumping weapon zone %i\n", index);
+						const auto zone = file.substr(0, file.size() - 3);
+						dump_zone(zone);
+					}
+
+					index++;
+				}
+			}
 		});
 
 		command::add("verifyzone", [](const command::params& params)

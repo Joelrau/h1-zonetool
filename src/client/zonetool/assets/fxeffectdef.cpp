@@ -3,183 +3,212 @@
 
 namespace zonetool
 {
-	void parse_visuals(assetmanager::reader* read, FxElemDef* def, FxElemVisuals* vis)
+	namespace
 	{
-		switch (def->elemType)
+		h2::FxEffectDef* convert_to_h2(FxEffectDef* h1_asset, utils::memory::allocator& allocator)
 		{
-		case FX_ELEM_TYPE_MODEL:
-			vis->model = read->read_asset<XModel>();
-			break;
-		case FX_ELEM_TYPE_RUNNER:
-			vis->effectDef.handle = read->read_asset<FxEffectDef>();
-			break;
-		case FX_ELEM_TYPE_SOUND:
-		case FX_ELEM_TYPE_VECTORFIELD:
-			vis->soundName = read->read_string();
-			break;
-		case FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION:
-			vis->particleSimAnimation = read->read_asset<FxParticleSimAnimation>();
-			break;
-		default:
-			if (def->elemType - 12 <= 1u)
+#define COPY_VALUE(name) \
+		static_assert(sizeof(asset->elemDefs[i].name) == sizeof(h1_asset->elemDefs[i].name)); \
+		asset->elemDefs[i].name = h1_asset->elemDefs[i].name;
+
+#define COPY_VALUE_CAST(name) \
+		static_assert(sizeof(asset->elemDefs[i].name) == sizeof(h1_asset->elemDefs[i].name)); \
+		asset->elemDefs[i].name = *reinterpret_cast<decltype(asset->elemDefs[i].name)*>(&h1_asset->elemDefs[i].name);
+
+#define COPY_ARR(name) \
+		static_assert(sizeof(asset->elemDefs[i].name) == sizeof(h1_asset->elemDefs[i].name)); \
+		std::memcpy(&asset->elemDefs[i].name, &h1_asset->elemDefs[i].name, sizeof(asset->elemDefs[i].name));
+
+#define REINTERPRET_CAST_SAFE(name) \
+		static_assert(sizeof(*asset->elemDefs[i].name) == sizeof(*h1_asset->elemDefs[i].name)); \
+		asset->elemDefs[i].name = reinterpret_cast<decltype(asset->elemDefs[i].name)>(h1_asset->elemDefs[i].name);
+
+			const auto asset = allocator.allocate<h2::FxEffectDef>();
+
+			std::memcpy(asset, h1_asset, sizeof(h1_asset));
+			const auto elem_count = asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission;
+			asset->elemDefs = allocator.allocate_array<h2::FxElemDef>(elem_count);
+
+			for (auto i = 0; i < elem_count; i++)
 			{
-				if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
+				COPY_VALUE(flags);
+				COPY_VALUE(flags2);
+				COPY_VALUE_CAST(spawn);
+				COPY_VALUE_CAST(spawnRange);
+				COPY_VALUE_CAST(fadeInRange);
+				COPY_VALUE_CAST(fadeOutRange);
+				COPY_VALUE(spawnFrustumCullRadius);
+				COPY_VALUE_CAST(spawnDelayMsec);
+				COPY_VALUE_CAST(spawnDelayMsec);
+				COPY_ARR(spawnOrigin);
+				COPY_VALUE_CAST(spawnOffsetRadius);
+				COPY_VALUE_CAST(spawnOffsetHeight);
+				COPY_ARR(spawnAngles);
+				COPY_ARR(angularVelocity);
+				COPY_VALUE_CAST(initialRotation);
+				COPY_VALUE_CAST(gravity);
+				COPY_VALUE_CAST(reflectionFactor);
+				COPY_VALUE_CAST(atlas);
+				COPY_VALUE_CAST(elemType);
+				COPY_VALUE(elemLitType);
+				COPY_VALUE(visualCount);
+				COPY_VALUE(velIntervalCount);
+				COPY_VALUE(visStateIntervalCount);
+
+				const auto vel_count = asset->elemDefs[i].velIntervalCount + 1;
+				asset->elemDefs[i].velSamples = allocator.allocate_array<h2::FxElemVelStateSample>(vel_count);
+				for (auto o = 0; o < vel_count; o++)
 				{
-					vis->lightDef = read->read_asset<GfxLightDef>();
+					COPY_ARR(velSamples[o].local.velocity.base);
+					COPY_ARR(velSamples[o].local.velocity.amplitude);
+					COPY_ARR(velSamples[o].local.totalDelta.base);
+					COPY_ARR(velSamples[o].local.totalDelta.amplitude);
+
+					COPY_ARR(velSamples[o].world.velocity.base);
+					COPY_ARR(velSamples[o].world.velocity.amplitude);
+					COPY_ARR(velSamples[o].world.totalDelta.base);
+					COPY_ARR(velSamples[o].world.totalDelta.amplitude);
 				}
-			}
-			else
-			{
-				vis->material = read->read_asset<Material>();
-			}
-			break;
-		}
-	}
 
-	FxEffectDef* IFxEffectDef::parse(const std::string& name, ZoneMemory* mem)
-	{
-		assetmanager::reader read(mem);
+				REINTERPRET_CAST_SAFE(visSamples);
 
-		const auto path = "effects\\"s + name + ".fxe"s;
-		if (!read.open(path))
-		{
-			return nullptr;
-		}
-
-		ZONETOOL_INFO("Parsing fx \"%s\"...", name.data());
-
-		const auto asset = read.read_single<FxEffectDef>();
-		asset->name = read.read_string();
-		asset->elemDefs = read.read_array<FxElemDef>();
-
-		for (int i = 0; i < asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission; i++)
-		{
-			auto def = &asset->elemDefs[i];
-
-			def->velSamples = read.read_array<FxElemVelStateSample>();
-			def->visSamples = read.read_array<FxElemVisStateSample>();
-
-			if (def->elemType == FX_ELEM_TYPE_DECAL)
-			{
-				if (def->visuals.markArray)
+				const auto convert_visuals = [&](h2::FxElemDef* def, FxElemVisuals* vis, h2::FxElemVisuals* dest)
 				{
-					def->visuals.markArray = read.read_array<FxElemMarkVisuals>();
-
-					for (unsigned char j = 0; j < def->visualCount; j++)
+					switch (def->elemType)
 					{
-						if (def->visuals.markArray[j].materials[0])
+					case FX_ELEM_TYPE_MODEL:
+					{
+						const auto model = allocator.allocate<h2::XModel>();
+						model->name = vis->model->name;
+						dest->model = model;
+						break;
+					}
+					case FX_ELEM_TYPE_RUNNER:
+					{
+						const auto handle = allocator.allocate<h2::FxEffectDef>();
+						handle->name = vis->effectDef.handle->name;
+						dest->effectDef.handle = handle;
+						break;
+					}
+					case FX_ELEM_TYPE_SOUND:
+					case FX_ELEM_TYPE_VECTORFIELD:
+						break;
+					case FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION:
+						break;
+					default:
+						if (def->elemType - 12 <= 1u)
 						{
-							def->visuals.markArray[j].materials[0] = read.read_asset<Material>();
+							if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
+							{
+
+							}
 						}
-						if (def->visuals.markArray[j].materials[1])
+						else
 						{
-							def->visuals.markArray[j].materials[1] = read.read_asset<Material>();
+							const auto material = allocator.allocate<h2::Material>();
+							material->name = vis->material->name;
+							dest->material = material;
 						}
-						if (def->visuals.markArray[j].materials[2])
+						break;
+					}
+				};
+
+				if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_DECAL && h1_asset->elemDefs[i].visuals.markArray)
+				{
+					const auto mark_array = allocator.allocate_array<h2::FxElemMarkVisuals>(h1_asset->elemDefs[i].visualCount);
+					for (auto o = 0u; o < h1_asset->elemDefs[i].visualCount; o++)
+					{
+						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[0])
 						{
-							def->visuals.markArray[j].materials[2] = read.read_asset<Material>();
+							const auto material = allocator.allocate<h2::Material>();
+							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[0]->name;
+							mark_array[o].materials[0] = material;
+						}
+
+						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[1])
+						{
+							const auto material = allocator.allocate<h2::Material>();
+							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[1]->name;
+							mark_array[o].materials[1] = material;
+						}
+
+						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[2])
+						{
+							const auto material = allocator.allocate<h2::Material>();
+							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[2]->name;
+							mark_array[o].materials[2] = material;
 						}
 					}
+
+					asset->elemDefs[i].visuals.markArray = mark_array;
 				}
-			}
-			else if (def->visualCount > 1)
-			{
-				def->visuals.array = read.read_array<FxElemVisuals>();
-
-				for (unsigned char vis = 0; vis < def->visualCount; vis++)
+				else if (h1_asset->elemDefs[i].visualCount > 1)
 				{
-					parse_visuals(&read, def, &def->visuals.array[vis]);
-				}
-			}
-			else
-			{
-				parse_visuals(&read, def, &def->visuals.instance);
-			}
-
-			def->effectOnImpact.handle = read.read_asset<FxEffectDef>();
-			def->effectOnDeath.handle = read.read_asset<FxEffectDef>();
-			def->effectEmitted.handle = read.read_asset<FxEffectDef>();
-
-			if (def->extended.trailDef)
-			{
-				if (def->elemType == FX_ELEM_TYPE_TRAIL)
-				{
-					def->extended.trailDef = read.read_single<FxTrailDef>();
-
-					if (def->extended.trailDef->verts)
+					asset->elemDefs[i].visuals.array = allocator.allocate_array<h2::FxElemVisuals>(h1_asset->elemDefs[i].visualCount);
+					for (unsigned char vis = 0; vis < h1_asset->elemDefs[i].visualCount; vis++)
 					{
-						def->extended.trailDef->verts = read.read_array<FxTrailVertex>();
-					}
-
-					if (def->extended.trailDef->inds)
-					{
-						def->extended.trailDef->inds = read.read_array<unsigned short>();
-					}
-				}
-				else if (def->elemType == FX_ELEM_TYPE_SPARK_FOUNTAIN)
-				{
-					def->extended.sparkFountainDef = read.read_single<FxSparkFountainDef>();
-				}
-				else if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
-				{
-					def->extended.spotLightDef = read.read_single<FxSpotLightDef>();
-				}
-				else if (def->elemType == FX_ELEM_TYPE_OMNI_LIGHT)
-				{
-					def->extended.omniLightDef = read.read_single<FxOmniLightDef>();
-				}
-				else if (def->elemType == FX_ELEM_TYPE_FLARE)
-				{
-					def->extended.flareDef = read.read_single<FxFlareDef>();
-
-					if (def->extended.flareDef->intensityX)
-					{
-						def->extended.flareDef->intensityX = read.read_array<float>();
-					}
-
-					if (def->extended.flareDef->intensityY)
-					{
-						def->extended.flareDef->intensityY = read.read_array<float>();
-					}
-
-					if (def->extended.flareDef->srcCosIntensity)
-					{
-						def->extended.flareDef->srcCosIntensity = read.read_array<float>();
-					}
-
-					if (def->extended.flareDef->srcCosScale)
-					{
-						def->extended.flareDef->srcCosScale = read.read_array<float>();
+						convert_visuals(&asset->elemDefs[i], &h1_asset->elemDefs[i].visuals.array[vis], 
+							&asset->elemDefs[i].visuals.array[vis]);
 					}
 				}
 				else
 				{
-					def->extended.unknownDef = read.read_single<char>();
+					convert_visuals(&asset->elemDefs[i], &h1_asset->elemDefs[i].visuals.instance, 
+						&asset->elemDefs[i].visuals.instance);
 				}
+
+				COPY_VALUE(collBounds);
+				REINTERPRET_CAST_SAFE(effectOnImpact.name);
+				REINTERPRET_CAST_SAFE(effectOnDeath.name);
+				REINTERPRET_CAST_SAFE(effectEmitted.name);
+				COPY_VALUE_CAST(emitDist);
+				COPY_VALUE_CAST(emitDistVariance);
+				REINTERPRET_CAST_SAFE(extended.unknownDef);
+
+				if (asset->elemDefs[i].extended.trailDef)
+				{
+					if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_TRAIL)
+					{
+						asset->elemDefs[i].extended.trailDef = allocator.allocate<h2::FxTrailDef>();
+						COPY_VALUE(extended.trailDef->scrollTimeMsec);
+						COPY_VALUE(extended.trailDef->repeatDist);
+						COPY_VALUE(extended.trailDef->invSplitDist);
+						COPY_VALUE(extended.trailDef->vertCount);
+						REINTERPRET_CAST_SAFE(extended.trailDef->verts);
+						COPY_VALUE(extended.trailDef->indCount);
+						REINTERPRET_CAST_SAFE(extended.trailDef->inds);
+					}
+					else if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_DECAL)
+					{
+						asset->elemDefs[i].extended.decalDef = allocator.allocate<h2::FxDecalDef>();
+					}
+				}
+
+
+				COPY_VALUE(sortOrder);
+				COPY_VALUE(lightingFrac);
+				COPY_VALUE(useItemClip);
+				COPY_VALUE(fadeInfo);
+				COPY_VALUE(randomSeed);
 			}
+
+			return asset;
 		}
+	}
 
-		read.close();
+	void parse_visuals(assetmanager::reader* read, FxElemDef* def, FxElemVisuals* vis)
+	{
 
-		return asset;
+	}
+
+	FxEffectDef* IFxEffectDef::parse(const std::string& name, ZoneMemory* mem)
+	{
+		return nullptr;
 	}
 
 	void IFxEffectDef::init(const std::string& name, ZoneMemory* mem)
 	{
-		this->name_ = name;
 
-		if (this->referenced())
-		{
-			this->asset_ = mem->Alloc<typename std::remove_reference<decltype(*this->asset_)>::type>();
-			this->asset_->name = mem->StrDup(name);
-			return;
-		}
-
-		this->asset_ = this->parse(name, mem);
-		if (!this->asset_)
-		{
-			this->asset_ = DB_FindXAssetHeader_Safe(XAssetType(this->type()), this->name().data()).fx;
-		}
 	}
 
 	void IFxEffectDef::prepare(ZoneBuffer* buf, ZoneMemory* mem)
@@ -188,92 +217,7 @@ namespace zonetool
 
 	void IFxEffectDef::load_depending(IZone* zone)
 	{
-		auto data = this->asset_;
 
-		auto load_FxElemVisuals = [zone](FxElemDef* def, FxElemDefVisuals* vis)
-		{
-			auto load_visuals = [zone](FxElemDef* def, FxElemVisuals* vis)
-			{
-				if (!vis->anonymous)
-				{
-					return;
-				}
-
-				switch (def->elemType)
-				{
-				case FX_ELEM_TYPE_MODEL:
-					zone->add_asset_of_type(ASSET_TYPE_XMODEL, vis->model->name);
-					break;
-				case FX_ELEM_TYPE_RUNNER:
-					zone->add_asset_of_type(ASSET_TYPE_FX, vis->effectDef.handle->name);
-					break;
-				case FX_ELEM_TYPE_SOUND:
-				case FX_ELEM_TYPE_VECTORFIELD:
-					zone->add_asset_of_type(ASSET_TYPE_SOUND, vis->soundName);
-					break;
-				case FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION:
-					zone->add_asset_of_type(ASSET_TYPE_PARTICLE_SIM_ANIMATION, vis->particleSimAnimation->name);
-					break;
-				default:
-					if (def->elemType - 12 <= 1u)
-					{
-						if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
-						{
-							zone->add_asset_of_type(ASSET_TYPE_LIGHT_DEF, vis->lightDef->name);
-						}
-					}
-					else
-					{
-						zone->add_asset_of_type(ASSET_TYPE_MATERIAL, vis->material->name);
-					}
-					break;
-				}
-			};
-
-			if (def->elemType == FX_ELEM_TYPE_DECAL)
-			{
-				for (unsigned char i = 0; i < def->visualCount; i++)
-				{
-					if (vis->markArray[i].materials)
-					{
-						if (vis->markArray[i].materials[0])
-							zone->add_asset_of_type(ASSET_TYPE_MATERIAL, vis->markArray[i].materials[0]->name);
-						if (vis->markArray[i].materials[1])
-							zone->add_asset_of_type(ASSET_TYPE_MATERIAL, vis->markArray[i].materials[1]->name);
-						if (vis->markArray[i].materials[2])
-							zone->add_asset_of_type(ASSET_TYPE_MATERIAL, vis->markArray[i].materials[2]->name);
-					}
-				}
-			}
-			else if (def->visualCount > 1)
-			{
-				for (unsigned char i = 0; i < def->visualCount; i++)
-				{
-					load_visuals(def, &vis->array[i]);
-				}
-			}
-			else
-			{
-				load_visuals(def, &vis->instance);
-			}
-		};
-
-		// Loop through frames
-		for (int i = 0; i < data->elemDefCountLooping + data->elemDefCountOneShot + data->elemDefCountEmission; i++)
-		{
-			auto& def = data->elemDefs[i];
-
-			// Sub-FX effects
-			if (def.effectEmitted.handle)
-				zone->add_asset_of_type(ASSET_TYPE_FX, def.effectEmitted.handle->name);
-			if (def.effectOnDeath.handle)
-				zone->add_asset_of_type(ASSET_TYPE_FX, def.effectOnDeath.handle->name);
-			if (def.effectOnImpact.handle)
-				zone->add_asset_of_type(ASSET_TYPE_FX, def.effectOnImpact.handle->name);
-
-			// Visuals
-			load_FxElemVisuals(&def, &def.visuals);
-		}
 	}
 
 	std::string IFxEffectDef::name()
@@ -288,238 +232,25 @@ namespace zonetool
 
 	void write_fx_elem_visuals(IZone* zone, ZoneBuffer* buf, FxElemDef* def, FxElemVisuals* dest)
 	{
-		auto data = dest;
 
-		if (!data->anonymous)
-		{
-			return;
-		}
-
-		switch (def->elemType)
-		{
-		case FX_ELEM_TYPE_MODEL:
-			dest->model = reinterpret_cast<XModel*>(zone->get_asset_pointer(ASSET_TYPE_XMODEL, data->model->name));
-			break;
-		case FX_ELEM_TYPE_RUNNER:
-			dest->effectDef.name = buf->write_str(data->effectDef.handle->name);
-			break;
-		case FX_ELEM_TYPE_SOUND:
-		case FX_ELEM_TYPE_VECTORFIELD:
-			dest->soundName = buf->write_str(data->soundName);
-			break;
-		case FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION:
-			dest->particleSimAnimation = reinterpret_cast<FxParticleSimAnimation*>(zone->get_asset_pointer(ASSET_TYPE_PARTICLE_SIM_ANIMATION, data->particleSimAnimation->name));
-			break;
-		default:
-			if (def->elemType - 12 <= 1u)
-			{
-				if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
-				{
-					dest->lightDef = reinterpret_cast<GfxLightDef*>(zone->get_asset_pointer(ASSET_TYPE_LIGHT_DEF, data->lightDef->name));
-				}
-			}
-			else
-			{
-				dest->material = reinterpret_cast<Material*>(zone->get_asset_pointer(ASSET_TYPE_MATERIAL, data->material->name));
-			}
-			break;
-		}
 	}
 
 	void write_fx_elem_def_visuals(IZone* zone, ZoneBuffer* buf, FxElemDef* def, FxElemDefVisuals* dest)
 	{
-		auto data = dest;
 
-		if (def->elemType == FX_ELEM_TYPE_DECAL)
-		{
-			if (data->markArray)
-			{
-				auto destvisuals = buf->write(data->markArray, def->visualCount);
-
-				for (unsigned char i = 0; i < def->visualCount; i++)
-				{
-					destvisuals[i].materials[0] = (data->markArray[i].materials[0])
-						? reinterpret_cast<Material*>(zone->get_asset_pointer(
-							ASSET_TYPE_MATERIAL, data->markArray[i].materials[0]->name))
-						: nullptr;
-					destvisuals[i].materials[1] = (data->markArray[i].materials[1])
-						? reinterpret_cast<Material*>(zone->get_asset_pointer(
-							ASSET_TYPE_MATERIAL, data->markArray[i].materials[1]->name))
-						: nullptr;
-					destvisuals[i].materials[2] = (data->markArray[i].materials[2])
-						? reinterpret_cast<Material*>(zone->get_asset_pointer(
-							ASSET_TYPE_MATERIAL, data->markArray[i].materials[2]->name))
-						: nullptr;
-				}
-			}
-		}
-		else if (def->visualCount > 1)
-		{
-			auto vis = buf->write(data->array, def->visualCount);
-
-			for (unsigned char i = 0; i < def->visualCount; i++)
-			{
-				write_fx_elem_visuals(zone, buf, def, &vis[i]);
-			}
-		}
-		else
-		{
-			write_fx_elem_visuals(zone, buf, def, &dest->instance);
-		}
 	}
 
 	void write_fx_elem_def(IZone* zone, ZoneBuffer* buf, FxElemDef* dest)
 	{
-		auto data = dest;
 
-		if (data->velSamples)
-		{
-			buf->align(3);
-			buf->write(data->velSamples, data->velIntervalCount + 1);
-			ZoneBuffer::clear_pointer(&dest->velSamples);
-		}
-
-		if (data->visSamples)
-		{
-			buf->align(3);
-			buf->write(data->visSamples, data->visStateIntervalCount + 1);
-			ZoneBuffer::clear_pointer(&dest->velSamples);
-		}
-
-		write_fx_elem_def_visuals(zone, buf, data, &dest->visuals);
-
-		if (data->effectOnImpact.handle)
-		{
-			buf->write_str(data->effectOnImpact.handle->name);
-			ZoneBuffer::clear_pointer(&dest->effectOnImpact);
-		}
-
-		if (data->effectOnDeath.handle)
-		{
-			buf->write_str(data->effectOnDeath.handle->name);
-			ZoneBuffer::clear_pointer(&dest->effectOnDeath);
-		}
-
-		if (data->effectEmitted.handle)
-		{
-			buf->write_str(data->effectEmitted.handle->name);
-			ZoneBuffer::clear_pointer(&dest->effectEmitted);
-		}
-
-		if (data->extended.trailDef)
-		{
-			if (data->elemType == FX_ELEM_TYPE_TRAIL)
-			{
-				if (data->extended.trailDef)
-				{
-					buf->align(3);
-					buf->write(data->extended.trailDef);
-
-					if (data->extended.trailDef->verts)
-					{
-						buf->align(3);
-						buf->write(data->extended.trailDef->verts, data->extended.trailDef->vertCount);
-					}
-
-					if (data->extended.trailDef->inds)
-					{
-						buf->align(1);
-						buf->write(data->extended.trailDef->inds, data->extended.trailDef->indCount);
-					}
-
-					ZoneBuffer::clear_pointer(&dest->extended.trailDef);
-				}
-			}
-			else if (data->elemType == FX_ELEM_TYPE_SPARK_FOUNTAIN)
-			{
-				if (data->extended.sparkFountainDef)
-				{
-					buf->align(3);
-					buf->write(data->extended.sparkFountainDef);
-					ZoneBuffer::clear_pointer(&dest->extended.sparkFountainDef);
-				}
-			}
-			else if (data->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
-			{
-				if (data->extended.spotLightDef)
-				{
-					buf->align(3);
-					buf->write(data->extended.spotLightDef);
-					ZoneBuffer::clear_pointer(&dest->extended.spotLightDef);
-				}
-			}
-			else if (data->elemType == FX_ELEM_TYPE_OMNI_LIGHT)
-			{
-				if (data->extended.omniLightDef)
-				{
-					buf->align(3);
-					buf->write(data->extended.omniLightDef);
-					ZoneBuffer::clear_pointer(&dest->extended.omniLightDef);
-				}
-			}
-			else if (data->elemType == FX_ELEM_TYPE_FLARE)
-			{
-				buf->align(3);
-				buf->write(data->extended.flareDef);
-
-				if (data->extended.flareDef->intensityX)
-				{
-					buf->write(data->extended.flareDef->intensityX, data->extended.flareDef->intensityXIntervalCount + 1);
-				}
-
-				if (data->extended.flareDef->intensityY)
-				{
-					buf->write(data->extended.flareDef->intensityY, data->extended.flareDef->intensityYIntervalCount + 1);
-				}
-
-				if (data->extended.flareDef->srcCosIntensity)
-				{
-					buf->write(data->extended.flareDef->srcCosIntensity, data->extended.flareDef->srcCosIntensityIntervalCount + 1);
-				}
-
-				if (data->extended.flareDef->srcCosScale)
-				{
-					buf->write(data->extended.flareDef->srcCosScale, data->extended.flareDef->srcCosScaleIntervalCount + 1);
-				}
-
-				ZoneBuffer::clear_pointer(&dest->extended.flareDef);
-			}
-			else
-			{
-				buf->align(0);
-				buf->write_stream(data->extended.unknownDef, 1);
-				ZoneBuffer::clear_pointer(&dest->extended.unknownDef);
-			}
-		}
 	}
 
 	void IFxEffectDef::write(IZone* zone, ZoneBuffer* buf)
 	{
-		auto data = this->asset_;
-		auto dest = buf->write(data);
 
-		buf->push_stream(3);
-
-		dest->name = buf->write_str(this->name());
-
-		if (data->elemDefs)
-		{
-			buf->align(3);
-			auto destdef = buf->write(data->elemDefs,
-				data->elemDefCountLooping + data->elemDefCountOneShot + data->elemDefCountEmission);
-
-			for (int i = 0; i < (data->elemDefCountLooping + data->elemDefCountOneShot + data->elemDefCountEmission); i++)
-			{
-				write_fx_elem_def(zone, buf, &destdef[i]);
-			}
-
-			ZoneBuffer::clear_pointer(&dest->elemDefs);
-		}
-
-		buf->pop_stream();
 	}
 
-	void dump_visuals(assetmanager::dumper* dump, FxElemDef* def, FxElemVisuals* vis)
+	void dump_visuals(assetmanager::dumper* dump, h2::FxElemDef* def, h2::FxElemVisuals* vis)
 	{
 		switch (def->elemType)
 		{
@@ -552,10 +283,12 @@ namespace zonetool
 		}
 	}
 
-	void IFxEffectDef::dump(FxEffectDef* asset)
+	void IFxEffectDef::dump(FxEffectDef* h1_asset)
 	{
 		assetmanager::dumper dump;
 
+		utils::memory::allocator allocator;
+		const auto asset = convert_to_h2(h1_asset, allocator);
 		const auto path = "effects\\"s + asset->name + ".fxe"s;
 		if (!dump.open(path))
 		{
@@ -673,6 +406,10 @@ namespace zonetool
 					{
 						dump.dump_array(def->extended.flareDef->srcCosScale, def->extended.flareDef->srcCosScaleIntervalCount + 1);
 					}
+				}
+				else if (def->elemType == FX_ELEM_TYPE_DECAL)
+				{
+					dump.dump_single(def->extended.decalDef);
 				}
 				else
 				{

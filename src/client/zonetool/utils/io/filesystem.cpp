@@ -1,6 +1,8 @@
 #include "std_include.hpp"
 #include "filesystem.hpp"
 
+#include "../../zonetool.hpp"
+
 namespace zonetool
 {
 	namespace filesystem
@@ -238,6 +240,12 @@ namespace zonetool
 		std::string get_dump_path()
 		{
 			auto path = "dump\\" + fastfile + "\\";
+
+			if (zonetool::is_dumping_weapons)
+			{
+				path = "dump\\weapon_dump\\";
+			}
+
 			if (!std::filesystem::exists(path))
 			{
 				create_directory(path);

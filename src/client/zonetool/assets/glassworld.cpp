@@ -112,6 +112,8 @@ namespace zonetool
 		buf->pop_stream();
 	}
 
+	static_assert(sizeof(GlassWorld) == sizeof(h2::GlassWorld));
+
 	void IGlassWorld::dump(GlassWorld* asset)
 	{
 		const auto path = asset->name + ".glassmap"s;

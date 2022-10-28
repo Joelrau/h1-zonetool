@@ -69,6 +69,8 @@
 
 namespace zonetool
 {
+	extern bool is_dumping_weapons;
+
 	template <typename T>
 	XAssetHeader DB_FindXAssetHeader_Copy(XAssetType type, const std::string& name, ZoneMemory* mem)
 	{

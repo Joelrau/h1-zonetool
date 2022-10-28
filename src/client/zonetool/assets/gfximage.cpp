@@ -1104,7 +1104,12 @@ namespace zonetool
 		dump_image_dds(asset);
 #endif
 
-		auto path = "images\\"s + clean_name(asset->name) + ".h1Image"s;
+		if (asset->streamed)
+		{
+			return;
+		}
+
+		auto path = "images\\"s + clean_name(asset->name) + ".h2Image"s;
 		assetmanager::dumper write;
 		if (!write.open(path))
 		{
@@ -1126,17 +1131,6 @@ namespace zonetool
 			write.dump_array(asset->pixelData, asset->dataLen1);
 		}
 
-		if (asset->streamed)
-		{
-			auto streamFileIndex = *reinterpret_cast<unsigned int*>(0x143274884);
-			auto streamFiles = reinterpret_cast<XStreamFile*>(0x1432748B0);
-
-			for (auto i = 0u; i < 4; i++)
-			{
-				auto streamFile = &streamFiles[streamFileIndex + i];
-				write.dump_single(streamFile);
-			}
-		}
 		write.close();
 	}
 }

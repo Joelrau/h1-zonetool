@@ -3,42 +3,33 @@
 
 namespace zonetool
 {
+	namespace
+	{
+		h2::ComPrimaryLight* convert_primary_lights(ComPrimaryLight* primary_lights, const unsigned int count, 
+			utils::memory::allocator& allocator)
+		{
+			const auto lights = allocator.allocate_array<h2::ComPrimaryLight>(count);
+
+			lights->type = static_cast<h2::GfxLightType>(primary_lights->type);
+			lights->canUseShadowMap = primary_lights->canUseShadowMap;
+			lights->needsDynamicShadows = primary_lights->needsDynamicShadows;
+			lights->exponent = primary_lights->exponent;
+			lights->isVolumetric = primary_lights->isVolumetric;
+			std::memcpy(&lights->color, &primary_lights->color, sizeof(h2::ComPrimaryLight) -
+				(offsetof(h2::ComPrimaryLight, __pad0) + sizeof(lights->__pad0)));
+
+			return lights;
+		}
+	}
+
 	ComWorld* IComWorld::parse(const std::string& name, ZoneMemory* mem)
 	{
-		const auto path = name + ".commap";
-
-		assetmanager::reader read(mem);
-		if (!read.open(path))
-		{
-			return nullptr;
-		}
-
-		ZONETOOL_INFO("Parsing commap \"%s\"...", name.data());
-
-		ComWorld* asset = read.read_single<ComWorld>();
-		asset->name = read.read_string();
-
-		asset->primaryLights = read.read_array<ComPrimaryLight>();
-		for (unsigned int i = 0; i < asset->primaryLightCount; i++)
-		{
-			asset->primaryLights[i].defName = read.read_string();
-		}
-		asset->primaryLightEnvs = read.read_array<ComPrimaryLightEnv>();
-
-		read.close();
-
-		return asset;
+		return nullptr;
 	}
 
 	void IComWorld::init(const std::string& name, ZoneMemory* mem)
 	{
-		this->name_ = "maps/"s + (filesystem::get_fastfile().substr(0, 3) == "mp_" ? "mp/" : "") + filesystem::get_fastfile() + ".d3dbsp"; // name;
-		this->asset_ = this->parse(name, mem);
 
-		if (!this->asset_)
-		{
-			ZONETOOL_FATAL("Could not parse commap \"%s\"", name.data());
-		}
 	}
 
 	void IComWorld::prepare(ZoneBuffer* buf, ZoneMemory* mem)
@@ -47,15 +38,7 @@ namespace zonetool
 
 	void IComWorld::load_depending(IZone* zone)
 	{
-		auto asset = this->asset_;
 
-		for (unsigned int i = 0; i < asset->primaryLightCount; i++)
-		{
-			if (asset->primaryLights[i].defName)
-			{
-				zone->add_asset_of_type(ASSET_TYPE_LIGHT_DEF, asset->primaryLights[i].defName);
-			}
-		}
 	}
 
 	std::string IComWorld::name()
@@ -70,41 +53,14 @@ namespace zonetool
 
 	void IComWorld::write(IZone* zone, ZoneBuffer* buf)
 	{
-		auto* data = this->asset_;
-		auto* dest = buf->write(data);
 
-		buf->push_stream(3);
-
-		dest->name = buf->write_str(this->name());
-
-		if (data->primaryLights)
-		{
-			buf->align(3);
-			auto* primary_light = buf->write(data->primaryLights, data->primaryLightCount);
-
-			for (unsigned int i = 0; i < data->primaryLightCount; i++)
-			{
-				if (data->primaryLights[i].defName)
-				{
-					primary_light[i].defName = buf->write_str(data->primaryLights[i].defName);
-				}
-			}
-
-			ZoneBuffer::clear_pointer(&dest->primaryLights);
-		}
-
-		if (data->primaryLightEnvs)
-		{
-			buf->align(3);
-			buf->write(data->primaryLightEnvs, data->primaryLightEnvCount);
-			ZoneBuffer::clear_pointer(&dest->primaryLightEnvs);
-		}
-
-		buf->pop_stream();
 	}
 
-	void IComWorld::dump(ComWorld* asset)
+	static_assert(sizeof(ComWorld) == sizeof(h2::ComWorld));
+
+	void IComWorld::dump(ComWorld* h1_asset)
 	{
+		const auto asset = reinterpret_cast<h2::ComWorld*>(h1_asset);
 		const auto path = asset->name + ".commap"s;
 
 		assetmanager::dumper write;
@@ -112,6 +68,10 @@ namespace zonetool
 		{
 			return;
 		}
+
+		utils::memory::allocator allocator;
+		asset->primaryLights = convert_primary_lights(h1_asset->primaryLights,
+			asset->primaryLightCount, allocator);
 
 		write.dump_single(asset);
 		write.dump_string(asset->name);
