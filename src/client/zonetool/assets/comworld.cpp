@@ -17,6 +17,7 @@ namespace zonetool
 			lights->isVolumetric = primary_lights->isVolumetric;
 			std::memcpy(&lights->color, &primary_lights->color, sizeof(h2::ComPrimaryLight) -
 				(offsetof(h2::ComPrimaryLight, __pad0) + sizeof(lights->__pad0)));
+			lights->defName = primary_lights->defName;
 
 			return lights;
 		}

@@ -8812,8 +8812,9 @@ namespace zonetool
 			unsigned char numBonePhysics; // 12
 			unsigned char numCompositeModels; // 13
 			char __pad0[2]; // 14-16
-			float scale; // 16
-			unsigned int noScalePartBits[8]; // 20
+			float unk_float; // 16
+			float scale; // 20
+			unsigned int noScalePartBits[8]; // 24
 			scr_string_t* boneNames; // 56
 			unsigned char* parentList; // 64
 			XModelAngle* tagAngles; // 72
