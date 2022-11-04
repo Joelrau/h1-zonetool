@@ -9,6 +9,14 @@
 
 namespace zonetool
 {
+	namespace
+	{
+		void* pmem_alloc_stub(unsigned __int64 size, unsigned __int64 alignment, unsigned int type, int source)
+		{
+			return _aligned_malloc(size, alignment);
+		}
+	}
+
 	void load_proto_stub(utils::hook::assembler& a)
 	{
 		a.pushad64();
@@ -299,6 +307,8 @@ namespace zonetool
 			utils::hook::set<uint8_t>(0x140543730, 0xC3); // dwNetStart
 
 			zonetool::initialize();
+
+			utils::hook::jump(0x140501920, pmem_alloc_stub);
 		}
 	};
 }
