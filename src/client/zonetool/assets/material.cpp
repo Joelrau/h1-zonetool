@@ -51,6 +51,22 @@ namespace zonetool
 
 			return new_name;
 		}
+
+		std::unordered_map<std::string, std::string> techset_replacements =
+		{
+			{"m_l_sm_lmpb_dc1dn1ds1dg1dna1_r0c0n0sd0om0_nfwpf", "m_l_sm_lmpb_r0c0n0sd0om0_nfwpf"},
+			{"m_l_sm_lmpb_dc1dn1ds1dg1dna1_r0c0n0sd0sr0om0_nfwpf", "m_l_sm_lmpb_r0c0n0sd0sr0om0_nfwpf"},
+		};
+
+		std::string get_replaced_techset(const std::string& name)
+		{
+			if (techset_replacements.find(name) != techset_replacements.end())
+			{
+				return techset_replacements[name];
+			}
+
+			return name;
+		}
 	}
 
 	MaterialTextureDef* IMaterial::prase_texture_table(json& matdata, ZoneMemory* mem)
@@ -107,12 +123,14 @@ namespace zonetool
 
 			if (asset && asset->techniqueSet)
 			{
-				ITechset::dump_stateinfo(asset->techniqueSet->name, asset);
-				ITechset::dump_statebits(asset->techniqueSet->name, asset->stateBitsEntry);
-				ITechset::dump_statebits_map(asset->techniqueSet->name, asset->stateBitsTable, asset->stateBitsCount);
+				const auto name = get_replaced_techset(asset->techniqueSet->name);
 
-				ITechset::dump_constant_buffer_indexes(asset->techniqueSet->name, asset->constantBufferIndex);
-				ITechset::dump_constant_buffer_def_array(asset->techniqueSet->name, asset->constantBufferCount, asset->constantBufferTable);
+				ITechset::dump_stateinfo(name, asset);
+				ITechset::dump_statebits(name, asset->stateBitsEntry);
+				ITechset::dump_statebits_map(name, asset->stateBitsTable, asset->stateBitsCount);
+
+				ITechset::dump_constant_buffer_indexes(name, asset->constantBufferIndex);
+				ITechset::dump_constant_buffer_def_array(name, asset->constantBufferCount, asset->constantBufferTable);
 			}
 
 			ordered_json matdata;
@@ -121,7 +139,8 @@ namespace zonetool
 
 			if (asset->techniqueSet)
 			{
-				MATERIAL_DUMP_STRING(techniqueSet->name);
+				const auto name = get_replaced_techset(asset->techniqueSet->name);
+				matdata["techniqueSet->name"] = name;
 			}
 
 			MATERIAL_DUMP_INFO(gameFlags);

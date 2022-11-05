@@ -11095,11 +11095,17 @@ namespace zonetool
 			Bounds bounds;
 		}; assert_sizeof(GfxSky, 56);
 
+		struct mnode_t
+		{
+			unsigned short unk0;
+			unsigned short unk1;
+		};
+
 		struct GfxWorldDpvsPlanes
 		{
 			int cellCount;
 			cplane_s* planes;
-			unsigned int* nodes;
+			mnode_t* nodes;
 			unsigned int* sceneEntCellBits;
 		}; assert_sizeof(GfxWorldDpvsPlanes, 32);
 

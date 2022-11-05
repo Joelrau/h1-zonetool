@@ -100,7 +100,9 @@ namespace zonetool
 						{
 							if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
 							{
-
+								const auto light = allocator.allocate<h2::GfxLightDef>();
+								light->name = vis->lightDef->name;
+								dest->lightDef = light;
 							}
 						}
 						else
