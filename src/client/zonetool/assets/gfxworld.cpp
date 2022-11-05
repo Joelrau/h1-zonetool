@@ -55,8 +55,8 @@ namespace zonetool
 				COPY_VALUE(dpvsPlanes.cellCount);
 				REINTERPRET_CAST_SAFE(dpvsPlanes.planes);
 
-				asset->dpvsPlanes.nodes = allocator.allocate_array<h2::mnode_t>(asset->planeCount);
-				for (auto i = 0; i < asset->planeCount; i++)
+				asset->dpvsPlanes.nodes = allocator.allocate_array<h2::mnode_t>(asset->nodeCount);
+				for (auto i = 0; i < asset->nodeCount; i++)
 				{
 					asset->dpvsPlanes.nodes[i].unk0 = 0;
 					asset->dpvsPlanes.nodes[i].unk1 = h1_asset->dpvsPlanes.nodes[i];
