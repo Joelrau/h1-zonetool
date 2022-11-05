@@ -10,14 +10,17 @@ namespace zonetool
 		{
 			const auto lights = allocator.allocate_array<h2::ComPrimaryLight>(count);
 
-			lights->type = static_cast<h2::GfxLightType>(primary_lights->type);
-			lights->canUseShadowMap = primary_lights->canUseShadowMap;
-			lights->needsDynamicShadows = primary_lights->needsDynamicShadows;
-			lights->exponent = primary_lights->exponent;
-			lights->isVolumetric = primary_lights->isVolumetric;
-			std::memcpy(&lights->color, &primary_lights->color, sizeof(h2::ComPrimaryLight) -
-				(offsetof(h2::ComPrimaryLight, __pad0) + sizeof(lights->__pad0)));
-			lights->defName = primary_lights->defName;
+			for (auto i = 0; i < count; i++)
+			{
+				lights[i].type = static_cast<h2::GfxLightType>(primary_lights[i].type);
+				lights[i].canUseShadowMap = primary_lights[i].canUseShadowMap;
+				lights[i].needsDynamicShadows = primary_lights[i].needsDynamicShadows;
+				lights[i].exponent = primary_lights[i].exponent;
+				lights[i].isVolumetric = primary_lights[i].isVolumetric;
+				std::memcpy(&lights[i].color, &primary_lights[i].color, sizeof(h2::ComPrimaryLight) -
+					(offsetof(h2::ComPrimaryLight, __pad0) + sizeof(lights[i].__pad0)));
+				lights[i].defName = primary_lights[i].defName;
+			}
 
 			return lights;
 		}
