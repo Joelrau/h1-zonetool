@@ -285,7 +285,7 @@ namespace zonetool
 	struct PhysBrushModelFields
 	{
 		int polytopeIndex;
-		short unk; // 0
+		short worldIndex;
 		short meshIndex;
 	};
 
@@ -860,7 +860,7 @@ namespace zonetool
 
 	enum LoadedSoundFormat : std::int16_t
 	{
-		SND_FORMAT_PCM = 0x0,
+		SND_FORMAT_PCM = 0x1,
 		SND_FORMAT_FLAC = 0x6,
 	};
 
@@ -965,8 +965,9 @@ namespace zonetool
 			unsigned int fullDryLevel : 1;
 			unsigned int noWetLevel : 1;
 			unsigned int is3d : 1;
+			unsigned int unk1 : 10;
 			unsigned int type : 2;
-			unsigned int unk : 24;
+			unsigned int unk2 : 14;
 		};
 		unsigned int intValue;
 	};
@@ -1576,10 +1577,9 @@ namespace zonetool
 	struct FxElemVisualState
 	{
 		float color[4];
-		float rotationA;
-		float rotationB;
-		float rotationC;
-		float pad1[2];
+		float pad1[3];
+		float rotationDelta;
+		float rotationTotal;
 		float size[2];
 		float scale;
 		float pad2[2];
@@ -1593,7 +1593,7 @@ namespace zonetool
 
 	struct FxElemMarkVisuals
 	{
-		Material* materials[3];
+		Material* materials[3]; // mc, wc, wc (auto displacement)
 	};
 
 	union FxElemVisuals
@@ -4745,7 +4745,7 @@ namespace zonetool
 		DynEntityLinkToDef* linkTo;
 		PhysMass mass;
 		int contents;
-		char __pad0[8];
+		float __pad0[2]; //char __pad0[8];
 	}; assert_sizeof(DynEntityDef, 136);
 
 	struct DynEntityPose

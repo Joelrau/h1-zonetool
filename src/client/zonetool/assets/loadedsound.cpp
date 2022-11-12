@@ -217,7 +217,7 @@ namespace zonetool
 		file.read(data, size, 1);
 
 		result->info.blockAlign = 0;
-		result->info.format = 6; // idk, seems to always be 6
+		result->info.format = SND_FORMAT_FLAC;
 
 		std::string data_str{data, static_cast<size_t>(size)};
 		const auto converted = convert_flac(data_str, &result->info);
@@ -274,7 +274,6 @@ namespace zonetool
 					{
 						ZONETOOL_FATAL("%s: Invalid wave format %i.", name.data(), format);
 					}
-					result->info.format = format;
 
 					short numChannels;
 					fread(&numChannels, 2, 1, fp);
@@ -325,6 +324,8 @@ namespace zonetool
 		{
 			ZONETOOL_FATAL("%s: Could not read sounddata.", name.data());
 		}
+
+		result->info.format = SND_FORMAT_PCM;
 
 		result->name = mem->StrDup(name);
 
