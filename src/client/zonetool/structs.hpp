@@ -284,7 +284,8 @@ namespace zonetool
 
 	struct PhysBrushModelFields
 	{
-		int polytopeIndex;
+		short polytopeIndex;
+		short unk;
 		short worldIndex;
 		short meshIndex;
 	};
@@ -1704,7 +1705,7 @@ namespace zonetool
 
 	struct FxElemDef
 	{
-		int flags;
+		FxElemDefFlags flags;
 		int flags2;
 		FxSpawnDef spawn;
 		FxFloatRange spawnRange;
@@ -1745,18 +1746,6 @@ namespace zonetool
 		float __pad0[6];
 		//char __pad0[24];
 	}; assert_sizeof(FxElemDef, 0x140);
-
-	enum FxSystemFlags : std::uint32_t
-	{
-		FX_FLAG_DISABLE = 0x1,
-		FX_FLAG_NODRAW = 0x2,
-		FX_FLAG_NOSPOTLIGHT = 0x4,
-		FX_FLAG_GC = 0x8,
-		FX_FLAG_INIT = 0x10,
-		FX_FLAG_ARCHIVING = 0x20,
-		FX_FLAG_DEFER_ELEM = 0x40,
-		FX_FLAG_NOOMNILIGHT = 0x80,
-	};
 
 	struct FxEffectDef
 	{

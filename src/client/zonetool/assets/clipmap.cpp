@@ -107,7 +107,7 @@ namespace zonetool
 
 		parse_info(&asset->info, read, mem);
 
-		asset->pInfo = read.read_single<ClipInfo>();
+		//asset->pInfo = read.read_single<ClipInfo>();
 		//parse_info(asset->pInfo, read, mem);
 
 		asset->nodes = read.read_array<cNode_t>();
@@ -121,16 +121,26 @@ namespace zonetool
 
 		asset->leafs = read.read_array<cLeaf_t>();
 		asset->cmodels = read.read_array<cmodel_t>();
-		for (unsigned int i = 0; i < asset->numSubModels; i++)
-		{
-			if (asset->cmodels[i].info)
-			{
-				asset->cmodels[i].info = read.read_single<ClipInfo>();
-				//parse_info(asset->cmodels[i].info, read, mem);
-			}
-		}
+		//for (unsigned int i = 0; i < asset->numSubModels; i++)
+		//{
+		//	if (asset->cmodels[i].info)
+		//	{
+		//		asset->cmodels[i].info = read.read_single<ClipInfo>();
+		//		parse_info(asset->cmodels[i].info, read, mem);
+		//		auto x = 0;
+		//	}
+		//}
 
 		asset->mapEnts = read.read_asset<MapEnts>();
+
+		asset->stages = read.read_array<Stage>();
+		for (int i = 0; i < asset->stageCount; i++)
+		{
+			asset->stages[i].name = read.read_string();
+		}
+		//asset->stageTrigger.models = read.read_array<TriggerModel>();
+		//asset->stageTrigger.hulls = read.read_array<TriggerHull>();
+		//asset->stageTrigger.slabs = read.read_array<TriggerSlab>();
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -225,28 +235,10 @@ namespace zonetool
 
 		read.close();
 
-		// parse stages
-		assetmanager::reader stageReader(mem);
-		if (stageReader.open(name + ".ents.stages"))
-		{
-			ZONETOOL_INFO("Parsing entity stages...");
-
-			asset->stageCount = static_cast<unsigned char>(stageReader.read_int());
-			if (asset->stageCount)
-			{
-				asset->stages = stageReader.read_array<Stage>();
-
-				for (int i = 0; i < asset->stageCount; i++)
-				{
-					asset->stages[i].name = stageReader.read_string();
-				}
-			}
-		}
-		stageReader.close();
-
-		// pInfo -> info
-		asset->pInfo = &asset->info;
-		//asset->pInfo = mem->Alloc<ClipInfo>();
+		// copy info into pInfo
+		//asset->pInfo = &asset->info;
+		asset->pInfo = mem->Alloc<ClipInfo>();
+		memcpy(asset->pInfo, &asset->info, sizeof(ClipInfo));
 
 		return asset;
 	}
@@ -570,12 +562,6 @@ namespace zonetool
 			for (unsigned int i = 0; i < data->numSubModels; i++)
 			{
 				destcmodels[i].info = info_ptr;
-				//buf->push_stream(0);
-				//buf->align(3);
-				//auto destInfo = buf->write(data->cmodels[i].info);
-				//write_info(zone, buf, data->cmodels[i].info, destInfo);
-				//ZoneBuffer::clear_pointer(&destcmodels[i].info);
-				//buf->pop_stream();
 			}
 
 			ZoneBuffer::clear_pointer(&dest->cmodels);
@@ -942,7 +928,7 @@ namespace zonetool
 
 		dump_info(&asset->info, write);
 
-		write.dump_single(asset->pInfo);
+		//write.dump_single(asset->pInfo);
 		//dump_info(asset->pInfo, write);
 
 		write.dump_array(asset->nodes, asset->numNodes);
@@ -956,16 +942,25 @@ namespace zonetool
 
 		write.dump_array(asset->leafs, asset->numLeafs);
 		write.dump_array(asset->cmodels, asset->numSubModels);
-		for (unsigned int i = 0; i < asset->numSubModels; i++)
-		{
-			if (asset->cmodels[i].info)
-			{
-				write.dump_single(asset->cmodels[i].info);
-				//dump_info(asset->cmodels[i].info, write);
-			}
-		}
+		//for (unsigned int i = 0; i < asset->numSubModels; i++)
+		//{
+		//	if (asset->cmodels[i].info)
+		//	{
+		//		write.dump_single(asset->cmodels[i].info);
+		//		dump_info(asset->cmodels[i].info, write);
+		//	}
+		//}
 
 		write.dump_asset(asset->mapEnts);
+
+		write.dump_array(asset->stages, asset->stageCount);
+		for (unsigned char i = 0; i < asset->stageCount; i++)
+		{
+			write.dump_string(asset->stages[i].name);
+		}
+		//write.dump_array(asset->stageTrigger.models, asset->stageTrigger.count);
+		//write.dump_array(asset->stageTrigger.hulls, asset->stageTrigger.hullCount);
+		//write.dump_array(asset->stageTrigger.slabs, asset->stageTrigger.slabCount);
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -1063,27 +1058,5 @@ namespace zonetool
 		write.dump_array(asset->grappleData.magnet, asset->grappleData.magnetCount);
 
 		write.close();
-
-		// dump stages
-		if (asset->stages)
-		{
-			assetmanager::dumper stageDumper;
-
-			if (stageDumper.open(asset->name + ".ents.stages"s))
-			{
-				stageDumper.dump_int(asset->stageCount);
-				if (asset->stageCount)
-				{
-					stageDumper.dump_array(asset->stages, asset->stageCount);
-
-					for (int i = 0; i < asset->stageCount; i++)
-					{
-						stageDumper.dump_string(asset->stages[i].name);
-					}
-				}
-			}
-
-			stageDumper.close();
-		}
 	}
 }
