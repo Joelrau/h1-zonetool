@@ -48,7 +48,7 @@ namespace zonetool
 		header->name = reader.read_string();
 
 		const auto asset = mem->ManualAlloc<MaterialTechnique>(sizeof(MaterialTechniqueHeader) + (sizeof(MaterialPass) * header->passCount));
-		memcpy(&asset->hdr, header, sizeof MaterialTechniqueHeader);
+		memcpy(&asset->hdr, header, sizeof(MaterialTechniqueHeader));
 		memcpy(asset->passArray, passes, sizeof(MaterialPass) * header->passCount);
 
 		for (unsigned short i = 0; i < header->passCount; i++)

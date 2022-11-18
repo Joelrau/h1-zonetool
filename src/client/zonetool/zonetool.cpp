@@ -278,6 +278,7 @@ namespace zonetool
 	{
 		verify = false;
 		stop_dumping();
+
 		return DB_FinishLoadXFile_hook.invoke<void>();
 	}
 
@@ -513,16 +514,34 @@ namespace zonetool
 						// this will use a directory iterator to automatically add assets
 						else if (row->fields[0] == "iterate"s)
 						{
-							try
+							if (row->num_fields >= 2)
 							{
-								add_assets_using_iterator(fastfile, "fx", "fx", ".fxe", true, zone);
-								add_assets_using_iterator(fastfile, "xanimparts", "XAnim", ".xae2", true, zone);
-								add_assets_using_iterator(fastfile, "xmodel", "XModel", ".xme6", true, zone);
-								add_assets_using_iterator(fastfile, "material", "materials", "", true, zone);
-							}
-							catch (std::exception& ex)
-							{
-								ZONETOOL_FATAL("A fatal exception occured while building zone \"%s\", exception was: \n%s", fastfile.data(), ex.what());
+								auto type = row->fields[1];
+								auto iterate_all = row->fields[1] == "true"s;
+
+								try
+								{
+									if (type == "fx"s || iterate_all)
+									{
+										add_assets_using_iterator(fastfile, type, "effects", ".fxe", true, zone);
+									}
+									if (type == "material"s || iterate_all)
+									{
+										add_assets_using_iterator(fastfile, type, "materials", "", true, zone);
+									}
+									if (type == "xmodel"s || iterate_all)
+									{
+										add_assets_using_iterator(fastfile, type, "xmodel", ".xmodel_export", true, zone);
+									}
+									if (type == "xanim"s || iterate_all)
+									{
+										add_assets_using_iterator(fastfile, type, "xanim", ".xanim_export", true, zone);
+									}
+								}
+								catch (std::exception& ex)
+								{
+									ZONETOOL_FATAL("A fatal exception occured while building zone \"%s\", exception was: \n%s", fastfile.data(), ex.what());
+								}
 							}
 						}
 						// if entry is not an option, it should be an asset.
