@@ -10,7 +10,7 @@ namespace zonetool
 		{
 			const auto lights = allocator.allocate_array<h2::ComPrimaryLight>(count);
 
-			for (auto i = 0; i < count; i++)
+			for (auto i = 0u; i < count; i++)
 			{
 				lights[i].type = static_cast<h2::GfxLightType>(primary_lights[i].type);
 				lights[i].canUseShadowMap = primary_lights[i].canUseShadowMap;

@@ -7,6 +7,8 @@
 #include <DirectXTex.h>
 #pragma warning( pop )
 
+#include "../utils/compression.hpp"
+#include <utils/io.hpp>
 //#define IMAGE_DUMP_DDS
 
 namespace zonetool
@@ -1062,41 +1064,121 @@ namespace zonetool
 		}
 	}
 
-#ifdef IMAGE_DUMP_DDS
-	void dump_image_dds(GfxImage* image)
+	void dump_streamed_image_dds(GfxImage* image)
 	{
-		if (!image->streamed)
+		const auto stream_file_index = *reinterpret_cast<unsigned int*>(0x143274884);
+		const auto stream_files = reinterpret_cast<XStreamFile*>(0x1432748B0);
+
+		for (auto i = 0u; i < 4; i++)
 		{
-			DirectX::Image img = {};
-			img.pixels = image->pixelData;
-			img.width = image->width;
-			img.height = image->height;
-			img.format = DXGI_FORMAT(image->imageFormat);
+			const auto stream_file = &stream_files[stream_file_index + i];
 
-			size_t rowPitch;
-			size_t slicePitch;
-			DirectX::ComputePitch(img.format, img.width, img.height, rowPitch, slicePitch);
-
-			img.rowPitch = rowPitch;
-			img.slicePitch = slicePitch;
-
-			std::string parent_path = filesystem::get_dump_path() + "images\\";
-			std::string spath = parent_path + clean_name(image->name) + ".dds";
-			std::wstring wpath(spath.begin(), spath.end());
-
-			if (!std::filesystem::exists(parent_path))
+			const auto imagefile_path = utils::string::va("zone\\imagefile%d.pak", stream_file->fileIndex);
+			std::ifstream imagefile;
+			imagefile.open(imagefile_path, std::ios::binary);
+			if (!imagefile.is_open() || stream_file->offset == 0 || stream_file->offsetEnd == 0)
 			{
-				std::filesystem::create_directories(parent_path);
+				continue;
 			}
 
-			auto result = DirectX::SaveToDDSFile(img, DirectX::DDS_FLAGS_NONE, wpath.data());
-			if (FAILED(result))
+			std::string buffer;
+			const auto size = stream_file->offsetEnd - stream_file->offset;
+			buffer.resize(size);
+			imagefile.seekg(stream_file->offset);
+			imagefile.read(buffer.data(), size);
+
+			try
 			{
-				ZONETOOL_WARNING("Failed to dump image \"%s.dds\"", image->name);
+				auto pixel_data = compression::decompress_lz4_block(buffer);
+
+				//DirectX::Image img = {};
+				//img.width = image->streams[i].width;
+				//img.height = image->streams[i].height;
+				//img.pixels = reinterpret_cast<uint8_t*>(pixel_data.data());
+				//img.format = image->imageFormat;
+
+				//size_t row_pitch{};
+				//size_t slice_pitch{};
+
+				//DirectX::ComputePitch(img.format, img.width, img.height, row_pitch, slice_pitch);
+
+				//img.rowPitch = row_pitch;
+				//img.slicePitch = slice_pitch;
+
+				std::string parent_path = filesystem::get_dump_path() + "streamed_images\\";
+				const auto name = clean_name(image->name);
+				//std::string spath = utils::string::va("%s%s_stream%i.dds", parent_path.data(), name.data(), i);
+				std::string raw_path = utils::string::va("%s%s_stream%i.pixels", parent_path.data(), name.data(), i);
+				//std::wstring wpath(spath.begin(), spath.end());
+				utils::io::write_file(raw_path, pixel_data, false);
+
+				//if (!std::filesystem::exists(parent_path))
+				//{
+				//	std::filesystem::create_directories(parent_path);
+				//}
+
+				//auto result = DirectX::SaveToDDSFile(img, DirectX::DDS_FLAGS_NONE, wpath.data());
+				//if (FAILED(result))
+				//{
+				//	ZONETOOL_WARNING("Failed to dump image \"%s_stream%i.dds\"", image->name, i);
+				//}
+			}
+			catch (...)
+			{
+				ZONETOOL_ERROR("Failed to dump streamed image \"%s\"", image->name);
 			}
 		}
+
+		{
+			const auto path = "streamed_images\\"s + clean_name(image->name) + ".h2Image"s;
+			assetmanager::dumper write;
+			if (!write.open(path))
+			{
+				return;
+			}
+
+			write.dump_single(image);
+			write.dump_string(image->name);
+			write.close();
+		}
 	}
-#endif
+
+	void dump_image_dds(GfxImage* image)
+	{
+		if (image->streamed)
+		{
+			dump_streamed_image_dds(image);
+			return;
+		}
+
+		DirectX::Image img = {};
+		img.pixels = image->pixelData;
+		img.width = image->width;
+		img.height = image->height;
+		img.format = DXGI_FORMAT(image->imageFormat);
+
+		size_t rowPitch;
+		size_t slicePitch;
+		DirectX::ComputePitch(img.format, img.width, img.height, rowPitch, slicePitch);
+
+		img.rowPitch = rowPitch;
+		img.slicePitch = slicePitch;
+
+		std::string parent_path = filesystem::get_dump_path() + "images\\";
+		std::string spath = parent_path + clean_name(image->name) + ".dds";
+		std::wstring wpath(spath.begin(), spath.end());
+
+		if (!std::filesystem::exists(parent_path))
+		{
+			std::filesystem::create_directories(parent_path);
+		}
+
+		auto result = DirectX::SaveToDDSFile(img, DirectX::DDS_FLAGS_NONE, wpath.data());
+		if (FAILED(result))
+		{
+			ZONETOOL_WARNING("Failed to dump image \"%s.dds\"", image->name);
+		}
+	}
 
 	void IGfxImage::dump(GfxImage* asset)
 	{

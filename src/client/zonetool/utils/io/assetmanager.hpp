@@ -138,10 +138,10 @@ namespace zonetool
 				dump_entries.clear();
 			}
 
-			void initialize(const std::string& name)
+			void initialize(const std::string& name, bool use_path = true)
 			{
 				file = filesystem::file(name);
-				file.open("wb");
+				file.open("wb", use_path);
 
 				dump_entries.clear();
 			}
@@ -160,11 +160,11 @@ namespace zonetool
 				return is_open();
 			}
 
-			auto open(const std::string& name)
+			auto open(const std::string& name, bool use_path = true)
 			{
 				if (!is_open())
 				{
-					initialize(name);
+					initialize(name, use_path);
 				}
 				return is_open();
 			}
