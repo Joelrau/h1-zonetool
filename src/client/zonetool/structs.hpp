@@ -6532,8 +6532,7 @@ namespace zonetool
 
 	struct GfxStaticModelLightmapInfo
 	{
-		unsigned char groundLighting_color1[4];
-		unsigned char groundLighting_color2[4];
+		unsigned short groundLighting[4];
 		unsigned short unk1;
 		unsigned short unk2;
 		float unk3;
