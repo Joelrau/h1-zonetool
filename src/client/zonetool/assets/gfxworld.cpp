@@ -226,9 +226,9 @@ namespace zonetool
 		for (unsigned int i = 0; i < asset->dpvs.smodelCount; i++)
 		{
 			auto flags = asset->dpvs.smodelDrawInsts[i].flags;
-			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].info.lightingValues)
+			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].vertexInfo.lightingValues)
 			{
-				asset->dpvs.smodelLighting[i].info.lightingValues = read.read_array<GfxStaticModelVertexLighting>();
+				asset->dpvs.smodelLighting[i].vertexInfo.lightingValues = read.read_array<GfxStaticModelVertexLighting>();
 			}
 		}
 
@@ -1582,12 +1582,12 @@ namespace zonetool
 			for (unsigned int i = 0; i < data->dpvs.smodelCount; i++)
 			{
 				auto flags = data->dpvs.smodelDrawInsts[i].flags;
-				if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && data->dpvs.smodelLighting[i].info.lightingValues)
+				if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && data->dpvs.smodelLighting[i].vertexInfo.lightingValues)
 				{
-					destlighting[i].info.lightingValuesVb = nullptr;
+					destlighting[i].vertexInfo.lightingValuesVb = nullptr;
 					buf->align(3);
-					buf->write(data->dpvs.smodelLighting[i].info.lightingValues, data->dpvs.smodelLighting[i].info.numLightingValues);
-					ZoneBuffer::clear_pointer(&destlighting[i].info.lightingValues);
+					buf->write(data->dpvs.smodelLighting[i].vertexInfo.lightingValues, data->dpvs.smodelLighting[i].vertexInfo.numLightingValues);
+					ZoneBuffer::clear_pointer(&destlighting[i].vertexInfo.lightingValues);
 				}
 			}
 
@@ -2014,9 +2014,9 @@ namespace zonetool
 		for (unsigned int i = 0; i < asset->dpvs.smodelCount; i++)
 		{
 			auto flags = asset->dpvs.smodelDrawInsts[i].flags;
-			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].info.lightingValues)
+			if ((flags & 0x180) != 0 && (flags & 0x80) != 0 && asset->dpvs.smodelLighting[i].vertexInfo.lightingValues)
 			{
-				write.dump_array(asset->dpvs.smodelLighting[i].info.lightingValues, asset->dpvs.smodelLighting[i].info.numLightingValues);
+				write.dump_array(asset->dpvs.smodelLighting[i].vertexInfo.lightingValues, asset->dpvs.smodelLighting[i].vertexInfo.numLightingValues);
 			}
 		}
 

@@ -954,6 +954,8 @@ namespace zonetool
 
 		read.close();
 
+		memset(&asset->texture, 0, sizeof(asset->texture));
+
 		return asset;
 	}
 
@@ -1045,6 +1047,17 @@ namespace zonetool
 			{
 				buf->align(3);
 				buf->write_stream(data->pixelData, data->dataLen1);
+				ZoneBuffer::clear_pointer(&dest->pixelData);
+			}
+			buf->pop_stream();
+		}
+		else
+		{
+			buf->push_stream(0);
+			if (data->pixelData)
+			{
+				buf->align(3);
+				buf->write_stream(data->pixelData, 1);
 				ZoneBuffer::clear_pointer(&dest->pixelData);
 			}
 			buf->pop_stream();
