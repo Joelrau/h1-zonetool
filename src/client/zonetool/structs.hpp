@@ -453,6 +453,18 @@ namespace zonetool
 		unsigned int nameHash;
 	};
 
+	enum $F11FA5CADBE10BF792F0EF20913A296A : __int32
+	{
+		MTL_ARG_CODE_CONST = 0x0,
+		MTL_ARG_CODE_TEXTURE = 0x1,
+		MTL_ARG_CODE_SAMPLER = 0x2,
+		MTL_ARG_MATERIAL_CONST = 0x3,
+		MTL_ARG_LITERAL_CONST = 0x4,
+		MTL_ARG_MATERIAL_TEXTURE = 0x5,
+		MTL_ARG_MATERIAL_SAMPLER = 0x6,
+		MTL_ARG_COUNT = 0x7,
+	};
+
 	struct MaterialShaderArgument
 	{
 		unsigned char type;
