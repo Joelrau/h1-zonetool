@@ -16,7 +16,7 @@ namespace zonetool
 		h2::MaterialTechniqueSet* convert_to_h2(MaterialTechniqueSet* h1_asset, utils::memory::allocator& allocator)
 		{
 			const auto asset = allocator.allocate<h2::MaterialTechniqueSet>();
-			std::memcpy(asset, h1_asset, sizeof(h1_asset));
+			std::memcpy(asset, h1_asset, sizeof(MaterialTechniqueSet));
 			
 			std::vector<int> debug_tech_indexes = {59, 119, 179, 239};
 			auto current_debug_tech = 0;
@@ -961,79 +961,11 @@ namespace zonetool
 			return index;
 		}
 
-		struct dest_conversion
-		{
-			unsigned short h1_dest;
-			unsigned short h2_dest;
-			unsigned short const_index;
-		};
-
-		std::vector<dest_conversion> dest_conversions =
-		{
-				/*{15, 16, 76}, // 1
-				{16, 17, 76}, // 1
-				{20, 21, 76}, // 1
-				{22, 23, 76}, // 1
-				{35, 36, 76}, // 1
-				{41, 42, 76}, // 1*/
-
-				/*{25, 26, 81}, // 1
-				{26, 27, 81}, // 1
-				{30, 31, 81}, // 1*/
-				//{32, 33, 81}, // 1
-				{37, 38, 81}, // 1
-				//{38, 39, 81}, // 1
-
-				/*{45, 46, 81}, // 1
-				{50, 51, 81}, // 1
-				{51, 52, 81}, // 1*/
-				//{56, 57, 81}, // 1
-				{57, 58, 81}, // 1 this works
-
-				/*{24, 25, 101}, // 1
-				{29, 30, 101}, // 1
-				{30, 31, 101}, // 1
-				{37, 38, 101}, // 1
-				{42, 43, 101}, // 1
-				{43, 44, 101}, // 1
-				{48, 49, 101}, // 1
-				{49, 50, 101}, // 1
-
-				{23, 24, 119}, // 1
-				{25, 26, 119}, // 1
-				{31, 32, 119}, // 1
-				{38, 39, 119}, // 1
-				{44, 45, 119}, // 1
-				{50, 51, 119}, // 1
-
-				{29, 30, 256}, // 1
-				{42, 43, 256}, // 1
-				{43, 44, 256}, // 1
-				{55, 56, 256}, // 1
-				{56, 57, 256}, // 1
-				{61, 62, 256}, // 1
-				{62, 63, 256}, // 1
-
-				{36, 39, 315}, // 3
-				{37, 40, 315}, // 3
-				{44, 47, 315}, // 3
-				{57, 60, 315}, // 3
-				{63, 66, 315}, // 3
-				{37, 40, 316}, // 3
-				{38, 41, 316}, // 3
-				{45, 48, 316}, // 3
-				{58, 61, 316}, // 3
-				{64, 67, 316}, // 3*/
-		};
-
 		unsigned short convert_dest(unsigned short index, unsigned short dest)
 		{
-			for (const auto& conv : dest_conversions)
+			if (dest >= 37)
 			{
-				if (conv.h1_dest == dest && conv.const_index == index)
-				{
-					return conv.h2_dest;
-				}
+				return dest + 1;
 			}
 
 			return dest;
