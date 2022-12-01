@@ -5,21 +5,44 @@ namespace zonetool
 {
 	namespace
 	{
-		h2::ComPrimaryLight* convert_primary_lights(ComPrimaryLight* primary_lights, const unsigned int count, 
+#define COPY_VALUE(name) \
+		lights[i].name = h1_lights[i].name; \
+
+#define COPY_ARR(name) \
+		std::memcpy(&lights[i].name, &h1_lights[i].name, sizeof(lights[i].name)); \
+
+		h2::ComPrimaryLight* convert_primary_lights(ComPrimaryLight* h1_lights, const unsigned int count, 
 			utils::memory::allocator& allocator)
 		{
 			const auto lights = allocator.allocate_array<h2::ComPrimaryLight>(count);
 
 			for (auto i = 0u; i < count; i++)
 			{
-				lights[i].type = static_cast<h2::GfxLightType>(primary_lights[i].type);
-				lights[i].canUseShadowMap = primary_lights[i].canUseShadowMap;
-				lights[i].needsDynamicShadows = primary_lights[i].needsDynamicShadows;
-				lights[i].exponent = primary_lights[i].exponent;
-				lights[i].isVolumetric = primary_lights[i].isVolumetric;
-				std::memcpy(&lights[i].color, &primary_lights[i].color, sizeof(h2::ComPrimaryLight) -
-					(offsetof(h2::ComPrimaryLight, __pad0) + sizeof(lights[i].__pad0)));
-				lights[i].defName = primary_lights[i].defName;
+				lights[i].type = static_cast<h2::GfxLightType>(h1_lights[i].type);
+				COPY_VALUE(canUseShadowMap);
+				COPY_VALUE(needsDynamicShadows);
+				COPY_VALUE(exponent);
+				COPY_VALUE(isVolumetric);
+				COPY_ARR(color);
+				std::memcpy(lights[i].color2, lights[i].color, sizeof(lights[i].color));
+				COPY_ARR(dir);
+				COPY_ARR(up);
+				COPY_ARR(origin);
+				COPY_ARR(fadeOffset);
+				COPY_VALUE(bulbRadius);
+				COPY_ARR(bulbLength);
+				COPY_VALUE(radius);
+				COPY_VALUE(cosHalfFovOuter);
+				COPY_VALUE(cosHalfFovInner);
+				COPY_VALUE(cosHalfFovExpanded);
+				COPY_VALUE(rotationLimit);
+				COPY_VALUE(translationLimit);
+				COPY_VALUE(cucRotationOffsetRad);
+				COPY_VALUE(cucRotationSpeedRad);
+				COPY_ARR(cucScrollVector);
+				COPY_ARR(cucScaleVector);
+				COPY_ARR(cucTransVector);
+				lights[i].defName = h1_lights[i].defName;
 			}
 
 			return lights;

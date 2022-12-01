@@ -156,7 +156,7 @@ namespace zonetool
 					DUMP_ASSET(ASSET_TYPE_RAWFILE, IRawFile, RawFile);
 					DUMP_ASSET(ASSET_TYPE_REVERB_CURVE, IReverbCurve, SndCurve);
 					DUMP_ASSET(ASSET_TYPE_SCRIPTABLE, IScriptableDef, ScriptableDef);
-					//DUMP_ASSET(ASSET_TYPE_SCRIPTFILE, IScriptFile, ScriptFile);
+					DUMP_ASSET(ASSET_TYPE_SCRIPTFILE, IScriptFile, ScriptFile);
 					DUMP_ASSET(ASSET_TYPE_SKELETONSCRIPT, ISkeletonScript, SkeletonScript);
 					DUMP_ASSET(ASSET_TYPE_SOUND, ISound, snd_alias_list_t);
 					DUMP_ASSET(ASSET_TYPE_SOUND_CONTEXT, ISoundContext, SndContext);
@@ -172,6 +172,7 @@ namespace zonetool
 					DUMP_ASSET(ASSET_TYPE_XANIM, IXAnimParts, XAnimParts);
 					DUMP_ASSET(ASSET_TYPE_XMODEL, IXModel, XModel);
 					DUMP_ASSET(ASSET_TYPE_XMODEL_SURFS, IXSurface, XModelSurfs);
+					DUMP_ASSET(ASSET_TYPE_CLUT, IClut, Clut);
 
 					DUMP_ASSET(ASSET_TYPE_PHYSCOLLMAP, IPhysCollmap, PhysCollmap);
 					DUMP_ASSET(ASSET_TYPE_PHYSCONSTRAINT, IPhysConstraint, PhysConstraint);

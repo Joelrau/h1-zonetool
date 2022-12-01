@@ -1588,10 +1588,9 @@ namespace zonetool
 	struct FxElemVisualState
 	{
 		float color[4];
-		float rotationA;
-		float rotationB;
-		float rotationC;
-		float pad1[2];
+		float pad1[3];
+		float rotationDelta;
+		float rotationTotal;
 		float size[2];
 		float scale;
 		float pad2[2];
@@ -1626,6 +1625,8 @@ namespace zonetool
 		FxElemVisuals* array;
 		FxElemVisuals instance;
 	};
+
+	static_assert(sizeof(FxElemDefVisuals) == 8);
 
 	struct FxTrailVertex
 	{
@@ -8265,6 +8266,7 @@ namespace zonetool
 		static_assert(offsetof(FxElemDef, visualCount) == 194);
 		static_assert(offsetof(FxElemDef, effectOnDeath) == 256);
 		static_assert(offsetof(FxElemDef, spawnAngles) == 112);
+		static_assert(offsetof(FxElemDef, atlas) == 184);
 		static_assert(offsetof(FxElemDef, elemType) == 192);
 		static_assert(offsetof(FxElemDef, visSamples) == 0xD0);
 		static_assert(offsetof(FxElemDef, visuals) == 0xD8);
@@ -10870,15 +10872,16 @@ namespace zonetool
 			unsigned char needsDynamicShadows; // 2
 			unsigned char exponent; // 3
 			unsigned char isVolumetric; // 4
-			char __pad0[15];
+			char __pad0[3];
 			float color[3]; // 8 12 16
+			float color2[3]; // 8 12 16
 			float dir[3]; // 20 24 28
 			float up[3]; // 32 36 40
 			float origin[3]; // 44 48 52
-			float fadeOffsetRt[2];
-			float radius;
+			float fadeOffset[2];
 			float bulbRadius;
 			float bulbLength[3];
+			float radius; // 80
 			float cosHalfFovOuter; // 84
 			float cosHalfFovInner; // 88
 			float cosHalfFovExpanded; // 92

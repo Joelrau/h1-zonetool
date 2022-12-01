@@ -43,13 +43,20 @@ namespace zonetool
 			COPY_VALUE(lastSunPrimaryLightIndex);
 			COPY_VALUE(primaryLightCount);
 			COPY_VALUE(primaryLightEnvCount);
-			COPY_VALUE(sortKeyLitDecal);
-			COPY_VALUE(sortKeyEffectDecal);
-			COPY_VALUE(sortKeyTopDecal);
-			COPY_VALUE(sortKeyEffectAuto);
-			COPY_VALUE(sortKeyDistortion);
-			COPY_VALUE(sortKeyUnknown);
-			COPY_VALUE(sortKeyUnknown2);
+			//COPY_VALUE(sortKeyLitDecal);
+			//COPY_VALUE(sortKeyEffectDecal);
+			//COPY_VALUE(sortKeyTopDecal);
+			//COPY_VALUE(sortKeyEffectAuto);
+			//COPY_VALUE(sortKeyDistortion);
+			//COPY_VALUE(sortKeyUnknown);
+			//COPY_VALUE(sortKeyUnknown2);
+			asset->sortKeyLitDecal = 7;
+			asset->sortKeyEffectDecal = 44;
+			asset->sortKeyTopDecal = 17;
+			asset->sortKeyEffectAuto = 54;
+			asset->sortKeyDistortion = 49;
+			asset->sortKeyUnknown = 18;
+			asset->sortKeyUnknown2 = 33;
 			
 			{
 				COPY_VALUE(dpvsPlanes.cellCount);

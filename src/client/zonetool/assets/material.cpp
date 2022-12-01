@@ -51,6 +51,36 @@ namespace zonetool
 
 			return new_name;
 		}
+		
+		std::unordered_map<std::uint8_t, std::uint8_t> mapped_sortkeys =
+		{
+
+		};
+
+		std::unordered_map<std::uint8_t, std::uint8_t> mapped_camera_regions =
+		{
+			{12, 14},
+		};
+
+		std::uint8_t convert_sortkey(const std::uint8_t sort_key)
+		{
+			if (sort_key >= 38)
+			{
+				return sort_key + 1;
+			}
+
+			return sort_key;
+		}
+
+		std::uint8_t convert_camera_region(const std::uint8_t camera_region)
+		{
+			if (mapped_camera_regions.find(camera_region) != mapped_camera_regions.end())
+			{
+				return mapped_camera_regions[camera_region];
+			}
+
+			return camera_region;
+		}
 	}
 
 	MaterialTextureDef* IMaterial::prase_texture_table(json& matdata, ZoneMemory* mem)
@@ -125,7 +155,7 @@ namespace zonetool
 			}
 
 			MATERIAL_DUMP_INFO(gameFlags);
-			MATERIAL_DUMP_INFO(sortKey);
+			matdata["sortKey"] = convert_sortkey(asset->info.sortKey);
 			MATERIAL_DUMP_INFO(renderFlags);
 
 			MATERIAL_DUMP_INFO(textureAtlasRowCount);
@@ -137,7 +167,7 @@ namespace zonetool
 			//MATERIAL_DUMP_INFO(hashIndex);
 
 			//MATERIAL_DUMP(stateFlags);
-			MATERIAL_DUMP(cameraRegion);
+			matdata["cameraRegion"] = convert_camera_region(asset->cameraRegion);
 			MATERIAL_DUMP(materialType);
 			MATERIAL_DUMP(assetFlags);
 
