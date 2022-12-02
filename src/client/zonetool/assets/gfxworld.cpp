@@ -43,13 +43,6 @@ namespace zonetool
 			COPY_VALUE(lastSunPrimaryLightIndex);
 			COPY_VALUE(primaryLightCount);
 			COPY_VALUE(primaryLightEnvCount);
-			//COPY_VALUE(sortKeyLitDecal);
-			//COPY_VALUE(sortKeyEffectDecal);
-			//COPY_VALUE(sortKeyTopDecal);
-			//COPY_VALUE(sortKeyEffectAuto);
-			//COPY_VALUE(sortKeyDistortion);
-			//COPY_VALUE(sortKeyUnknown);
-			//COPY_VALUE(sortKeyUnknown2);
 			asset->sortKeyLitDecal = 7;
 			asset->sortKeyEffectDecal = 44;
 			asset->sortKeyTopDecal = 17;
@@ -152,14 +145,16 @@ namespace zonetool
 					asset->dpvs.smodelDrawInsts[i].model = allocator.allocate<h2::XModel>();
 					asset->dpvs.smodelDrawInsts[i].model->name = h1_asset->dpvs.smodelDrawInsts[i].model->name;
 					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].placement);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].cullDist);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].flags);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].lightingHandle);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].staticModelId);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].primaryLightEnvIndex);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].reflectionProbeIndex);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].firstMtlSkinIndex);
-					COPY_VALUE_CAST(dpvs.smodelDrawInsts[i].sunShadowFlags);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].cullDist);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].flags);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].lightingHandle);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].staticModelId);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].primaryLightEnvIndex);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].reflectionProbeIndex);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].firstMtlSkinIndex);
+					COPY_VALUE(dpvs.smodelDrawInsts[i].sunShadowFlags);
+					asset->dpvs.smodelDrawInsts[i].pad = 1;
+					asset->dpvs.smodelDrawInsts[i].unk = h1_asset->dpvs.smodelDrawInsts[i].unk1;
 				}
 
 				REINTERPRET_CAST_SAFE(dpvs.unknownSModelVisData1);

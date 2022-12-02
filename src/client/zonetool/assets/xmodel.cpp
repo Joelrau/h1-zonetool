@@ -30,7 +30,7 @@ namespace zonetool
 			COPY_VALUE(lodRampType);
 			COPY_VALUE(numBonePhysics);
 			COPY_VALUE(numCompositeModels);
-			asset->unk_float = 1.0f;
+			asset->unk_float = -1.0f;
 			COPY_VALUE(scale);
 			COPY_ARR(noScalePartBits);
 			REINTERPRET_CAST_SAFE(boneNames);
