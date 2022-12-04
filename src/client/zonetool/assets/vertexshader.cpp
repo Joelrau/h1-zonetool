@@ -81,8 +81,12 @@ namespace zonetool
 		buf->pop_stream();
 	}
 
-	void IVertexShader::dump(MaterialVertexShader* asset)
+	void IVertexShader::dump(MaterialVertexShader* h1_asset)
 	{
+		utils::memory::allocator allocator;
+		const auto asset = allocator.allocate<MaterialVertexShader>();
+		std::memcpy(asset, h1_asset, sizeof(MaterialVertexShader));
+		asset->name = allocator.duplicate_string(asset->name + "_h1"s);
 		const auto path = "techsets\\"s + asset->name + ".vertexshader"s;
 
 		assetmanager::dumper write;

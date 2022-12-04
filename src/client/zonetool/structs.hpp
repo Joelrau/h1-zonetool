@@ -692,6 +692,57 @@ namespace zonetool
 		unsigned int hashIndex;
 	}; assert_sizeof(MaterialInfo, 48);
 
+	enum MaterialStateFlags : std::uint8_t
+	{
+		STATE_FLAG_CULL_BACK = 0x1,
+		STATE_FLAG_DECAL = 0x4,
+		STATE_FLAG_WRITES_DEPTH = 0x8,
+		STATE_FLAG_USES_DEPTH_BUFFER = 0x10,
+		STATE_FLAG_USES_STENCIL_BUFFER = 0x20,
+	};
+
+	enum GfxCameraRegionType : std::uint8_t
+	{
+		CAMERA_REGION_LIT_OPAQUE = 0x0,
+		CAMERA_REGION_LIT_OPAQUE_SSS = 0x1,
+		CAMERA_REGION_LIT_DECAL = 0x2,
+		CAMERA_REGION_LIT_TRANS = 0x3,
+		CAMERA_REGION_EMISSIVE = 0x4,
+		CAMERA_REGION_DEPTH_HACK = 0x5,
+		CAMERA_REGION_DEPTH_HACK_TRANS = 0x6,
+		CAMERA_REGION_DEPTH_HACK_SSS = 0x7,
+		CAMERA_REGION_PRE_DEPTH_HACK = 0x8,
+		CAMERA_REGION_PRE_DEPTH_HACK_SSS = 0x9,
+		CAMERA_REGION_PRE_OPAQUE = 0xA,
+		CAMERA_REGION_PRE_SSS = 0xB,
+		CAMERA_REGION_COUNT = 0xC,
+		CAMERA_REGION_NONE = 0xC,
+	};
+
+	enum MaterialType : std::uint8_t
+	{
+		MTL_TYPE_DEFAULT = 0x0, // ""
+		MTL_TYPE_MODEL = 0x1, // "m"
+		MTL_TYPE_MODEL_GREY = 0x2, // "me"
+		MTL_TYPE_MODEL_VERTCOL = 0x3, // "mc"
+		MTL_TYPE_MODEL_VERTCOL_GREY = 0x4, // "mce"
+		MTL_TYPE_MODEL_VERTLIT = 0xD, // "mv"
+		MTL_TYPE_MODEL_VERTLIT_VERTCOL = 0xE, // "mvc"
+		MTL_TYPE_MODEL_LMAP = 0x13, // "ml"
+		MTL_TYPE_MODEL_LMAP_VERTCOL = 0x14, // "mlc"
+		MTL_TYPE_MODEL_SUBDIV = 0x19, // "ms"
+		MTL_TYPE_MODEL_SUBDIV_VERTCOL = 0x1A, // "msv"
+		MTL_TYPE_WORLD = 0x23, // "w"
+		MTL_TYPE_WORLD_VERTCOL = 0x24, // "wc"
+		MTL_TYPE_COUNT = 0x24,
+	};
+
+	enum MaterialAssetFlags : std::uint8_t
+	{
+		MTL_ASSETFLAG_NONE = 0x0,
+		MTL_ASSETFLAG_CB_IS_WRITABLE = 0x1,
+	};
+
 	struct Material
 	{
 		union

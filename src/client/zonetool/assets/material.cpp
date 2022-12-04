@@ -137,12 +137,13 @@ namespace zonetool
 
 			if (asset && asset->techniqueSet)
 			{
-				ITechset::dump_stateinfo(asset->techniqueSet->name, asset);
-				ITechset::dump_statebits(asset->techniqueSet->name, asset->stateBitsEntry);
-				ITechset::dump_statebits_map(asset->techniqueSet->name, asset->stateBitsTable, asset->stateBitsCount);
+				const auto techset_name = asset->techniqueSet->name + "_h1"s;
+				ITechset::dump_stateinfo(techset_name, asset);
+				ITechset::dump_statebits(techset_name, asset->stateBitsEntry);
+				ITechset::dump_statebits_map(techset_name, asset->stateBitsTable, asset->stateBitsCount);
 
-				ITechset::dump_constant_buffer_indexes(asset->techniqueSet->name, asset->constantBufferIndex);
-				ITechset::dump_constant_buffer_def_array(asset->techniqueSet->name, asset->constantBufferCount, asset->constantBufferTable);
+				ITechset::dump_constant_buffer_indexes(techset_name, asset->constantBufferIndex);
+				ITechset::dump_constant_buffer_def_array(techset_name, asset->constantBufferCount, asset->constantBufferTable);
 			}
 
 			ordered_json matdata;
@@ -151,7 +152,8 @@ namespace zonetool
 
 			if (asset->techniqueSet)
 			{
-				MATERIAL_DUMP_STRING(techniqueSet->name);
+				const auto techset_name = asset->techniqueSet->name + "_h1"s;
+				matdata["techniqueSet->name"] = techset_name;
 			}
 
 			MATERIAL_DUMP_INFO(gameFlags);

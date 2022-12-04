@@ -1182,9 +1182,9 @@ namespace zonetool
 
 	void IGfxImage::dump(GfxImage* asset)
 	{
-#ifdef IMAGE_DUMP_DDS
+//#ifdef IMAGE_DUMP_DDS
 		dump_image_dds(asset);
-#endif
+//#endif
 
 		if (asset->streamed)
 		{

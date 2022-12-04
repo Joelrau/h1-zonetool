@@ -17,6 +17,7 @@ namespace zonetool
 		{
 			const auto asset = allocator.allocate<h2::MaterialTechniqueSet>();
 			std::memcpy(asset, h1_asset, sizeof(MaterialTechniqueSet));
+			asset->name = allocator.duplicate_string(asset->name + "_h1"s);
 			
 			std::vector<int> debug_tech_indexes = {59, 119, 179, 239};
 			auto current_debug_tech = 0;
@@ -932,23 +933,44 @@ namespace zonetool
 
 		unsigned short convert_code_const(unsigned short index)
 		{
-			const auto& name = h1_code_consts[index];
 			if (index < 350)
 			{
-				for (auto i = 0; i < h2_code_consts.size(); i++)
+				if (index <= 342 && index >= 338)
 				{
-					if (name == h2_code_consts[i])
-					{
-						// idk why this happens, constant arr must not be correct
-						auto new_index = static_cast<unsigned short>(i);
-						if (index > 148 && index <= 211)
-						{
-							++new_index;
-						}
-
-						return new_index;
-					}
+					return index + 15;
 				}
+
+				if (index >= 312)
+				{
+					return index + 14;
+				}
+
+				if (index >= 238)
+				{
+					return index + 13;
+				}
+
+				if (index >= 229)
+				{
+					return index + 4;
+				}
+
+				if (index >= 212)
+				{
+					return index + 3;
+				}
+
+				if (index >= 149) // not sure about this one (between 129-155)
+				{
+					return index + 2;
+				}
+
+				if (index >= 80)
+				{
+					return index + 1;
+				}
+
+				return index;
 			}
 			else
 			{
@@ -956,26 +978,11 @@ namespace zonetool
 				static_assert(diff == 14);
 				return index + diff;
 			}
-
-			printf("couldn't find h2 code const for %i %s!\n", index, name.data());
-			return index;
-		}
-
-		unsigned short convert_dest(unsigned short index, unsigned short dest)
-		{
-			if (dest >= 37)
-			{
-				return dest + 1;
-			}
-
-			return dest;
 		}
 
 		MaterialShaderArgument* convert_shader_arguments(MaterialPass* pass, MaterialShaderArgument* args, utils::memory::allocator& allocator)
 		{
-			const auto stable_arg_start = pass->perPrimArgCount + pass->perObjArgCount;
 			const auto arg_count = pass->perPrimArgCount + pass->perObjArgCount + pass->stableArgCount;
-
 			const auto converted_args = allocator.allocate_array<MaterialShaderArgument>(arg_count);
 			std::memcpy(converted_args, args, sizeof(MaterialShaderArgument) * arg_count);
 
@@ -987,10 +994,6 @@ namespace zonetool
 				}
 
 				converted_args[i].u.codeConst.index = convert_code_const(converted_args[i].u.codeConst.index);
-				if (i >= stable_arg_start)
-				{
-					//converted_args[i].dest = convert_dest(converted_args[i].u.codeConst.index, converted_args[i].dest);
-				}
 			}
 
 			return converted_args;
@@ -1220,7 +1223,7 @@ namespace zonetool
 		}
 	}
 
-	void ITechset::dump_technique(MaterialTechnique* asset, int index)
+	void ITechset::dump_technique(MaterialTechnique* asset, int index, MaterialTechniqueSet* techset)
 	{
 		const auto path = "techsets\\"s + asset->hdr.name + ".technique";
 
@@ -1246,31 +1249,46 @@ namespace zonetool
 		{
 			if (asset->passArray[i].vertexShader)
 			{
-				dumper.dump_asset(asset->passArray[i].vertexShader);
+				const auto vertex_shader = allocator.allocate<MaterialVertexShader>();
+				std::memcpy(vertex_shader, asset->passArray[i].vertexShader, sizeof(MaterialVertexShader));
+				vertex_shader->name = allocator.duplicate_string(vertex_shader->name + "_h1"s);
+				dumper.dump_asset(vertex_shader);
 				//IVertexShader::dump(asset->passArray[i].vertexShader);
 			}
 
 			if (asset->passArray[i].vertexDecl)
 			{
-				dumper.dump_asset(asset->passArray[i].vertexDecl);
+				const auto vertex_decl = allocator.allocate<MaterialVertexDeclaration>();
+				std::memcpy(vertex_decl, asset->passArray[i].vertexDecl, sizeof(MaterialVertexDeclaration));
+				vertex_decl->name = allocator.duplicate_string(vertex_decl->name + "_h1"s);
+				dumper.dump_asset(vertex_decl);
 				IVertexDecl::dump(reinterpret_cast<MaterialVertexDeclaration*>(asset->passArray[i].vertexDecl));
 			}
 
 			if (asset->passArray[i].hullShader)
 			{
-				dumper.dump_asset(asset->passArray[i].hullShader);
+				const auto hull_shader = allocator.allocate<MaterialHullShader>();
+				std::memcpy(hull_shader, asset->passArray[i].hullShader, sizeof(MaterialHullShader));
+				hull_shader->name = allocator.duplicate_string(hull_shader->name + "_h1"s);
+				dumper.dump_asset(hull_shader);
 				//IHullShader::dump(asset->passArray[i].hullShader);
 			}
 
 			if (asset->passArray[i].domainShader)
 			{
-				dumper.dump_asset(asset->passArray[i].domainShader);
+				const auto domain_shader = allocator.allocate<MaterialDomainShader>();
+				std::memcpy(domain_shader, asset->passArray[i].domainShader, sizeof(MaterialDomainShader));
+				domain_shader->name = allocator.duplicate_string(domain_shader->name + "_h1"s);
+				dumper.dump_asset(domain_shader);
 				//IDomainShader::dump(asset->passArray[i].domainShader);
 			}
 
 			if (asset->passArray[i].pixelShader)
 			{
-				dumper.dump_asset(asset->passArray[i].pixelShader);
+				const auto pixel_shader = allocator.allocate<MaterialPixelShader>();
+				std::memcpy(pixel_shader, asset->passArray[i].pixelShader, sizeof(MaterialPixelShader));
+				pixel_shader->name = allocator.duplicate_string(pixel_shader->name + "_h1"s);
+				dumper.dump_asset(pixel_shader);
 				//IPixelShader::dump(asset->passArray[i].pixelShader);
 			}
 
@@ -1338,7 +1356,7 @@ namespace zonetool
 			if (asset->techniques[i])
 			{
 				dumper.dump_string(asset->techniques[i]->hdr.name);
-				ITechset::dump_technique(reinterpret_cast<MaterialTechnique*>(asset->techniques[i]), i);
+				ITechset::dump_technique(reinterpret_cast<MaterialTechnique*>(asset->techniques[i]), i, h1_asset);
 			}
 		}
 

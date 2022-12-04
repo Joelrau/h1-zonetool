@@ -82,8 +82,12 @@ namespace zonetool
 		buf->pop_stream();
 	}
 
-	void IComputeShader::dump(ComputeShader* asset)
+	void IComputeShader::dump(ComputeShader* h1_asset)
 	{
+		utils::memory::allocator allocator;
+		const auto asset = allocator.allocate<ComputeShader>();
+		std::memcpy(asset, h1_asset, sizeof(ComputeShader));
+		asset->name = allocator.duplicate_string(asset->name + "_h1"s);
 		const auto path = "techsets\\"s + asset->name + ".computeshader"s;
 
 		assetmanager::dumper write;
