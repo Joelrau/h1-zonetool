@@ -8,7 +8,7 @@ namespace zonetool
 		h2::FxWorld* convert_to_h2(FxWorld* h1_asset, utils::memory::allocator& allocator)
 		{
 			const auto asset = allocator.allocate<h2::FxWorld>();
-			std::memcpy(asset, h1_asset, sizeof(asset));
+			std::memcpy(asset, h1_asset, sizeof(FxWorld));
 
 			asset->glassSys.piecePlaces = allocator.allocate_array<h2::FxGlassPiecePlace>(asset->glassSys.pieceLimit);
 			for (auto i = 0u; i < asset->glassSys.pieceLimit; i++)
