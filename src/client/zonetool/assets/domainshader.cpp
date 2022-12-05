@@ -87,7 +87,7 @@ namespace zonetool
 		utils::memory::allocator allocator;
 		const auto asset = allocator.allocate<MaterialDomainShader>();
 		std::memcpy(asset, h1_asset, sizeof(MaterialDomainShader));
-		asset->name = allocator.duplicate_string(asset->name + "_h1"s);
+		asset->name = allocator.duplicate_string(asset->name + TECHSET_POSTFIX);
 		const auto path = "techsets\\"s + asset->name + ".domainshader"s;
 
 		assetmanager::dumper write;

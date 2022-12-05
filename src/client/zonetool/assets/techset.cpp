@@ -17,14 +17,27 @@ namespace zonetool
 		{
 			const auto asset = allocator.allocate<h2::MaterialTechniqueSet>();
 			std::memcpy(asset, h1_asset, sizeof(MaterialTechniqueSet));
-			asset->name = allocator.duplicate_string(asset->name + "_h1"s);
+			asset->name = allocator.duplicate_string(asset->name + TECHSET_POSTFIX);
 			
 			std::vector<int> debug_tech_indexes = {59, 119, 179, 239};
 			auto current_debug_tech = 0;
 			auto h1_tecniques_index = 0;
 			for (auto i = 0u; i < TECHNIQUES_COUNT; i++)
 			{
-				asset->techniques[i] = reinterpret_cast<h2::MaterialTechnique*>(h1_asset->techniques[h1_tecniques_index]);
+				const auto tech = reinterpret_cast<h2::MaterialTechnique*>(h1_asset->techniques[h1_tecniques_index]);
+				if (tech != nullptr)
+				{
+					const auto size = sizeof(MaterialTechniqueHeader) + sizeof(MaterialPass) * tech->hdr.passCount;
+					asset->techniques[i] = reinterpret_cast<h2::MaterialTechnique*>(
+						allocator.allocate(size));
+					std::memcpy(asset->techniques[i], tech, size);
+					asset->techniques[i]->hdr.name = allocator.duplicate_string(asset->techniques[i]->hdr.name + TECHSET_POSTFIX);
+				}
+				else
+				{
+					asset->techniques[i] = nullptr;
+				}
+
 				if (current_debug_tech < debug_tech_indexes.size() && h1_tecniques_index == debug_tech_indexes[current_debug_tech])
 				{
 					asset->techniques[i + 1] = asset->techniques[i];
@@ -1251,7 +1264,7 @@ namespace zonetool
 			{
 				const auto vertex_shader = allocator.allocate<MaterialVertexShader>();
 				std::memcpy(vertex_shader, asset->passArray[i].vertexShader, sizeof(MaterialVertexShader));
-				vertex_shader->name = allocator.duplicate_string(vertex_shader->name + "_h1"s);
+				vertex_shader->name = allocator.duplicate_string(vertex_shader->name + TECHSET_POSTFIX);
 				dumper.dump_asset(vertex_shader);
 				//IVertexShader::dump(asset->passArray[i].vertexShader);
 			}
@@ -1260,7 +1273,7 @@ namespace zonetool
 			{
 				const auto vertex_decl = allocator.allocate<MaterialVertexDeclaration>();
 				std::memcpy(vertex_decl, asset->passArray[i].vertexDecl, sizeof(MaterialVertexDeclaration));
-				vertex_decl->name = allocator.duplicate_string(vertex_decl->name + "_h1"s);
+				vertex_decl->name = allocator.duplicate_string(vertex_decl->name + TECHSET_POSTFIX);
 				dumper.dump_asset(vertex_decl);
 				IVertexDecl::dump(reinterpret_cast<MaterialVertexDeclaration*>(asset->passArray[i].vertexDecl));
 			}
@@ -1269,7 +1282,7 @@ namespace zonetool
 			{
 				const auto hull_shader = allocator.allocate<MaterialHullShader>();
 				std::memcpy(hull_shader, asset->passArray[i].hullShader, sizeof(MaterialHullShader));
-				hull_shader->name = allocator.duplicate_string(hull_shader->name + "_h1"s);
+				hull_shader->name = allocator.duplicate_string(hull_shader->name + TECHSET_POSTFIX);
 				dumper.dump_asset(hull_shader);
 				//IHullShader::dump(asset->passArray[i].hullShader);
 			}
@@ -1278,7 +1291,7 @@ namespace zonetool
 			{
 				const auto domain_shader = allocator.allocate<MaterialDomainShader>();
 				std::memcpy(domain_shader, asset->passArray[i].domainShader, sizeof(MaterialDomainShader));
-				domain_shader->name = allocator.duplicate_string(domain_shader->name + "_h1"s);
+				domain_shader->name = allocator.duplicate_string(domain_shader->name + TECHSET_POSTFIX);
 				dumper.dump_asset(domain_shader);
 				//IDomainShader::dump(asset->passArray[i].domainShader);
 			}
@@ -1287,7 +1300,7 @@ namespace zonetool
 			{
 				const auto pixel_shader = allocator.allocate<MaterialPixelShader>();
 				std::memcpy(pixel_shader, asset->passArray[i].pixelShader, sizeof(MaterialPixelShader));
-				pixel_shader->name = allocator.duplicate_string(pixel_shader->name + "_h1"s);
+				pixel_shader->name = allocator.duplicate_string(pixel_shader->name + TECHSET_POSTFIX);
 				dumper.dump_asset(pixel_shader);
 				//IPixelShader::dump(asset->passArray[i].pixelShader);
 			}

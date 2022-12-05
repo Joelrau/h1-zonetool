@@ -80,7 +80,7 @@ namespace zonetool
 		utils::memory::allocator allocator;
 		const auto asset = allocator.allocate<MaterialVertexDeclaration>();
 		std::memcpy(asset, h1_asset, sizeof(MaterialVertexDeclaration));
-		asset->name = allocator.duplicate_string(asset->name + "_h1"s);
+		asset->name = allocator.duplicate_string(asset->name + TECHSET_POSTFIX);
 		const auto path = "techsets\\"s + asset->name + ".vertexdecl"s;
 
 		assetmanager::dumper write;
