@@ -65,6 +65,7 @@
 #include "assets/fxworld.hpp"
 #include "assets/gfxworld.hpp"
 #include "assets/glassworld.hpp"
+#include "assets/aipaths.hpp"
 
 #include "zone.hpp"
 
@@ -88,3 +89,5 @@ namespace zonetool
 	void initialize();
 	void start();
 }
+
+#define TECHSET_POSTFIX "_h1"s // avoid collisions with h2 techsets/shaders
