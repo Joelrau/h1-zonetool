@@ -249,7 +249,6 @@ namespace zonetool
 			// write pointer for every scriptstring
 			for (std::size_t idx = 0; idx < stringcount; idx++)
 			{
-				buf->write<std::uintptr_t>(&pad);
 				const auto str = buf->get_scriptstring(idx);
 				if (str.empty())
 				{
@@ -257,6 +256,7 @@ namespace zonetool
 				}
 				else
 				{
+					buf->write<std::uintptr_t>(&pad);
 				}
 			}
 
