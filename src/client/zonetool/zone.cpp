@@ -127,6 +127,7 @@ namespace zonetool
 		try
 		{
 			// declare asset interfaces
+			ADD_ASSET(ASSET_TYPE_CLUT, IClut);
 			ADD_ASSET(ASSET_TYPE_DOPPLER_PRESET, IDopplerPreset);
 			ADD_ASSET(ASSET_TYPE_FX, IFxEffectDef);
 			ADD_ASSET(ASSET_TYPE_PARTICLE_SIM_ANIMATION, IFxParticleSimAnimation);
@@ -173,6 +174,7 @@ namespace zonetool
 			ADD_ASSET(ASSET_TYPE_MENU, IMenuDef);
 			ADD_ASSET(ASSET_TYPE_MENULIST, IMenuList);
 
+			ADD_ASSET(ASSET_TYPE_AIPATHS, IAIPaths);
 			ADD_ASSET(ASSET_TYPE_COL_MAP_MP, IClipMap);
 			ADD_ASSET(ASSET_TYPE_COM_MAP, IComWorld);
 			ADD_ASSET(ASSET_TYPE_FX_MAP, IFxWorld);

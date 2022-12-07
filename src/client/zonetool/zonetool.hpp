@@ -12,6 +12,7 @@
 
 #include "utils/utils.hpp"
 
+#include "assets/clut.hpp"
 #include "assets/dopplerpreset.hpp"
 #include "assets/fxeffectdef.hpp"
 #include "assets/fxparticlesimanimation.hpp"
@@ -59,6 +60,7 @@
 #include "assets/menudef.hpp"
 #include "assets/menulist.hpp"
 
+#include "assets/aipaths.hpp"
 #include "assets/clipmap.hpp"
 #include "assets/comworld.hpp"
 #include "assets/fxworld.hpp"

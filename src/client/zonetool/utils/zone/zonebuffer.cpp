@@ -11,6 +11,8 @@
 
 #include <tomcrypt.h>
 
+#include "../compression.hpp"
+
 #define ZSTD_COMPRESSION 11
 #define ZLIB_COMPRESSION Z_BEST_COMPRESSION
 
@@ -26,7 +28,7 @@ namespace zonetool
 		this->m_len = MAX_ZONE_SIZE;
 
 		this->m_zonepointers.clear();
-		this->m_scriptstrings.clear();
+		this->init_script_strings();
 		this->m_depthstencilstatebits.clear();
 		this->m_blendstatebits.clear();
 		this->m_ppas.clear();
@@ -44,7 +46,7 @@ namespace zonetool
 		this->m_zonepointers.clear();
 
 		// clear scriptstrings
-		this->m_scriptstrings.clear();
+		this->init_script_strings();
 
 		// clear depth stencil state bits
 		this->m_depthstencilstatebits.clear();
@@ -79,7 +81,7 @@ namespace zonetool
 		this->m_len = data.size();
 
 		this->m_zonepointers.clear();
-		this->m_scriptstrings.clear();
+		this->init_script_strings();
 		this->m_depthstencilstatebits.clear();
 		this->m_blendstatebits.clear();
 		this->m_ppas.clear();
@@ -99,7 +101,7 @@ namespace zonetool
 		this->m_buf.resize(this->m_len);
 
 		this->m_zonepointers.clear();
-		this->m_scriptstrings.clear();
+		this->init_script_strings();
 		this->m_depthstencilstatebits.clear();
 		this->m_blendstatebits.clear();
 		this->m_ppas.clear();
@@ -515,28 +517,14 @@ namespace zonetool
 
 	std::vector<std::uint8_t> ZoneBuffer::compress_lz4()
 	{
-		// calculate buffer size needed for current zone
-		auto size = LZ4_compressBound(static_cast<int>(this->m_pos));
+		return compression::compress_lz4_block(this->m_buf, this->m_pos);
+	}
 
-		// alloc array for compressed data
-		std::vector<std::uint8_t> compressed;
-		compressed.resize(size);
-
-		// compress buffer
-		auto destsize = LZ4_compress_default(
-			reinterpret_cast<const char*>(this->m_buf.data()),
-			reinterpret_cast<char*>(compressed.data()),
-			static_cast<int>(this->m_pos),
-			size);
-		compressed.resize(destsize);
-
-		if (!destsize)
+	void ZoneBuffer::init_script_strings()
+	{
+		this->m_scriptstrings =
 		{
-			ZONETOOL_ERROR("An error occured while compressing the fastfile (LZ4)");
-			return {};
-		}
-
-		// return compressed buffer
-		return compressed;
+			{""}, // null scriptstring
+		};
 	}
 }
