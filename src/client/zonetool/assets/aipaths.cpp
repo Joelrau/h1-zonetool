@@ -97,7 +97,7 @@ namespace zonetool
 
 	void IAIPaths::dump(PathData* asset)
 	{
-		const auto path = asset->name + ".paths"s;
+		const auto path = asset->name + ".aipaths"s;
 
 		assetmanager::dumper dumper;
 		if (!dumper.open(path))
