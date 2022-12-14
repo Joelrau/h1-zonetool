@@ -323,19 +323,21 @@ namespace zonetool
 
 	struct GfxDrawSurfFields
 	{
-		unsigned __int64 objectId : 16;
+		unsigned __int64 objectId : 16; // p0 >> 0
+		unsigned __int64 pad0 : 20;
 		unsigned __int64 reflectionProbeIndex : 8;
 		unsigned __int64 hasGfxEntIndex : 1;
-		unsigned __int64 customIndex : 5;
-		unsigned __int64 materialSortedIndex : 13;
-		unsigned __int64 tessellation : 3;
-		unsigned __int64 prepass : 2;
+		unsigned __int64 customIndex : 5; // p0 >> 45
+		unsigned __int64 materialSortedIndex : 14; // p0 >> 50
+		unsigned __int64 tessellation : 2; // p1 >> 0
+		unsigned __int64 prepass : 2; // p1 >> 2
+		unsigned __int64 pad1 : 4;
 		unsigned __int64 useHeroLighting : 1;
 		unsigned __int64 sceneLightEnvIndex : 16;
 		unsigned __int64 viewModelRender : 1;
 		unsigned __int64 surfType : 4;
-		unsigned __int64 primarySortKey : 6;
-		unsigned __int64 unused : 30;
+		unsigned __int64 primarySortKey : 6; // p1 >> 30
+		unsigned __int64 unused : 28;
 	};
 
 	union GfxDrawSurf
@@ -917,8 +919,17 @@ namespace zonetool
 
 	enum MaterialGameFlags : std::uint8_t
 	{
+		MTL_GAMEFLAG_NONE = 0x0,
+		MTL_GAMEFLAG_CASTS_SHADOW_UNK1 = 0x1, // foliage
+		MTL_GAMEFLAG_CASTS_SHADOW_UNK2 = 0x2,
+		MTL_GAMEFLAG_CASTS_SHADOW_UNK3 = 0x3,
+		MTL_GAMEFLAG_CASTS_SHADOW_UNK4 = 0x4,
+		MTL_GAMEFLAG_CASTS_SHADOW_UNK5 = 0x5,
 		MTL_GAMEFLAG_CASTS_SHADOW_SHIFT = 0x6,
 		MTL_GAMEFLAG_CASTS_SHADOW_MASK = 0x1F,
+		MTL_GAMEFLAG_UNK7 = 0x20,
+		MTL_GAMEFLAG_UNK8 = 0x40,
+		MTL_GAMEFLAG_UNK9 = 0x80,
 	};
 
 	enum MaterialSortKey : std::uint8_t
@@ -928,9 +939,9 @@ namespace zonetool
 
 	enum SurfaceTypeBits : std::uint64_t
 	{
-		SURFTYPE_BITS_NONE = 0x0,
-		SURFTYPE_BITS_DEFAULT = 0x1,
-		SURFTYPE_BITS_BARK = 0x2,
+		SURFTYPE_BITS_DEFAULT = 0x0,
+		SURFTYPE_BITS_BARK = 0x1,
+		SURFTYPE_BITS_BRICK = 0x2,
 		SURFTYPE_BITS_CARPET = 0x4,
 		SURFTYPE_BITS_CLOTH = 0x8,
 		SURFTYPE_BITS_CONCRETE = 0x10,
@@ -2771,7 +2782,9 @@ namespace zonetool
 		XModelSurfs* modelSurfs;
 		int partBits[8];
 		XSurface* surfs;
-		char unknown[8];
+		int unk;
+		char flags;
+		char pad[3];
 	};
 
 	struct XModelAngle
@@ -6293,7 +6306,8 @@ namespace zonetool
 		GfxLightGridEntry* entries;
 		unsigned int colorCount;
 		GfxLightGridColors* colors;
-		char __pad0[24];
+		char __pad0[20];
+		unsigned int missingGridColorIndex;
 		int tableVersion;
 		int paletteVersion;
 		char rangeExponent8BitsEncoding;
@@ -6486,8 +6500,8 @@ namespace zonetool
 		STATIC_MODEL_FLAG_NO_CAST_SHADOW = 0x10,
 		STATIC_MODEL_FLAG_GROUND_LIGHTING = 0x20,
 		STATIC_MODEL_FLAG_LIGHTGRID_LIGHTING = 0x40,
-		STATIC_MODEL_FLAG_VERTEXLIT_LIGHTING = 0x80,
-		STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING = 0x100,
+		STATIC_MODEL_FLAG_VERTEXLIT_LIGHTING = 0x80, // mv
+		STATIC_MODEL_FLAG_LIGHTMAP_LIGHTING = 0x100, // ml
 		STATIC_MODEL_FLAG_ALLOW_FXMARK = 0x200,
 		STATIC_MODEL_FLAG_REACTIVEMOTION = 0x400,
 		STATIC_MODEL_FLAG_ANIMATED_VERTS = 0x800,
@@ -6502,7 +6516,7 @@ namespace zonetool
 		unsigned short lightingHandle;
 		unsigned short staticModelId;
 		unsigned short primaryLightEnvIndex;
-		short unk0;
+		unsigned short unk0;
 		char unk1;
 		unsigned char reflectionProbeIndex;
 		unsigned char firstMtlSkinIndex;
@@ -6532,18 +6546,30 @@ namespace zonetool
 
 	struct GfxStaticModelLightmapInfo
 	{
-		unsigned short groundLighting[4];
-		unsigned short unk1;
-		unsigned short unk2;
-		float unk3;
-		int unk4;
-		int unk5;
+		float offset[2];
+		float scale[2];
+		unsigned int lightmapIndex;
+	};
+
+	struct GfxStaticModelGroundLightingInfo
+	{
+		unsigned short groundLighting[4]; // float16
+	};
+
+	struct GfxStaticModelLightGridLightingInfo
+	{
+		unsigned short colorFloat16[4];
+		int a;
+		float b;
+		char __pad1[8];
 	};
 
 	union GfxStaticModelLighting
 	{
-		GfxStaticModelVertexLightingInfo vertexInfo;
-		GfxStaticModelLightmapInfo lightmapInfo;
+		GfxStaticModelVertexLightingInfo vertexLightingInfo;
+		GfxStaticModelLightmapInfo modelLightmapInfo;
+		GfxStaticModelGroundLightingInfo modelGroundLightingInfo;
+		GfxStaticModelLightGridLightingInfo modelLightGridLightingInfo;
 	}; assert_sizeof(GfxStaticModelLighting, 24);
 
 	struct GfxSubdivVertexLightingInfo
