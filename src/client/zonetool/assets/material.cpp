@@ -112,6 +112,22 @@ namespace zonetool
 		mat->materialType = matdata["materialType"].get<unsigned char>();
 		mat->assetFlags = matdata["assetFlags"].get<unsigned char>();
 
+		if (!matdata["drawSurf"].is_null())
+		{
+			mat->info.drawSurf.fields.objectId = matdata["drawSurf"]["objectId"].get<int>();
+			mat->info.drawSurf.fields.reflectionProbeIndex = matdata["drawSurf"]["reflectionProbeIndex"].get<int>();
+			mat->info.drawSurf.fields.hasGfxEntIndex = matdata["drawSurf"]["hasGfxEntIndex"].get<int>();
+			mat->info.drawSurf.fields.customIndex = matdata["drawSurf"]["customIndex"].get<int>();
+			mat->info.drawSurf.fields.materialSortedIndex = matdata["drawSurf"]["materialSortedIndex"].get<int>();
+			mat->info.drawSurf.fields.tessellation = matdata["drawSurf"]["tessellation"].get<int>();
+			mat->info.drawSurf.fields.prepass = matdata["drawSurf"]["prepass"].get<int>();
+			mat->info.drawSurf.fields.useHeroLighting = matdata["drawSurf"]["useHeroLighting"].get<int>();
+			mat->info.drawSurf.fields.sceneLightEnvIndex = matdata["drawSurf"]["sceneLightEnvIndex"].get<int>();
+			mat->info.drawSurf.fields.viewModelRender = matdata["drawSurf"]["viewModelRender"].get<int>();
+			mat->info.drawSurf.fields.surfType = matdata["drawSurf"]["surfType"].get<int>();
+			mat->info.drawSurf.fields.primarySortKey = matdata["drawSurf"]["primarySortKey"].get<int>();
+		}
+
 		std::string techset = matdata["techniqueSet->name"];
 		if (!techset.empty())
 		{
