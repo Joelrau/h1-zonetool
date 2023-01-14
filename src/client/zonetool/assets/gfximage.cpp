@@ -7,6 +7,10 @@
 #include <DirectXTex.h>
 #pragma warning( pop )
 
+#include "../utils/compression.hpp"
+#include <utils/io.hpp>
+#include <utils/cryptography.hpp>
+
 //#define IMAGE_DUMP_DDS
 
 namespace zonetool
@@ -924,6 +928,104 @@ namespace zonetool
 		return image;
 	}
 
+	std::optional<std::string> get_streamed_image_pixels(const std::string& name, int stream)
+	{
+		const auto image_path = utils::string::va("streamed_images\\%s_stream%i.pixels", 
+			clean_name(name).data(), stream);
+		const auto full_path = filesystem::get_file_path(image_path) + image_path;
+		
+		if (utils::io::file_exists(full_path))
+		{
+			return {utils::io::read_file(full_path)};
+		}
+
+		return {};
+	}
+
+	bool get_streamed_image_dds(const std::string& name, int stream, DirectX::ScratchImage& image)
+	{
+		const auto image_path = utils::string::va("streamed_images\\%s_stream%i.dds",
+			clean_name(name).data(), stream);
+
+		const auto full_path = filesystem::get_file_path(image_path) + image_path;
+		const auto full_path_w = utils::string::convert(full_path);
+		const auto result = DirectX::LoadFromDDSFile(full_path_w.data(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		return SUCCEEDED(result);
+	}
+
+	std::optional<std::string> get_streamed_image_dds(const std::string& name, int stream)
+	{
+		const auto image_path = utils::string::va("streamed_images\\%s_stream%i.dds",
+			clean_name(name).data(), stream);
+
+		DirectX::ScratchImage image{};
+
+		const auto full_path = filesystem::get_file_path(image_path) + image_path;
+		const auto full_path_w = utils::string::convert(full_path);
+		const auto result = DirectX::LoadFromDDSFile(full_path_w.data(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		if (!SUCCEEDED(result))
+		{
+			return {};
+		}
+
+		const auto pixel_data = image.GetPixels();
+		const auto size = image.GetPixelsSize();
+
+		return {{reinterpret_cast<const char*>(pixel_data), size}};
+	}
+
+	std::optional<std::string> get_streamed_image_data(const std::string& name, int stream)
+	{
+		const auto pixels = get_streamed_image_pixels(name, stream);
+		if (pixels.has_value())
+		{
+			return pixels;
+		}
+
+		const auto dds = get_streamed_image_dds(name, stream);
+		if (dds.has_value())
+		{
+			return dds;
+		}
+
+		return {};
+	}
+
+	GfxImage* IGfxImage::parse_streamed_image(const std::string& name, ZoneMemory* mem)
+	{
+		const auto asset_path = utils::string::va("streamed_images\\%s.h1Image", clean_name(name).data());
+
+		assetmanager::reader read(mem);
+		if (!read.open(asset_path))
+		{
+			return nullptr;
+		}
+
+		GfxImage* asset = read.read_single<GfxImage>();
+		asset->name = read.read_string();
+
+		ZONETOOL_INFO("Parsing streamed image \"%s\"...", name.data());
+
+		this->custom_streamed_image = true;
+
+		for (auto i = 0; i < 4; i++)
+		{
+			const auto result = get_streamed_image_pixels(name, i);
+			if (!result.has_value())
+			{
+				continue;
+			}
+
+			const auto& pixels = result.value();
+			const auto compressed = compression::compress_lz4_block(pixels);
+			this->image_stream_blocks[i] = {compressed};
+		}
+
+		read.close();
+
+		return asset;
+	}
+
 	GfxImage* IGfxImage::parse(const std::string& name, ZoneMemory* mem)
 	{
 		auto path = "images\\" + clean_name(name) + ".h1Image";
@@ -971,33 +1073,41 @@ namespace zonetool
 		}
 
 		this->asset_ = this->parse(name, mem);
+		if (this->asset_)
+		{
+			return;
+		}
+
+		this->asset_ = this->parse_streamed_image(name, mem);
+		if (this->asset_)
+		{
+			return;
+		}
+
+		this->asset_ = parse_custom(name.data(), mem);
 		if (!this->asset_)
 		{
-			this->asset_ = parse_custom(name.data(), mem);
-			if (!this->asset_)
-			{
-				ZONETOOL_WARNING("Image \"%s\" not found, it will probably look messed up ingame!", name.data());
+			ZONETOOL_WARNING("Image \"%s\" not found, it will probably look messed up ingame!", name.data());
 
-				static unsigned char default_pixel_data[4] = { 255, 0, 0, 255 };
-				auto* image = mem->Alloc<GfxImage>();
-				image->imageFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-				image->mapType = MAPTYPE_2D;
-				image->semantic = 0;
-				image->category = 1;
-				image->flags = 0;
-				image->dataLen1 = sizeof(default_pixel_data);
-				image->dataLen2 = sizeof(default_pixel_data);
-				image->width = 1;
-				image->height = 1;
-				image->pixelData = default_pixel_data;
-				image->depth = 1;
-				image->numElements = 1;
-				image->levelCount = 1;
-				image->streamed = 0;
-				image->name = mem->StrDup(this->name_);
+			static unsigned char default_pixel_data[4] = { 255, 0, 0, 255 };
+			auto* image = mem->Alloc<GfxImage>();
+			image->imageFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			image->mapType = MAPTYPE_2D;
+			image->semantic = 0;
+			image->category = 1;
+			image->flags = 0;
+			image->dataLen1 = sizeof(default_pixel_data);
+			image->dataLen2 = sizeof(default_pixel_data);
+			image->width = 1;
+			image->height = 1;
+			image->pixelData = default_pixel_data;
+			image->depth = 1;
+			image->numElements = 1;
+			image->levelCount = 1;
+			image->streamed = 0;
+			image->name = mem->StrDup(this->name_);
 
-				this->asset_ = image;
-			}
+			this->asset_ = image;
 		}
 	}
 

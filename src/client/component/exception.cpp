@@ -117,11 +117,33 @@ namespace exception
 			return code == STATUS_INTEGER_OVERFLOW || code == STATUS_FLOAT_OVERFLOW || code == STATUS_SINGLE_STEP;
 		}
 
+		void cpp_exception(const LPEXCEPTION_POINTERS exceptioninfo)
+		{
+			const auto e = reinterpret_cast<std::exception*>(exceptioninfo->ExceptionRecord->ExceptionInformation[1]);
+
+			std::string error_str = utils::string::va("C++ Exception (%s) (0x%08X) at 0x%p (0x%p).\n"
+				"A minidump has been written.\n\n",
+				e->what(),
+				exception_data.code, exception_data.address,
+				reinterpret_cast<uint64_t>(exception_data.address));
+
+			utils::thread::suspend_other_threads();
+			show_mouse_cursor();
+
+			MessageBoxA(nullptr, error_str.data(), "H1-ZoneTool ERROR", MB_ICONERROR);
+			TerminateProcess(GetCurrentProcess(), exception_data.code);
+		}
+
 		LONG WINAPI exception_filter(const LPEXCEPTION_POINTERS exceptioninfo)
 		{
 			if (is_harmless_error(exceptioninfo))
 			{
 				return EXCEPTION_CONTINUE_EXECUTION;
+			}
+
+			if (exceptioninfo->ExceptionRecord->ExceptionCode == 0xE06D7363)
+			{
+				cpp_exception(exceptioninfo);
 			}
 
 			write_minidump(exceptioninfo);

@@ -3,6 +3,8 @@
 #include "zone.hpp"
 #include "utils/utils.hpp"
 
+#include <utils/io.hpp>
+
 #define FF_VERSION 66
 
 #define COMPRESS_TYPE_LZ4 4
@@ -13,6 +15,72 @@ static_assert(COMPRESS_TYPE == COMPRESS_TYPE_LZ4 || COMPRESS_TYPE == COMPRESS_TY
 
 namespace zonetool
 {
+	namespace
+	{
+		void write_stream_files(std::vector<IGfxImage*> images, ZoneMemory* mem)
+		{
+			if (images.size() == 0)
+			{
+				return;
+			}
+
+			std::uint16_t current_index = 96; // unused imagefile index for h1
+			std::string image_file_buffer;
+
+			const auto init_image_file = [&]
+			{
+				image_file_buffer.clear();
+
+				XPakHeader header{};
+				std::strcat(header.header, "S1ffu100");
+				header.version = FF_VERSION;
+
+				image_file_buffer.append(reinterpret_cast<char*>(&header), sizeof(XPakHeader));
+			};
+
+			const auto write_image_file = [&]
+			{
+				const auto& fastfile = filesystem::get_fastfile();
+				const auto save_path = utils::io::directory_exists("zone") ? "zone/" : "";
+				const auto name = utils::string::va("%s%s.pak", save_path, fastfile.data(), current_index);
+				utils::io::write_file(name, image_file_buffer);
+				init_image_file();
+			};
+
+			init_image_file();
+
+			for (const auto& image : images)
+			{
+				for (auto i = 0; i < 4; i++)
+				{
+					if (image->image_stream_files[i])
+					{
+						continue;
+					}
+
+					image->image_stream_files[i] = mem->Alloc<XStreamFile>();
+
+					if (!image->image_stream_blocks[i].has_value())
+					{
+						continue;
+					}
+
+					const auto& data = image->image_stream_blocks[i].value();
+					const auto offset = image_file_buffer.size();
+					image_file_buffer.append(reinterpret_cast<const char*>(data.data()), data.size());
+					const auto offset_end = image_file_buffer.size();
+					image->image_stream_blocks[i].reset();
+
+					image->image_stream_files[i]->fileIndex = current_index;
+					image->image_stream_files[i]->offset = offset;
+					image->image_stream_files[i]->offsetEnd = offset_end;
+				}
+			}
+
+			write_image_file();
+		}
+	}
+
 	IAsset* Zone::find_asset(std::int32_t type, const std::string& name)
 	{
 		if (name.empty())
@@ -214,6 +282,24 @@ namespace zonetool
 		memset(&mem, 0, headersize);
 
 		auto zone = buf->at<XZoneMemory<num_streams>>();
+
+		{
+			// write imagefile
+			std::vector<IGfxImage*> images;
+			for (std::size_t i = 0; i < m_assets.size(); i++)
+			{
+				if (m_assets[i]->type() == ASSET_TYPE_IMAGE)
+				{
+					const auto image = static_cast<IGfxImage*>(m_assets[i].get());
+					if (image->custom_streamed_image)
+					{
+						images.emplace_back(image);
+					}
+				}
+			}
+
+			write_stream_files(images, this->m_zonemem.get());
+		}
 
 		// write zone header
 		buf->write(&mem);
