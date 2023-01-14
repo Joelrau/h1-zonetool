@@ -21,7 +21,7 @@ namespace zonetool
 		std::vector<std::uintptr_t> m_zonestreams;
 		std::stack<std::uint8_t> m_streamstack;
 
-		std::vector<std::string> m_scriptstrings;
+		std::vector<const char*> m_scriptstrings;
 
 		// material shit
 		std::vector<std::uint64_t> m_depthstencilstatebits;
@@ -205,8 +205,8 @@ namespace zonetool
 		std::uint32_t current_stream_offset();
 		std::uint32_t stream_offset(std::uint8_t stream);
 
-		std::uint32_t write_scriptstring(std::string str);
-		std::string get_scriptstring(std::size_t idx);
+		std::uint32_t write_scriptstring(const char* str);
+		const char* get_scriptstring(std::size_t idx);
 		std::size_t scriptstring_count();
 
 		std::uint8_t write_depthstencilstatebit(std::uint64_t bits);

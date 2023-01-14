@@ -5,7 +5,6 @@ namespace zonetool
 {
 	void IScriptableDef::add_script_string(scr_string_t* ptr, const char* str)
 	{
-		if (!str) return;
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
 			if (this->script_strings[i].first == ptr)
@@ -13,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IScriptableDef::get_script_string(scr_string_t* ptr)
+	const char* IScriptableDef::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -25,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 	void IScriptableDef::parse_scriptable_event_def(ScriptableEventDef* event, assetmanager::reader& read, ZoneMemory* mem)
@@ -151,16 +150,13 @@ namespace zonetool
 
 	void IScriptableDef::prepare_scriptable_event_def(ScriptableEventDef* event, ZoneBuffer* buf, ZoneMemory* mem)
 	{
-		std::string str;
 		switch (event->type)
 		{
 		case SCRIPTABLE_EVENT_FX:
-			str = this->get_script_string(&event->data.playFx.tagName);
-			event->data.playFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(str));
+			event->data.playFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(this->get_script_string(&event->data.playFx.tagName)));
 			break;
 		case SCRIPTABLE_EVENT_STOP_FX:
-			str = this->get_script_string(&event->data.stopFx.tagName);
-			event->data.stopFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(str));
+			event->data.stopFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(this->get_script_string(&event->data.stopFx.tagName)));
 			break;
 		default:
 			break;
@@ -171,34 +167,31 @@ namespace zonetool
 	{
 		auto* data = this->asset_;
 
-		std::string str;
-
 		for (unsigned char i = 0; i < data->partCount; i++)
 		{
 			for (unsigned char j = 0; j < data->parts[i].stateCount; j++)
 			{
-				str = this->get_script_string(&data->parts[i].states[j].name);
-				data->parts[i].states[j].name = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				data->parts[i].states[j].name = static_cast<scr_string_t>(buf->write_scriptstring(
+					this->get_script_string(&data->parts[i].states[j].name)));
 
-				str = this->get_script_string(&data->parts[i].states[j].tagName);
-				data->parts[i].states[j].tagName = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				data->parts[i].states[j].tagName = static_cast<scr_string_t>(buf->write_scriptstring(
+					this->get_script_string(&data->parts[i].states[j].tagName)));
 				for (unsigned char k = 0; k < data->parts[i].states[j].onEnterEventCount; k++)
 				{
 					prepare_scriptable_event_def(&data->parts[i].states[j].onEnterEvents[k], buf, mem);
 				}
 			}
-			str = this->get_script_string(&data->parts[i].name);
-			data->parts[i].name = static_cast<scr_string_t>(buf->write_scriptstring(str));
+			data->parts[i].name = static_cast<scr_string_t>(buf->write_scriptstring(this->get_script_string(&data->parts[i].name)));
 		}
 
 		for (unsigned char i = 0; i < data->notetrackCount; i++)
 		{
-			str = this->get_script_string(&data->notetracks[i].name);
-			data->notetracks[i].name = static_cast<scr_string_t>(buf->write_scriptstring(str));
+			data->notetracks[i].name = static_cast<scr_string_t>(buf->write_scriptstring(
+				this->get_script_string(&data->notetracks[i].name)));
 			if (data->notetracks[i].type == SCRIPTABLE_NT_FX)
 			{
-				str = this->get_script_string(&data->notetracks[i].data.playFx.tagName);
-				data->notetracks[i].data.playFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				data->notetracks[i].data.playFx.tagName = static_cast<scr_string_t>(buf->write_scriptstring(
+					this->get_script_string(&data->notetracks[i].data.playFx.tagName)));
 			}
 		}
 	}

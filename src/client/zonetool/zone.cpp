@@ -249,13 +249,25 @@ namespace zonetool
 			// write pointer for every scriptstring
 			for (std::size_t idx = 0; idx < stringcount; idx++)
 			{
-				buf->write<std::uintptr_t>(&pad);
+				const auto str = buf->get_scriptstring(idx);
+				if (str == nullptr)
+				{
+					buf->write<std::uintptr_t>(&zero);
+				}
+				else
+				{
+					buf->write<std::uintptr_t>(&pad);
+				}
 			}
 
 			// write scriptstrings
 			for (std::size_t idx = 0; idx < stringcount; idx++)
 			{
-				buf->write_str(buf->get_scriptstring(idx));
+				const auto str = buf->get_scriptstring(idx);
+				if (str != nullptr)
+				{
+					buf->write_str(str);
+				}
 			}
 		}
 		buf->pop_stream();

@@ -9,9 +9,9 @@ namespace zonetool
 		std::string name_;
 		XAnimParts* asset_ = nullptr;
 
-		std::vector<std::pair<scr_string_t*, std::string>> script_strings;
-		void add_script_string(scr_string_t* ptr, std::string str);
-		std::string get_script_string(scr_string_t* ptr);
+		std::vector<std::pair<scr_string_t*, const char*>> script_strings;
+		void add_script_string(scr_string_t* ptr, const char* str);
+		const char* get_script_string(scr_string_t* ptr);
 
 	public:
 		XAnimParts* parse(const std::string& name, ZoneMemory* mem);

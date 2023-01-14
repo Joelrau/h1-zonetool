@@ -3,7 +3,7 @@
 
 namespace zonetool
 {
-	void ISkeletonScript::add_script_string(scr_string_t* ptr, std::string str)
+	void ISkeletonScript::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -12,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string ISkeletonScript::get_script_string(scr_string_t* ptr)
+	const char* ISkeletonScript::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -24,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 	void ISkeletonScript::init(const std::string& name, ZoneMemory* mem)

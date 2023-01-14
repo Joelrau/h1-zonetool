@@ -235,11 +235,12 @@ namespace zonetool
 		return static_cast<std::uint32_t>(m_zonestreams[stream]);
 	}
 
-	std::uint32_t ZoneBuffer::write_scriptstring(std::string str)
+	std::uint32_t ZoneBuffer::write_scriptstring(const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->m_scriptstrings.size(); i++)
 		{
-			if (this->m_scriptstrings[i] == str)
+			if (this->m_scriptstrings[i] == str || 
+				str && this->m_scriptstrings[i] && !strcmp(this->m_scriptstrings[i], str))
 			{
 				return i;
 			}
@@ -248,7 +249,7 @@ namespace zonetool
 		return static_cast<std::uint32_t>(this->m_scriptstrings.size() - 1);
 	}
 
-	std::string ZoneBuffer::get_scriptstring(std::size_t idx)
+	const char* ZoneBuffer::get_scriptstring(std::size_t idx)
 	{
 		return this->m_scriptstrings[idx];
 	}
@@ -522,9 +523,6 @@ namespace zonetool
 
 	void ZoneBuffer::init_script_strings()
 	{
-		this->m_scriptstrings =
-		{
-			{""}, // null scriptstring
-		};
+		this->m_scriptstrings.clear();
 	}
 }

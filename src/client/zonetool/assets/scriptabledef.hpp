@@ -9,9 +9,9 @@ namespace zonetool
 		std::string name_;
 		ScriptableDef* asset_ = nullptr;
 
-		std::vector<std::pair<scr_string_t*, std::string>> script_strings;
+		std::vector<std::pair<scr_string_t*, const char*>> script_strings;
 		void add_script_string(scr_string_t* ptr, const char* str);
-		std::string get_script_string(scr_string_t* ptr);
+		const char* get_script_string(scr_string_t* ptr);
 
 		void parse_scriptable_event_def(ScriptableEventDef* event, assetmanager::reader& read, ZoneMemory* mem);
 		void prepare_scriptable_event_def(ScriptableEventDef* event, ZoneBuffer* buf, ZoneMemory* mem);

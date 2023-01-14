@@ -3,7 +3,7 @@
 
 namespace zonetool
 {
-	void IWeaponAttachment::add_script_string(scr_string_t* ptr, std::string str)
+	void IWeaponAttachment::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -12,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IWeaponAttachment::get_script_string(scr_string_t* ptr)
+	const char* IWeaponAttachment::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -24,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 #define ATTACHMENT_READ_ASSET_ARR(__type__, __datafield__, __field__, __struct__, __size__) \
@@ -122,13 +122,13 @@ namespace zonetool
 		attachment->stringArray1 = mem->Alloc<scr_string_t>(4);
 		for (auto i = 0; i < 4; i++)
 		{
-			this->add_script_string(&attachment->stringArray1[i], data["stringArray1"][i].get<std::string>());
+			this->add_script_string(&attachment->stringArray1[i], mem->StrDup(data["stringArray1"][i].get<std::string>()));
 		}
 
 		attachment->stringArray2 = mem->Alloc<scr_string_t>(4);
 		for (auto i = 0; i < 4; i++)
 		{
-			this->add_script_string(&attachment->stringArray2[i], data["stringArray2"][i].get<std::string>());
+			this->add_script_string(&attachment->stringArray2[i], mem->StrDup(data["stringArray2"][i].get<std::string>()));
 		}
 
 		if (!data["waFields"].is_null())
@@ -230,7 +230,7 @@ namespace zonetool
 		{ \
 			for (int i = 0; i < __count__; i++) \
 			{ \
-				std::string tag = this->get_script_string(&data->__field__[i]); \
+				auto tag = this->get_script_string(&data->__field__[i]); \
 				data->__field__[i] = static_cast<scr_string_t>(buf->write_scriptstring(tag)); \
 			} \
 		}

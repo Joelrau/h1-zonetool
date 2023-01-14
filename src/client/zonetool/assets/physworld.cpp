@@ -3,7 +3,7 @@
 
 namespace zonetool
 {
-	void IPhysWorld::add_script_string(scr_string_t* ptr, std::string str)
+	void IPhysWorld::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -12,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IPhysWorld::get_script_string(scr_string_t* ptr)
+	const char* IPhysWorld::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -24,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 	PhysWorld* IPhysWorld::parse(const std::string& name, ZoneMemory* mem)
@@ -91,7 +91,7 @@ namespace zonetool
 		{
 			for (unsigned int i = 0; i < data->waterVolumesCount; i++)
 			{
-				auto str = this->get_script_string(&data->waterVolumes[i].string);
+				const auto str = this->get_script_string(&data->waterVolumes[i].string);
 				data->waterVolumes[i].string = static_cast<scr_string_t>(buf->write_scriptstring(str));
 			}
 		}

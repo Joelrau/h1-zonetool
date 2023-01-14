@@ -3,7 +3,7 @@
 
 namespace zonetool
 {
-	void IMapEnts::add_script_string(scr_string_t* ptr, std::string str)
+	void IMapEnts::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -12,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IMapEnts::get_script_string(scr_string_t* ptr)
+	const char* IMapEnts::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -24,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 	void IMapEnts::parse_splineList(ZoneMemory* mem, std::string name, SplineRecordList* splineList)
@@ -72,10 +72,10 @@ namespace zonetool
 		for (unsigned short i = 0; i < spawnList->spawnsCount; i++)
 		{
 			spawnList->spawns[i].index = i;
-			add_script_string(&spawnList->spawns[i].name, data[i]["name"].get<std::string>());
-			add_script_string(&spawnList->spawns[i].target, data[i]["target"].get<std::string>());
-			add_script_string(&spawnList->spawns[i].script_noteworthy, data[i]["script_noteworthy"].get<std::string>());
-			add_script_string(&spawnList->spawns[i].unknown, data[i]["unknown"].get<std::string>());
+			add_script_string(&spawnList->spawns[i].name, mem->StrDup(data[i]["name"].get<std::string>()));
+			add_script_string(&spawnList->spawns[i].target, mem->StrDup(data[i]["target"].get<std::string>()));
+			add_script_string(&spawnList->spawns[i].script_noteworthy, mem->StrDup(data[i]["script_noteworthy"].get<std::string>()));
+			add_script_string(&spawnList->spawns[i].unknown, mem->StrDup(data[i]["unknown"].get<std::string>()));
 			for (auto j = 0; j < 3; j++)
 			{
 				spawnList->spawns[i].origin[j] = data[i]["origin"][j].get<float>();
@@ -223,17 +223,17 @@ namespace zonetool
 		{
 			for (int i = 0; i < data->spawnList.spawnsCount; i++)
 			{
-				std::string str = this->get_script_string(&data->spawnList.spawns[i].name);
-				data->spawnList.spawns[i].name = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				const auto name = this->get_script_string(&data->spawnList.spawns[i].name);
+				data->spawnList.spawns[i].name = static_cast<scr_string_t>(buf->write_scriptstring(name));
 
-				str = this->get_script_string(&data->spawnList.spawns[i].target);
-				data->spawnList.spawns[i].target = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				const auto target = this->get_script_string(&data->spawnList.spawns[i].target);
+				data->spawnList.spawns[i].target = static_cast<scr_string_t>(buf->write_scriptstring(target));
 
-				str = this->get_script_string(&data->spawnList.spawns[i].script_noteworthy);
-				data->spawnList.spawns[i].script_noteworthy = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				const auto script_noteworthy = this->get_script_string(&data->spawnList.spawns[i].script_noteworthy);
+				data->spawnList.spawns[i].script_noteworthy = static_cast<scr_string_t>(buf->write_scriptstring(script_noteworthy));
 
-				str = this->get_script_string(&data->spawnList.spawns[i].unknown);
-				data->spawnList.spawns[i].unknown = static_cast<scr_string_t>(buf->write_scriptstring(str));
+				const auto unknown = this->get_script_string(&data->spawnList.spawns[i].unknown);
+				data->spawnList.spawns[i].unknown = static_cast<scr_string_t>(buf->write_scriptstring(unknown));
 			}
 		}
 	}

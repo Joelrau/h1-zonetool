@@ -222,7 +222,7 @@ namespace zonetool
 		//return WEAP_ANIM_INVALID;
 	}
 
-	void IWeaponDef::add_script_string(scr_string_t* ptr, std::string str)
+	void IWeaponDef::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -231,10 +231,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IWeaponDef::get_script_string(scr_string_t* ptr)
+	const char* IWeaponDef::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -243,7 +243,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 #define WEAPON_READ_FIELD(__type__, __field__) \
@@ -546,7 +546,7 @@ namespace zonetool
 		weapon->hideTags = mem->Alloc<scr_string_t>(32);
 		for (auto i = 0; i < 32; i++)
 		{
-			this->add_script_string(&weapon->hideTags[i], data["hideTags"][i].get<std::string>());
+			this->add_script_string(&weapon->hideTags[i], mem->StrDup(data["hideTags"][i].get<std::string>()));
 		}
 
 		weapon->numWeaponAttachments = static_cast<unsigned char>(data["attachments"].size());
@@ -656,12 +656,12 @@ namespace zonetool
 					auto notetrackSoundMapKey = data["notetrackOverrides"][i]["notetrackSoundMapKeys"][j].get<std::string>();
 					if (!notetrackSoundMapKey.empty())
 					{
-						this->add_script_string(&weapon->notetrackOverrides[i].notetrackSoundMapKeys[j], notetrackSoundMapKey);
+						this->add_script_string(&weapon->notetrackOverrides[i].notetrackSoundMapKeys[j], mem->StrDup(notetrackSoundMapKey));
 					}
 					auto notetrackSoundMapValue = data["notetrackOverrides"][i]["notetrackSoundMapValues"][j].get<std::string>();
 					if (!notetrackSoundMapValue.empty())
 					{
-						this->add_script_string(&weapon->notetrackOverrides[i].notetrackSoundMapValues[j], notetrackSoundMapValue);
+						this->add_script_string(&weapon->notetrackOverrides[i].notetrackSoundMapValues[j], mem->StrDup(notetrackSoundMapValue));
 					}
 				}
 			}
@@ -672,12 +672,12 @@ namespace zonetool
 		for (auto i = 0; i < 36; i++)
 		{
 			auto notetrack = data["notetrackSoundMapKeys"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackSoundMapKeys[i], notetrack);
+			this->add_script_string(&weapon->notetrackSoundMapKeys[i], mem->StrDup(notetrack));
 		}
 		for (auto i = 0; i < 36; i++)
 		{
 			auto notetrack = data["notetrackSoundMapValues"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackSoundMapValues[i], notetrack);
+			this->add_script_string(&weapon->notetrackSoundMapValues[i], mem->StrDup(notetrack));
 		}
 
 		weapon->notetrackRumbleMapKeys = mem->Alloc<scr_string_t>(16);
@@ -685,12 +685,12 @@ namespace zonetool
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackRumbleMapKeys"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackRumbleMapKeys[i], notetrack);
+			this->add_script_string(&weapon->notetrackRumbleMapKeys[i], mem->StrDup(notetrack));
 		}
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackRumbleMapValues"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackRumbleMapValues[i], notetrack);
+			this->add_script_string(&weapon->notetrackRumbleMapValues[i], mem->StrDup(notetrack));
 		}
 
 		weapon->notetrackFXMapKeys = mem->Alloc<scr_string_t>(16);
@@ -698,12 +698,12 @@ namespace zonetool
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackFXMapKeys"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackFXMapKeys[i], notetrack);
+			this->add_script_string(&weapon->notetrackFXMapKeys[i], mem->StrDup(notetrack));
 		}
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackFXMapTagValues"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackFXMapTagValues[i], notetrack);
+			this->add_script_string(&weapon->notetrackFXMapTagValues[i], mem->StrDup(notetrack));
 		}
 
 		weapon->notetrackFXMapValues = mem->Alloc<FxEffectDef*>(16);
@@ -718,12 +718,12 @@ namespace zonetool
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackUnknownKeys"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackUnknownKeys[i], notetrack);
+			this->add_script_string(&weapon->notetrackUnknownKeys[i], mem->StrDup(notetrack));
 		}
 		for (auto i = 0; i < 16; i++)
 		{
 			auto notetrack = data["notetrackUnknownValues"][i].get<std::string>();
-			this->add_script_string(&weapon->notetrackUnknownValues[i], notetrack);
+			this->add_script_string(&weapon->notetrackUnknownValues[i], mem->StrDup(notetrack));
 		}
 
 		weapon->notetrackUnknown = mem->Alloc<char>(16);
@@ -924,7 +924,7 @@ namespace zonetool
 		if (!data["stowTag"].is_null())
 		{
 			auto stowTag = data["stowTag"].get<std::string>();
-			this->add_script_string(&weapon->stowTag, stowTag);
+			this->add_script_string(&weapon->stowTag, mem->StrDup(stowTag));
 		}
 
 		WEAPON_READ_FIELD(int, altWeapon);
@@ -1365,7 +1365,7 @@ namespace zonetool
 		{ \
 			for (int nt = 0; nt < __count__; nt++) \
 			{ \
-				std::string tag = this->get_script_string(&weapon->__field__[nt]); \
+				const auto tag = this->get_script_string(&weapon->__field__[nt]); \
 				weapon->__field__[nt] = static_cast<scr_string_t>(buf->write_scriptstring(tag)); \
 			} \
 		}
@@ -1374,7 +1374,7 @@ namespace zonetool
 		{
 			for (int i = 0; i < 32; i++)
 			{
-				std::string tag = this->get_script_string(&weapon->hideTags[i]);
+				const auto tag = this->get_script_string(&weapon->hideTags[i]);
 				weapon->hideTags[i] = static_cast<scr_string_t>(buf->write_scriptstring(tag));
 			}
 		}
@@ -1491,7 +1491,7 @@ namespace zonetool
 		for (auto i = 0; i < 36; i++)
 		{
 			auto str = this->get_script_string(&weapon->notetrackSoundMapValues[i]);
-			if (!str.empty())
+			if (str != nullptr)
 			{
 				zone->add_asset_of_type(ASSET_TYPE_SOUND, str);
 			}

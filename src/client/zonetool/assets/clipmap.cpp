@@ -3,7 +3,7 @@
 
 namespace zonetool
 {
-	void IClipMap::add_script_string(scr_string_t* ptr, std::string str)
+	void IClipMap::add_script_string(scr_string_t* ptr, const char* str)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -12,10 +12,10 @@ namespace zonetool
 				return;
 			}
 		}
-		this->script_strings.push_back(std::pair<scr_string_t*, std::string>(ptr, str));
+		this->script_strings.push_back(std::pair<scr_string_t*, const char*>(ptr, str));
 	}
 
-	std::string IClipMap::get_script_string(scr_string_t* ptr)
+	const char* IClipMap::get_script_string(scr_string_t* ptr)
 	{
 		for (std::uint32_t i = 0; i < this->script_strings.size(); i++)
 		{
@@ -24,7 +24,7 @@ namespace zonetool
 				return this->script_strings[i].second;
 			}
 		}
-		return "";
+		return nullptr;
 	}
 
 	void IClipMap::parse_info(ClipInfo* info, assetmanager::reader& read, ZoneMemory* mem)
@@ -262,7 +262,7 @@ namespace zonetool
 		{
 			for (unsigned int i = 0; i < data->dynEntAnchorCount; i++)
 			{
-				std::string str = this->get_script_string(&data->dynEntAnchorNames[i]);
+				const auto str = this->get_script_string(&data->dynEntAnchorNames[i]);
 				data->dynEntAnchorNames[i] = static_cast<scr_string_t>(buf->write_scriptstring(str));
 			}
 		}
@@ -271,7 +271,7 @@ namespace zonetool
 		{
 			for (unsigned int i = 0; i < data->scriptableMapEnts.instanceCount; i++)
 			{
-				std::string str = this->get_script_string(&data->scriptableMapEnts.instances[i].targetname);
+				const auto str = this->get_script_string(&data->scriptableMapEnts.instances[i].targetname);
 				data->scriptableMapEnts.instances[i].targetname = static_cast<scr_string_t>(buf->write_scriptstring(str));
 			}
 		}
