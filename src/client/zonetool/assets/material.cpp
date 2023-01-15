@@ -528,7 +528,7 @@ namespace zonetool
 				}
 				else
 				{
-					if (asset->textureTable[i].u.image->name)
+					if (asset->textureTable[i].u.image && asset->textureTable[i].u.image->name)
 					{
 						image["image"] = asset->textureTable[i].u.image->name;
 					}

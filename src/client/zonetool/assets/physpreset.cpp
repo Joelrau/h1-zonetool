@@ -3,6 +3,26 @@
 
 namespace zonetool
 {
+	PhysPreset* IPhysPreset::parse(const std::string& name, ZoneMemory* mem)
+	{
+		const auto path = "physpreset\\"s + name + ".pp";
+
+		assetmanager::reader read(mem);
+		if (!read.open(path))
+		{
+			return nullptr;
+		}
+
+		ZONETOOL_INFO("Parsing physpreset \"%s\"...", name.data());
+
+		auto* asset = read.read_single<PhysPreset>();
+		asset->name = read.read_string();
+		asset->sndAliasPrefix = read.read_string();
+		read.close();
+
+		return asset;
+	}
+
 	void IPhysPreset::init(const std::string& name, ZoneMemory* mem)
 	{
 		this->name_ = name;
@@ -14,7 +34,11 @@ namespace zonetool
 			return;
 		}
 
-		this->asset_ = DB_FindXAssetHeader_Safe(XAssetType(this->type()), this->name().data()).physPreset;
+		this->asset_ = this->parse(name, mem);
+		if (!this->asset_)
+		{
+			this->asset_ = DB_FindXAssetHeader_Safe(XAssetType(this->type()), this->name().data()).physPreset;
+		}
 	}
 
 	void IPhysPreset::prepare(ZoneBuffer* buf, ZoneMemory* mem)
@@ -54,5 +78,17 @@ namespace zonetool
 
 	void IPhysPreset::dump(PhysPreset* asset)
 	{
+		const auto path = "physpreset\\"s + asset->name + ".pp";
+
+		assetmanager::dumper write;
+		if (!write.open(path))
+		{
+			return;
+		}
+
+		write.dump_single(asset);
+		write.dump_string(asset->name);
+		write.dump_string(asset->sndAliasPrefix);
+		write.close();
 	}
 }

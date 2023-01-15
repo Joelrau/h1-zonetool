@@ -10,6 +10,8 @@ namespace zonetool
 		PhysPreset* asset_ = nullptr;
 
 	public:
+		PhysPreset* parse(const std::string& name, ZoneMemory* mem);
+
 		void init(const std::string& name, ZoneMemory* mem) override;
 		void prepare(ZoneBuffer* buf, ZoneMemory* mem) override;
 		void load_depending(IZone* zone) override;

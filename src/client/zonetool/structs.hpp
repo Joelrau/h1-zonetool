@@ -5977,7 +5977,7 @@ namespace zonetool
 		snd_alias_list_t* damagedSound;
 		snd_alias_list_t* destroyedSound;
 		snd_alias_list_t* destroyedQuietSound;
-		char __pad[8];
+		float unk[2];
 		int numCrackRings;
 		bool isOpaque;
 	}; assert_sizeof(FxGlassDef, 120);
@@ -6555,9 +6555,12 @@ namespace zonetool
 	struct GfxSurfaceBounds
 	{
 		Bounds bounds;
-		char __pad0[11];
+		unsigned __int16 mipRadius;
+		unsigned __int8 invHighMipRadius[5];
+		char __pad0[4];
 		char flags;
 	}; assert_sizeof(GfxSurfaceBounds, 36);
+	assert_offsetof(GfxSurfaceBounds, flags, 35);
 
 	struct GfxPackedPlacement
 	{
@@ -6784,10 +6787,8 @@ namespace zonetool
 		GfxLightGrid lightGrid; // 432
 		int modelCount; // 1512
 		GfxBrushModel* models; // 1520
-		vec3_t mins1;
-		vec3_t maxs1;
-		vec3_t mins2;
-		vec3_t maxs2;
+		Bounds unkBounds;
+		Bounds shadowBounds;
 		unsigned int checksum;
 		int materialMemoryCount; // 1580
 		MaterialMemory* materialMemory; // 1584

@@ -70,6 +70,15 @@ namespace zonetool
 		return false;
 	}
 
+	void wait_for_database()
+	{
+		// wait for database to be ready
+		while (!WaitForSingleObject(*reinterpret_cast<HANDLE*>(0x149811020), 0) == 0)
+		{
+			Sleep(5);
+		}
+	}
+
 	XAssetHeader DB_FindXAssetHeader_Safe(XAssetType type, const std::string& name)
 	{
 		const auto asset_entry = DB_FindXAssetEntry(type, name.data());
@@ -327,11 +336,7 @@ namespace zonetool
 			return false;
 		}
 
-		// wait for database to be ready
-		while (!WaitForSingleObject(*reinterpret_cast<HANDLE*>(0x149811020), 0) == 0)
-		{
-			Sleep(5);
-		}
+		wait_for_database();
 
 		if (!dump && !verify)
 		{
@@ -352,7 +357,7 @@ namespace zonetool
 			ZONETOOL_INFO("Loading zone \"%s\"...", name.data());
 		}
 
-		XZoneInfo zone = { name.data(), DB_ZONE_LOAD | DB_ZONE_CUSTOM, 0 };
+		XZoneInfo zone = { name.data(), DB_ZONE_GAME | DB_ZONE_CUSTOM, 0 };
 		DB_LoadXAssets(&zone, 1, mode);
 		return true;
 	}
@@ -375,11 +380,7 @@ namespace zonetool
 			return;
 		}
 
-		// wait for database to be ready
-		while (!WaitForSingleObject(*reinterpret_cast<HANDLE*>(0x149811020), 0) == 0)
-		{
-			Sleep(5);
-		}
+		wait_for_database();
 
 		ZONETOOL_INFO("Dumping zone \"%s\"...", name.data());
 
@@ -404,11 +405,7 @@ namespace zonetool
 			return;
 		}
 
-		// wait for database to be ready
-		while (!WaitForSingleObject(*reinterpret_cast<HANDLE*>(0x149811020), 0) == 0)
-		{
-			Sleep(5);
-		}
+		wait_for_database();
 
 		verify = true;
 		if (!load_zone(name, DB_LOAD_ASYNC, true))
@@ -499,7 +496,8 @@ namespace zonetool
 						}
 						if (row->fields[0] == "require"s)
 						{
-							load_zone(row->fields[1], DB_LOAD_SYNC);
+							load_zone(row->fields[1], DB_LOAD_ASYNC);
+							wait_for_database();
 						}
 						else if (row->fields[0] == "include"s)
 						{
