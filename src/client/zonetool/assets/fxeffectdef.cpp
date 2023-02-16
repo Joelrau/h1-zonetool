@@ -5,8 +5,6 @@ namespace zonetool
 {
 	namespace
 	{
-		h2::FxEffectDef* convert_to_h2(FxEffectDef* h1_asset, utils::memory::allocator& allocator)
-		{
 #define COPY_VALUE(name) \
 		static_assert(sizeof(asset->elemDefs[i].name) == sizeof(h1_asset->elemDefs[i].name)); \
 		asset->elemDefs[i].name = h1_asset->elemDefs[i].name;
@@ -23,9 +21,11 @@ namespace zonetool
 		static_assert(sizeof(*asset->elemDefs[i].name) == sizeof(*h1_asset->elemDefs[i].name)); \
 		asset->elemDefs[i].name = reinterpret_cast<decltype(asset->elemDefs[i].name)>(h1_asset->elemDefs[i].name);
 
+		h2::FxEffectDef* convert_to_h2(FxEffectDef* h1_asset, utils::memory::allocator& allocator)
+		{
 			const auto asset = allocator.allocate<h2::FxEffectDef>();
 
-			std::memcpy(asset, h1_asset, sizeof(h1_asset));
+			std::memcpy(asset, h1_asset, sizeof(FxEffectDef));
 			const auto elem_count = asset->elemDefCountLooping + asset->elemDefCountOneShot + asset->elemDefCountEmission;
 			asset->elemDefs = allocator.allocate_array<h2::FxElemDef>(elem_count);
 
@@ -39,7 +39,7 @@ namespace zonetool
 				COPY_VALUE_CAST(fadeOutRange);
 				COPY_VALUE(spawnFrustumCullRadius);
 				COPY_VALUE_CAST(spawnDelayMsec);
-				COPY_VALUE_CAST(spawnDelayMsec);
+				COPY_VALUE_CAST(lifeSpanMsec);
 				COPY_ARR(spawnOrigin);
 				COPY_VALUE_CAST(spawnOffsetRadius);
 				COPY_VALUE_CAST(spawnOffsetHeight);
@@ -61,104 +61,33 @@ namespace zonetool
 				{
 					COPY_ARR(velSamples[o].local.velocity.base);
 					COPY_ARR(velSamples[o].local.velocity.amplitude);
+					std::memcpy(&asset->elemDefs[i].velSamples[o].local.velocity.unk_vec, 
+						asset->elemDefs[i].velSamples[o].local.velocity.amplitude, 
+						sizeof(float[3])
+					);
 					COPY_ARR(velSamples[o].local.totalDelta.base);
 					COPY_ARR(velSamples[o].local.totalDelta.amplitude);
+					std::memcpy(&asset->elemDefs[i].velSamples[o].local.totalDelta.unk_vec,
+						asset->elemDefs[i].velSamples[o].local.totalDelta.amplitude,
+						sizeof(float[3])
+					);
 
 					COPY_ARR(velSamples[o].world.velocity.base);
 					COPY_ARR(velSamples[o].world.velocity.amplitude);
+					std::memcpy(&asset->elemDefs[i].velSamples[o].world.totalDelta.unk_vec,
+						asset->elemDefs[i].velSamples[o].world.totalDelta.amplitude,
+						sizeof(float[3])
+					);
 					COPY_ARR(velSamples[o].world.totalDelta.base);
 					COPY_ARR(velSamples[o].world.totalDelta.amplitude);
+					std::memcpy(&asset->elemDefs[i].velSamples[o].world.totalDelta.unk_vec,
+						asset->elemDefs[i].velSamples[o].world.totalDelta.amplitude,
+						sizeof(float[3])
+					);
 				}
 
 				REINTERPRET_CAST_SAFE(visSamples);
-
-				const auto convert_visuals = [&](h2::FxElemDef* def, FxElemVisuals* vis, h2::FxElemVisuals* dest)
-				{
-					switch (def->elemType)
-					{
-					case FX_ELEM_TYPE_MODEL:
-					{
-						const auto model = allocator.allocate<h2::XModel>();
-						model->name = vis->model->name;
-						dest->model = model;
-						break;
-					}
-					case FX_ELEM_TYPE_RUNNER:
-					{
-						const auto handle = allocator.allocate<h2::FxEffectDef>();
-						handle->name = vis->effectDef.handle->name;
-						dest->effectDef.handle = handle;
-						break;
-					}
-					case FX_ELEM_TYPE_SOUND:
-					case FX_ELEM_TYPE_VECTORFIELD:
-						break;
-					case FX_ELEM_TYPE_PARTICLE_SIM_ANIMATION:
-						break;
-					default:
-						if (def->elemType - 12 <= 1u)
-						{
-							if (def->elemType == FX_ELEM_TYPE_SPOT_LIGHT)
-							{
-								const auto light = allocator.allocate<h2::GfxLightDef>();
-								light->name = vis->lightDef->name;
-								dest->lightDef = light;
-							}
-						}
-						else
-						{
-							const auto material = allocator.allocate<h2::Material>();
-							material->name = vis->material->name;
-							dest->material = material;
-						}
-						break;
-					}
-				};
-
-				if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_DECAL && h1_asset->elemDefs[i].visuals.markArray)
-				{
-					const auto mark_array = allocator.allocate_array<h2::FxElemMarkVisuals>(h1_asset->elemDefs[i].visualCount);
-					for (auto o = 0u; o < h1_asset->elemDefs[i].visualCount; o++)
-					{
-						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[0])
-						{
-							const auto material = allocator.allocate<h2::Material>();
-							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[0]->name;
-							mark_array[o].materials[0] = material;
-						}
-
-						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[1])
-						{
-							const auto material = allocator.allocate<h2::Material>();
-							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[1]->name;
-							mark_array[o].materials[1] = material;
-						}
-
-						if (h1_asset->elemDefs[i].visuals.markArray[o].materials[2])
-						{
-							const auto material = allocator.allocate<h2::Material>();
-							material->name = h1_asset->elemDefs[i].visuals.markArray[o].materials[2]->name;
-							mark_array[o].materials[2] = material;
-						}
-					}
-
-					asset->elemDefs[i].visuals.markArray = mark_array;
-				}
-				else if (h1_asset->elemDefs[i].visualCount > 1)
-				{
-					asset->elemDefs[i].visuals.array = allocator.allocate_array<h2::FxElemVisuals>(h1_asset->elemDefs[i].visualCount);
-					for (unsigned char vis = 0; vis < h1_asset->elemDefs[i].visualCount; vis++)
-					{
-						convert_visuals(&asset->elemDefs[i], &h1_asset->elemDefs[i].visuals.array[vis], 
-							&asset->elemDefs[i].visuals.array[vis]);
-					}
-				}
-				else
-				{
-					convert_visuals(&asset->elemDefs[i], &h1_asset->elemDefs[i].visuals.instance, 
-						&asset->elemDefs[i].visuals.instance);
-				}
-
+				REINTERPRET_CAST_SAFE(visuals.markArray);
 				COPY_VALUE(collBounds);
 				REINTERPRET_CAST_SAFE(effectOnImpact.name);
 				REINTERPRET_CAST_SAFE(effectOnDeath.name);
@@ -169,7 +98,7 @@ namespace zonetool
 
 				if (asset->elemDefs[i].extended.trailDef)
 				{
-					if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_TRAIL)
+					if (asset->elemDefs[i].elemType == FX_ELEM_TYPE_TRAIL)//
 					{
 						asset->elemDefs[i].extended.trailDef = allocator.allocate<h2::FxTrailDef>();
 						COPY_VALUE(extended.trailDef->scrollTimeMsec);
@@ -185,7 +114,6 @@ namespace zonetool
 						asset->elemDefs[i].extended.decalDef = allocator.allocate<h2::FxDecalDef>();
 					}
 				}
-
 
 				COPY_VALUE(sortOrder);
 				COPY_VALUE(lightingFrac);

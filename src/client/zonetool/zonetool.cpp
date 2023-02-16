@@ -143,7 +143,7 @@ namespace zonetool
 					// dump assets
 					DUMP_ASSET(ASSET_TYPE_CLUT, IClut, Clut);
 					DUMP_ASSET(ASSET_TYPE_DOPPLER_PRESET, IDopplerPreset, DopplerPreset);
-					DUMP_ASSET(ASSET_TYPE_FX, IFxEffectDef, FxEffectDef);
+					//DUMP_ASSET(ASSET_TYPE_FX, IFxEffectDef, FxEffectDef);
 					DUMP_ASSET(ASSET_TYPE_PARTICLE_SIM_ANIMATION, IFxParticleSimAnimation, FxParticleSimAnimation);
 					DUMP_ASSET(ASSET_TYPE_IMAGE, IGfxImage, GfxImage);
 					DUMP_ASSET(ASSET_TYPE_LIGHT_DEF, IGfxLightDef, GfxLightDef);

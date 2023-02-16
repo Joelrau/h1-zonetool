@@ -35,7 +35,6 @@ namespace zonetool
 			REINTERPRET_CAST_SAFE(baseName);
 			COPY_VALUE(bspVersion);
 			COPY_VALUE(planeCount);
-			COPY_VALUE(nodeCount);
 			COPY_VALUE(surfaceCount);
 			COPY_VALUE(skyCount);
 			REINTERPRET_CAST_SAFE(skies);
@@ -55,11 +54,13 @@ namespace zonetool
 				COPY_VALUE(dpvsPlanes.cellCount);
 				REINTERPRET_CAST_SAFE(dpvsPlanes.planes);
 
+				asset->nodeCount = h1_asset->nodeCount / 2;
 				asset->dpvsPlanes.nodes = allocator.allocate_array<h2::mnode_t>(asset->nodeCount);
-				for (auto i = 0; i < asset->nodeCount; i++)
+				auto node_index = 0;
+				for (auto i = 0; i < h1_asset->nodeCount; i += 2)
 				{
-					asset->dpvsPlanes.nodes[i].unk0 = 0;
-					asset->dpvsPlanes.nodes[i].unk1 = h1_asset->dpvsPlanes.nodes[i];
+					asset->dpvsPlanes.nodes[node_index].unk0 = h1_asset->dpvsPlanes.nodes[i];
+					asset->dpvsPlanes.nodes[node_index].unk1 = h1_asset->dpvsPlanes.nodes[i + 1] / 2;
 				}
 
 				REINTERPRET_CAST_SAFE(dpvsPlanes.sceneEntCellBits);
