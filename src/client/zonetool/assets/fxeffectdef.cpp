@@ -55,6 +55,11 @@ namespace zonetool
 				COPY_VALUE(velIntervalCount);
 				COPY_VALUE(visStateIntervalCount);
 
+				if ((((asset->elemDefs[i].flags & 0x30) - 16) & 0xFFFFFFEF) != 0)
+				{
+					std::memset(&asset->elemDefs[i].spawnOffsetRadius, 0, sizeof(FxFloatRange));
+				}
+
 				const auto vel_count = asset->elemDefs[i].velIntervalCount + 1;
 				asset->elemDefs[i].velSamples = allocator.allocate_array<h2::FxElemVelStateSample>(vel_count);
 				for (auto o = 0; o < vel_count; o++)
